@@ -206,13 +206,13 @@ Windows 下 Git 默认转换换行符，会导致"工作区文件"与"标签里�
 | 仓库地址 | https://github.com/ChenYiFanAccount/softeng-lab1-requirements |
 | 分支名称 | `main` |
 | `lab1-ai-draft` 完整提交编号 | `3c4771842dd42f20f7ea4db4ec0d8acd77b42fc0` |
-| `lab1-final` 完整提交编号 | `319c3f408abb272a68ed1c0f03c3c87d7f8f6264` |
+| `lab1-final` 完整提交编号 | `01822ad0e57efe8b018a4c6f04152afc8a972620` |
 
-两个标签的对象编号分别为 `58f04859a1501e39c5dc6d902c6f57ef4d12c9c4`（`lab1-ai-draft`）与 `e4d114318df7263931391f854adc51aa83013c0b`（`lab1-final`）。
+两个标签的对象编号分别为 `58f04859a1501e39c5dc6d902c6f57ef4d12c9c4`（`lab1-ai-draft`）与 `1a2a8908086669d632bdb17cba3ed0b729ab06a5`（`lab1-final`）。
 
 提交的 `requirements.md` 与 `chat.txt` 与标签 `lab1-final` 中的同名文件内容完全相同，指纹如下，可用于核对压缩包：
 
 ```
 requirements.md  8D0BB0EE84CAC250FA0CB016D55AB6EA52FD3A4A6ACEB69AC04FD573C5D26760
-chat.txt         88A64CA32CDB0C2314FD5F5E654201FB6D37B2CEF743A45E9BD46505CD0E8AEB
+chat.txt         78272EA167357D4E979F9BCAAF8DC278009278652FD4166CDE170D373C788A87
 ```

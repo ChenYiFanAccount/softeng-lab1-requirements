@@ -26,7 +26,7 @@
 - [x] P2 AI 初稿（requirements.md v1.0）
 - [x] P3 标签 `lab1-ai-draft`
 - [x] P4 人工审查（REV-001~REV-003）
-- [x] P5 标签 `lab1-final`（提交 `319c3f4`）
+- [x] P5 标签 `lab1-final`（提交 `01822ad`）
 - [ ] P6 导出 `report.pdf`（`report.md` 已完成，待导出）
 - [ ] P7 打包提交 `实验1_241220024_陈一帆.zip`
 
