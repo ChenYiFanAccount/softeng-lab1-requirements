@@ -21,9 +21,9 @@
 ## 进度
 
 - [x] P0 仓库初始化
-- [ ] P1 访谈（正式一轮 + 跟进一轮）
-- [ ] P2 AI 初稿
-- [ ] P3 标签 `lab1-ai-draft`
+- [x] P1 访谈（正式一轮 INT-01 + 跟进 INT-02~INT-04）
+- [x] P2 AI 初稿（requirements.md v1.0）
+- [x] P3 标签 `lab1-ai-draft`
 - [ ] P4 人工审查
 - [ ] P5 标签 `lab1-final`
 - [ ] P6 `report.pdf`
