@@ -6,3 +6,9 @@
 *.tmp
 Thumbs.db
 .DS_Store
+
+# 报告导出件：以 report.md 为源，模板未要求纳入仓库
+report.pdf
+
+# 临时脚本与打包件
+_tmp*
