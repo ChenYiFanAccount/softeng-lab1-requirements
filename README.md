@@ -24,7 +24,7 @@
 - [x] P1 访谈（正式一轮 INT-01 + 跟进 INT-02~INT-04）
 - [x] P2 AI 初稿（requirements.md v1.0）
 - [x] P3 标签 `lab1-ai-draft`
-- [ ] P4 人工审查
+- [x] P4 人工审查（REV-001~REV-003）
 - [ ] P5 标签 `lab1-final`
 - [ ] P6 `report.pdf`
 - [ ] P7 打包提交 `实验1_学号_姓名.zip`
