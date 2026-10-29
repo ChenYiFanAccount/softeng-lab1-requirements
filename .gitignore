@@ -1,0 +1,8 @@
+# 内部工作笔记，不纳入交付仓库（交付物只有 report.pdf / requirements.md / chat.txt）
+实验一_流程与项目分析.md
+
+# 临时与打包文件
+*.zip
+*.tmp
+Thumbs.db
+.DS_Store
