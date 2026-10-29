@@ -7,8 +7,9 @@
 
 | 文件 | 说明 |
 |---|---|
-| `requirements.md` | 需求规格说明（REQ-001 起，唯一编号、固定 9 字段） |
+| `requirements.md` | 需求规格说明（REQ-001 起，唯一编号、固定 10 字段） |
 | `chat.txt` | 访谈与补充沟通、AI 交互记录、人工审查记录三部分 |
+| `report.md` | 需求分析报告正文，导出为 `report.pdf` 后随提交 |
 | `实验一 需求分析.md` | 课程下发的实验要求（需求来源与核对依据） |
 
 ## 提交标签
@@ -25,9 +26,9 @@
 - [x] P2 AI 初稿（requirements.md v1.0）
 - [x] P3 标签 `lab1-ai-draft`
 - [x] P4 人工审查（REV-001~REV-003）
-- [ ] P5 标签 `lab1-final`
-- [ ] P6 `report.pdf`
-- [ ] P7 打包提交 `实验1_学号_姓名.zip`
+- [x] P5 标签 `lab1-final`（提交 `319c3f4`）
+- [ ] P6 导出 `report.pdf`（`report.md` 已完成，待导出）
+- [ ] P7 打包提交 `实验1_241220024_陈一帆.zip`
 
 ## 项目
 
