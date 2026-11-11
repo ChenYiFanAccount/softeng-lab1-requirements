@@ -1,14 +1,12 @@
-# 内部工作笔记，不纳入交付仓库（交付物只有 report.pdf / requirements.md / chat.txt）
-实验一_流程与项目分析.md
+﻿# 仓库根 = D:\NJU\softengineering
+# 目的：实验一（exp1/）与实验二（exp2/）共用同一个 git 仓库（沿用 lab1 远端）
+# 说明：实验一交付件与 lab1-final 逐字节一致，故仍禁用换行符转换（见 exp1/.gitattributes）
 
-# 临时与打包文件
-*.zip
+# 编辑器与课程模板，不入库
+.obsidian/
+模板/
+
+# 临时件
 *.tmp
+~$*
 Thumbs.db
-.DS_Store
-
-# 报告导出件：以 report.md 为源，模板未要求纳入仓库
-report.pdf
-
-# 临时脚本与打包件
-_tmp*
