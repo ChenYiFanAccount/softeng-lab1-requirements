@@ -1,0 +1,4 @@
+# 沿用实验一做法：关闭换行符自动转换，保证逐字节可核对
+* -text
+*.png binary
+*.pdf binary
