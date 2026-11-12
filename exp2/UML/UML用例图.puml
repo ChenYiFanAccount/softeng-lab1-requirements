@@ -1,10 +1,10 @@
 @startuml
-' 版本：v1.1（2026-11-12，S3 行为图；分组后重排版面）
+' 版本：v1.2（2026-11-12，S3 行为图；补 UC21 判定取消政策，修正 UC07 的 include 指向）
 ' 口径来源：exp1/requirements.md（REQ-001~027）、exp2/设计基线/02_模块划分与交互.md §2 模块卡片
 ' 画法：4 类参与者（游客/顾客/酒店工作人员/平台管理员）画在系统边界外；
-' 用三个用例包把 20 个用例按"谁在用"分组，避免连线交叉成一团；
+' 用三个用例包把 21 个用例按"谁在用"分组，避免连线交叉成一团；
 ' 用例名后带 REQ 编号，便于报告 3.x 逐条指回需求；include=必然发生，extend=条件性发生。
-title UML用例图 v1.1：4 类参与者与 20 个用例
+title UML用例图 v1.2：4 类参与者与 21 个用例
 
 skinparam shadowing false
 skinparam defaultFontSize 12
@@ -32,6 +32,7 @@ rectangle "酒店预订系统" {
     usecase "UC05 提交预订\n(REQ-005、REQ-006、REQ-014、REQ-019)" as UC05
     usecase "UC06 查看我的订单\n(REQ-015)" as UC06
     usecase "UC07 取消订单\n(REQ-010、REQ-023)" as UC07
+    usecase "UC21 判定取消政策\n(REQ-010、REQ-023)" as UC21
     usecase "UC08 改期\n(REQ-009)" as UC08
   }
 
@@ -84,7 +85,7 @@ Admin --> UC20
 
 ' ---------- include：必然发生（下单/改期都必须先拿到余量；取消必须先判政策） ----------
 UC05 ..> UC04 : <<include>>
-UC07 ..> UC17 : <<include>>
+UC07 ..> UC21 : <<include>> 取消前先判政策窗口（免费窗口、罚则、停业事实）
 
 ' ---------- extend：条件发生 ----------
 UC16 ..> UC07 : <<extend>> 管理员越权取消
@@ -96,7 +97,7 @@ note bottom of UC05
 end note
 
 note right of UC08
-  **另外两条包含/扩展关系为了让版面临可读，写在注释里：**
+  **另外两条包含/扩展关系为了让版面可读，写在注释里：**
   · UC08 改期同样 <<include>> UC04：改期必须先查新日期的区间余量，
     否则"新日期无房"会在释放旧库存之后才暴露（那是最坏的顺序）。
   · UC13 标记未入住 <<extend>> UC12：只有"入住日 23:59 前没到店"这个条件下
