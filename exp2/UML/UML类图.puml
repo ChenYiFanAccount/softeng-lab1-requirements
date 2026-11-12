@@ -1,0 +1,235 @@
+@startuml
+' 版本：v1.0（2026-11-12，S2 结构图）
+' 口径来源：exp2/设计基线/01_术语与追溯.md §1、03_数据设计.md §2/§8
+title UML类图 v1.0：酒店预订系统的领域模型
+
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam packageTitleFontSize 13
+skinparam class {
+  BackgroundColor #FEFEFE
+  BorderColor #44546A
+  ArrowColor #44546A
+}
+
+package "领域层 · 实体（13 个核心类型，对应 12 张表）" #F7F9FC {
+
+  class "UserAccount 用户账号" as UserAccount {
+    - 账号ID: String
+    - 手机号: String
+    - 密码哈希: String
+    - 状态: String
+    - 创建时间: DateTime
+    + 校验密码(明文): Boolean
+  }
+
+  class "Role 角色" as Role {
+    - 角色ID: String
+    - 角色名: String
+  }
+
+  class "Hotel 酒店" as Hotel {
+    - 酒店ID: String
+    - 名称: String
+    - 城市: String
+    - 地址: String
+    - 简介: String
+    - 入住时间: Time
+    - 退房时间: Time
+    - 状态: String
+  }
+
+  class "RoomType 房型" as RoomType {
+    - 房型ID: String
+    - 名称: String
+    - 总房量（totalRooms）: int
+    - 床型: String
+    - 可住人数: int
+    + 占用是否超出总房量(占用数): Boolean
+  }
+
+  class "RoomInventory 每日库存" as RoomInventory {
+    - 房型ID: String
+    - 日期: Date
+    - 可售间数: int
+    - 已占用间数: int
+    - 销售状态: String
+    - 更新时间: DateTime
+    + 余量(): int
+    + 可占用(间数): Boolean
+    + 可调整可售(新间数): Boolean
+  }
+
+  class "RoomPrice 每日价格" as RoomPrice {
+    - 房型ID: String
+    - 日期: Date
+    - 单价: Decimal
+    - 币种: String
+  }
+
+  class "Booking 订单" as Booking {
+    - 订单号: String
+    - 入住日: Date
+    - 退房日: Date
+    - 间数: int
+    - 总价: Decimal
+    - 状态: BookingStatus
+    - 取消原因: String
+    - 幂等键引用: String
+    - 创建时间: DateTime
+    + 占用天数(): int
+    + 是否有效(): Boolean
+  }
+
+  class "BookingStatus 订单状态" as BookingStatus <<enumeration>> {
+    待确认
+    已确认
+    已入住
+    已退房
+    已取消
+    未入住
+  }
+
+  class "BookingNight 逐晚快照" as BookingNight {
+    - 日期: Date
+    - 单价快照: Decimal
+    - 间数: int
+    + 小计(): Decimal
+  }
+
+  class "IdempotencyKey 幂等键" as IdempotencyKey {
+    - 键值: String
+    - 顾客ID: String
+    - 订单号: String
+    - 创建时间: DateTime
+  }
+
+  class "StayRecord 办理记录" as StayRecord {
+    - 记录ID: String
+    - 动作: String
+    - 标记来源: String
+    - 操作人: String
+    - 时间: DateTime
+  }
+
+  class "AuditLog 审计日志" as AuditLog {
+    - 日志ID: String
+    - 操作人: String
+    - 动作: String
+    - 对象: String
+    - 前状态: String
+    - 后状态: String
+    - 原因: String
+    - 来源IP: String
+    - 时间: DateTime
+  }
+
+  class "NotificationRecord 通知记录" as NotificationRecord {
+    - 记录ID: String
+    - 渠道: String
+    - 内容摘要: String
+    - 结果: String
+    - 时间: DateTime
+  }
+
+  class "HolidayCalendar 节假日" as HolidayCalendar {
+    - 日期: Date
+    - 名称: String
+    - 类型: String
+  }
+}
+
+package "领域服务（业务规则载体，不对应表）" #FFF8E7 {
+
+  class "BookingStateMachine 订单状态机" as BookingStateMachine {
+    + 允许转换(当前状态, 事件): Boolean
+    + 转换(订单, 事件): Boolean
+    + 可用动作(状态): 事件列表
+    + 拒绝原因(当前状态, 事件): String
+  }
+
+  class "BookingService 预订服务" as BookingService {
+    + 提交订单(命令): 订单号
+    + 改期(订单号, 新区间, 间数): Boolean
+    + 取消(订单号, 原因): Boolean
+    + 查询订单(条件): 订单列表
+  }
+
+  class "InventoryService 库存服务" as InventoryService {
+    + 占用间数(房型, 区间, 间数): Boolean
+    + 释放间数(房型, 区间, 间数): Boolean
+    + 按日调整可售(房型, 日期, 新可售): Boolean
+    + 区间余量(房型, 区间): int
+  }
+}
+
+package "仓储接口（领域层定义，数据访问层实现）" #EEF6EE {
+
+  interface "BookingRepository" as BookingRepository <<interface>> {
+    + 按订单号查(订单号): Booking
+    + 保存(订单): void
+    + 查有效重叠单(顾客, 酒店, 房型, 区间): Booking列表
+  }
+
+  interface "InventoryRepository" as InventoryRepository <<interface>> {
+    + 锁行并读取(房型, 日期): RoomInventory
+    + 累加已占用(房型, 日期, 增量): void
+    + 按区间查余量(房型, 区间): int列表
+  }
+
+  interface "AuditLogRepository" as AuditLogRepository <<interface>> {
+    + 追加(日志): void
+    + 按条件查(条件): AuditLog列表
+  }
+}
+
+' ---------- 实体之间的关系（多重度按 REQ 语义写） ----------
+UserAccount "1" -- "1" Role : 拥有
+UserAccount "1" -- "0..*" Booking : 下单
+UserAccount "1" -- "0..*" AuditLog : 产生
+UserAccount "1" -- "0..*" IdempotencyKey : 提交键
+
+Hotel "1" *-- "1..*" RoomType : 包含
+Hotel "0..1" -- "0..*" HolidayCalendar : 参考节假日
+
+RoomType "1" *-- "0..*" RoomInventory : 按日挂牌
+RoomType "1" *-- "0..*" RoomPrice : 按日定价
+
+Booking "1" *-- "1..*" BookingNight : 逐晚快照
+Booking "1" -- "1" BookingStatus : 状态
+Booking "0..*" -- "1" RoomType : 预订
+Booking "1" -- "0..1" IdempotencyKey : 幂等绑定
+Booking "1" -- "0..*" StayRecord : 办理流水
+Booking "1" -- "0..*" NotificationRecord : 通知流水
+
+' ---------- 服务与仓储接口的依赖（服务只依赖接口，不依赖实现） ----------
+BookingService ..> BookingRepository : 依赖
+BookingService ..> InventoryRepository : 依赖
+BookingService ..> BookingStateMachine : 依赖
+InventoryService ..> InventoryRepository : 依赖
+BookingStateMachine ..> BookingRepository : 依赖
+BookingService ..> AuditLogRepository : 依赖
+
+note right of BookingStatus
+  6 个状态、8 条转换边（6 种状态对）。
+  状态字段只能经 BookingStateMachine 修改，
+  业务代码不得直接赋值。
+  已入住/已退房/已取消 为终态，不可回退。
+end note
+
+note bottom of RoomInventory
+  库存口径（全系统唯一一套）：
+  · 可售间数 = 酒店按日挂牌可售量（落库）
+  · 已占用间数 = 有效订单占用（落库）
+  · 余量 = 可售 − 占用，是**方法**，不落库
+  下单只加已占用；调整可售不得低于已占用。
+end note
+
+note top of BookingNight
+  为什么单独一个类型：
+  单价按「房型 × 日期」维护，一单跨多晚，
+  每晚单价可能不同，总价 = Σ(单价快照 × 间数)。
+  只存一个"单价快照"字段表达不了。
+end note
+@enduml

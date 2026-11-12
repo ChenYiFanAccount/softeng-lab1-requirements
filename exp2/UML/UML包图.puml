@@ -1,0 +1,155 @@
+@startuml
+' 版本：v1.0（2026-11-12，S2 结构图）
+' 口径来源：exp2/设计基线/02_模块划分与交互.md §1（四层 + 10 模块）、§3 交互矩阵（S/A/T/R）
+'
+' 排版约束一（实测有效）：所有 package 块一律多行书写、每行只放一个子元素。
+' 写成 package "x" { [a] as A } 这种同行闭合形式，与多行块混排时 PlantUML 1.2026.9 会解析失败。
+' 排版约束二：模块按 M10→M1 顺序声明。本图用 left to right direction 分层，
+' 同层兄弟包是自下而上排的，反过来声明图上的编号才是自上而下 M1→M10，读图不跳号。
+title UML包图 v1.0：四层分层 + 业务能力纵切（模块化单体）
+
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam packageTitleFontSize 13
+skinparam componentStyle rectangle
+skinparam ArrowColor #44546A
+left to right direction
+
+package "表现层 L1｜页面与接口入口：只做参数校验、鉴权前置、结果渲染，不含业务判断" as L1 {
+  package "M10 运维（页面）" as P10 {
+    [运维配置页] as V10
+  }
+  package "M9 审计（页面）" as P9 {
+    [审计日志查询页] as V9
+  }
+  package "M8 报表（页面）" as P8 {
+    [统计看板] as V8
+  }
+  package "M7 取消（页面）" as P7 {
+    [取消与改期确认页] as V7
+  }
+  package "M6 履约（页面）" as P6 {
+    [酒店工作台] as V6
+    [入住退房办理页] as V6b
+  }
+  package "M5 预订（页面）" as P5 {
+    [预订确认页] as V5
+    [订单列表与详情页] as V5b
+  }
+  package "M4 搜索（页面）" as P4 {
+    [搜索首页与结果列表] as V4
+    [酒店详情页] as V4b
+  }
+  package "M3 库存（页面）" as P3 {
+    [库存日历页] as V3
+    [价格日历与停售页] as V3b
+  }
+  package "M2 酒店（页面）" as P2 {
+    [入驻申请与审核页] as V2
+  }
+  package "M1 账号（页面）" as P1 {
+    [登录/注册页] as V1
+  }
+}
+
+package "应用服务层 L2｜用例编排与事务边界：一个用例一个事务，跨模块调用只在这里发生" as L2 {
+  package "M10 平台运维" as A10 {
+    [读配置/对账/备份/告警] as A10i
+  }
+  package "M9 审计与日志" as A9 {
+    [写审计/查审计] as A9i
+  }
+  package "M8 报表统计" as A8 {
+    [指标汇总/趋势] as A8i
+  }
+  package "M7 取消与改期政策" as A7 {
+    [政策判定/取消执行/通知] as A7i
+  }
+  package "M6 履约与调度" as A6 {
+    [确认/拒单/入住/退房/no-show] as A6i
+  }
+  package "M5 预订与订单" as A5 {
+    [下单/改期/取消/订单查询] as A5i
+  }
+  package "M4 搜索与展示" as A4 {
+    [条件检索/详情/区间余量] as A4i
+  }
+  package "M3 库存与价格" as A3 {
+    [每日库存/每日价格/停售停业/节假日] as A3i
+  }
+  package "M2 酒店与房型" as A2 {
+    [入驻审核/资料/房型维护] as A2i
+  }
+  package "M1 账号与权限" as A1 {
+    [注册/登录/会话/角色判定] as A1i
+  }
+}
+
+package "领域层 L3｜实体 + 领域服务 + 仓储接口：不依赖任何外层，纯业务规则" as L3 {
+  package "实体" as DS1 {
+    [13 个核心类型（见 UML类图）] as E1
+  }
+  package "领域服务" as DS2 {
+    [InventoryService 库存服务] as D2
+    [BookingService 预订服务] as D1
+  }
+  package "状态机与仓储接口（领域层定义）" as DS3 {
+    [BookingStateMachine 状态机] as D3
+    [BookingRepository 订单仓储] as R1
+    [InventoryRepository 库存仓储] as R2
+    [AuditLogRepository 审计仓储] as R3
+  }
+}
+
+package "数据访问层 L4｜仓储实现与持久化：只做读写与行锁，不含业务规则" as L4 {
+  package "仓储实现" as IM {
+    [RepositoryImpl（3 个实现类）] as IMPL
+    [InventoryRepositoryImpl] as I2
+    [BookingRepositoryImpl] as I1
+    [AuditLogRepositoryImpl] as I3
+  }
+  package "存储" as ST {
+    database "关系型数据库（12 张表）" as DB
+  }
+}
+
+' ---------- 依赖方向 ----------
+L1 --> L2 : 依赖（调用用例）
+L2 --> L3 : 依赖（调用领域服务与仓储接口）
+IMPL --> DB : 读写
+
+' ---------- 唯一一条反向箭头：依赖倒置（实现方向向上） ----------
+IMPL ..|> R1 : 实现接口（全图唯一一条反向箭头）
+
+note right of L4
+  **依赖方向一句话**：依赖倒置。
+  接口（BookingRepository 等 3 个）定义在领域层，
+  实现类在数据访问层，于是"实现"这条箭头由下往上。
+
+  **为什么只画一条**：
+  三个接口的实现关系完全同型，若逐条画就是三条反向箭头，
+  图面会读成"反向依赖很普遍"。这里只画一条代表，另两条同型——
+  这正是"有且仅有一条反向箭头"的落地办法。
+
+  **为什么允许这一条例外**：
+  业务规则不该因为换存储而改动——领域层只认接口，
+  测试时塞内存实现即可，不用起数据库。
+
+  **代价**：
+  启动处必须注入具体实现（由容器装配），没有它就是空指针；
+  所以这条例外必须写在图上，不能让读者以为整个系统都允许反向依赖。
+end note
+
+note bottom of L2
+  除"实现"箭头外，禁止任何其他反向依赖：
+  · 数据访问层不得调用应用服务层
+  · 领域层不得引用框架/ORM 类型（只认接口与值对象）
+  · 表现层不得跨层直接访问数据访问层
+end note
+
+note top of L1
+  跨层例外只有两条：
+  ① M8 报表只读仓储接口（避免大查询穿透服务层）
+  ② M1 鉴权中间件在表现层之前拦截（会话校验先于业务）
+end note
+@enduml

@@ -401,6 +401,23 @@ def need_pair(stem: str, png_min: int = 20000) -> list[str]:
     return bad
 
 
+def class_body(text: str, alias: str) -> str:
+    """取出 `class "标签" as <alias> { ... }` 的花括号内正文（用于核对属性清单）。"""
+    m = re.search(r"^\s*(?:class|interface)\s+[^\n]*\bas\s+" + re.escape(alias) + r"\b[^\n]*\{", text, re.M)
+    if not m:
+        return ""
+    start = m.end()
+    depth = 1
+    i = start
+    while i < len(text) and depth:
+        if text[i] == "{":
+            depth += 1
+        elif text[i] == "}":
+            depth -= 1
+        i += 1
+    return text[start:i - 1]
+
+
 def s2_struct() -> None:
     """S2 判据按阶段卡 S2「A 层」逐条落地（复验 D-10：原判据只有一个 png>200B）。"""
     stage = "S2"
@@ -418,11 +435,12 @@ def s2_struct() -> None:
         mult = len(re.findall(r'"[0-9*]+"\s*[*-]|"\d+\s*\.\.', t))
         record(stage, "多重度标注 ≥ 6 处", mult >= 6, f"实际 {mult}")
         # 评审 A8：RoomInventory 的属性必须与 03 §2.4 逐字对齐，余量是方法不是字段
-        inv = [ln for ln in t.splitlines() if "RoomInventory" in ln or "库存" in ln and "可售" in ln]
-        block = "\n".join(inv)
+        block = class_body(t, "RoomInventory")
         three = all(k in block for k in ("可售间数", "已占用间数", "销售状态"))
         record(stage, "RoomInventory 三属性齐全（可售/已占用/销售状态）", three,
-               "" if three else f"实际：{block[:120]}")
+               "" if three else f"实际属性块：{block[:140].replace(chr(10), ' / ')}")
+        record(stage, "RoomInventory 不存『占用 = 总房量 − 可售』式反推字段",
+               "占用" in block and "可售" in block, "缺可售或已占用字段")
         record(stage, "类图不把『余量』当字段（余量须是派生方法）",
                not re.search(r"(-|\+)\s*余量\s*:", t), "把余量写成了持久化字段")
         # 三条服务类：BookingService / InventoryService / BookingStateMachine

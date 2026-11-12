@@ -1,0 +1,123 @@
+@startuml
+' 版本：v1.0（2026-11-12，S2 结构图）
+' 口径来源：exp2/设计基线/02_模块划分与交互.md §2 模块卡片（对外接口）、§3 交互矩阵（S/A/T/R）
+' 画法：10 个业务模块各画成一个组件，组件框内列出它对外提供的具名接口（共 20 个）；
+' 组件之间的箭头一律带 [S]/[A]/[T]/[R] 与接口名，与交互矩阵逐格对应。
+title UML组件图 v1.0：10 个业务模块与它们对外提供的接口
+
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam componentStyle rectangle
+skinparam ArrowColor #44546A
+
+component "页面与接口入口（表现层）" as WEB
+
+component "M1 账号与权限" as M1 {
+  interface "I1 注册/登录" as I1
+  interface "I2 角色判定" as I2
+}
+
+component "M2 酒店与房型" as M2 {
+  interface "I3 入驻审核" as I3
+  interface "I4 房型维护" as I4
+}
+
+component "M3 库存与价格" as M3 {
+  interface "I5 区间余量" as I5
+  interface "I6 占用/释放" as I6
+}
+
+component "M4 搜索与展示" as M4 {
+  interface "I7 条件检索" as I7
+  interface "I8 酒店详情" as I8
+}
+
+component "M5 预订与订单" as M5 {
+  interface "I9 下单" as I9
+  interface "I10 订单查询" as I10
+}
+
+component "M6 履约与调度" as M6 {
+  interface "I11 确认/拒单" as I11
+  interface "I12 入住/退房" as I12
+}
+
+component "M7 取消与改期政策" as M7 {
+  interface "I13 政策判定" as I13
+  interface "I14 取消执行" as I14
+  interface "I20 通知投递" as I20
+}
+
+component "M8 报表统计" as M8 {
+  interface "I15 指标汇总" as I15
+}
+
+component "M9 审计与日志" as M9 {
+  interface "I16 写审计" as I16
+  interface "I17 查审计" as I17
+}
+
+component "M10 平台运维" as M10 {
+  interface "I18 配置读取" as I18
+  interface "I19 对账任务" as I19
+}
+
+component "数据存储（12 张表）" as DB
+
+' ---------- 入口 → 业务模块 ----------
+WEB --> I1 : [S] 登录
+WEB --> I7 : [S] 搜索
+WEB --> I8 : [S] 看详情
+WEB --> I9 : [S] 下单
+WEB --> I10 : [S] 查订单
+WEB --> I14 : [S] 取消/改期
+
+' ---------- 下单链路 ----------
+I9 --> I2 : [S] 先鉴权
+I9 --> I5 : [S] 取区间余量（只读）
+I9 --> I6 : [S] 逐日占用（已占用 += n）
+I9 --> I16 : [A] 写审计（不阻塞下单）
+
+' ---------- 取消 / 超时释放 ----------
+I9 --> I13 : [S] 取消前校验政策
+I13 --> I6 : [S] 释放（已占用 -= n）
+M10 --> M6 : [T] 每日 00:05 扫描超时单
+M6 --> I9 : [S] 置取消并释放
+
+' ---------- 履约 ----------
+M6 --> I4 : [R] 读房型与酒店资料
+M6 --> I11 : [S] 确认/拒单
+
+' ---------- 库存维护 ----------
+M2 --> M3 : [S] 初始化每日库存行
+
+' ---------- 只读侧 ----------
+M8 --> I10 : [R] 只读汇总
+M8 --> I5 : [R] 只读余量
+M10 --> I5 : [R] 对账只读（只告警不改数）
+
+' ---------- 持久化 ----------
+M3 --> DB : 读写库存与价格
+I9 --> DB : 读写订单与逐晚快照
+I16 --> DB : 只追加审计
+
+note right of M10
+  三类连接的分工（与交互矩阵一致）：
+  · [S] 同步：同一事务内完成，失败即整体回滚
+  · [A] 异步：主流程写完后落审计，失败可重试
+  · [T] 定时：M10 只做触发与告警，不改业务数据
+  · [R] 只读：只比对/展示，不写库存
+end note
+
+note bottom of M3
+  库存接口只有两个方向：
+  · I5 区间余量（只读，M4/M5/M8/M10 都走它）
+  · I6 占用/释放（写，事务内逐日加锁）
+  没有"直接改余量"的接口——余量=可售−占用，算出来的，不落库。
+end note
+
+note bottom of M1
+  M1 不画指向其他模块的箭头：鉴权是"被调用方"，
+  业务模块执行前主动来问 I2，M1 不反过来依赖它们。
+end note
+@enduml
