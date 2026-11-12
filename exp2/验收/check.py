@@ -40,6 +40,8 @@ EXPECT = {
     "class_repos": 3,             # 类图仓储接口 <<interface>>
     "uml_required": 7,            # UML 必做张数
     "uml_optional": 2,            # UML 可选张数
+    "unique_business": 6,         # 03 §9 业务唯一约束（U1–U6）
+    "unique_tech": 4,             # 03 §9 技术性唯一（T1–T4，不混入 6 条）
 }
 
 # 禁用词：旧口径残留。命中即判 FAIL（说明某处还停留在修订前的说法）。
@@ -334,14 +336,39 @@ def s1_class_spec() -> None:
 
 def s1_banned() -> None:
     stage = "S1"
+    # 扫描范围（复验报告 D-11）：先前只扫 4 份文档，漏了阶段卡与验收目录，
+    # 导致"旧口径只留在验收材料里"这种残留抓不到。
+    targets = [B1, B2, B3, PLAN, PHASE]
+    exp_dir = ROOT / "验收"
+    if exp_dir.exists():
+        targets += sorted(exp_dir.glob("*.md")) + sorted(exp_dir.glob("*.py"))
+    # 白名单：外部评审材料按"原样归档"保留，其引述旧口径属正常（不得改写评审方原文）；
+    # 以及任何标注了"禁用词/旧口径/勘误"的行，属于讨论该词本身。
+    external = {"评审报告_S0_S1.md", "评审报告_S0_S1_复验.md", "返工单_R-01.md"}
+    exempt_line = re.compile(r"禁用词|旧口径|勘误|口径变更|引述")
     hits = []
-    for p in [B1, B2, B3, PLAN]:
+    scanned = 0
+    for p in targets:
+        if not p.exists() or p.name in external:
+            continue
+        scanned += 1
+        in_def = False
         for i, ln in enumerate(lines_of(p), 1):
+            # 本脚本自身要"写出"这些词才能检查它们，故跳过 BANNED 定义块
+            if ln.startswith("BANNED = {"):
+                in_def = True
+                continue
+            if in_def:
+                if ln.strip() == "}":
+                    in_def = False
+                continue
+            if exempt_line.search(ln):
+                continue
             for word in BANNED:
                 if word in ln:
                     hits.append(f"{p.name}:{i} 命中『{word}』")
     record(stage, "禁用词零命中（旧口径残留）", not hits,
-           "；".join(hits) if hits else f"扫描 {len(BANNED)} 个禁用词，4 份文档干净")
+           "；".join(hits) if hits else f"扫描 {scanned} 份文件 × {len(BANNED)} 个禁用词，干净")
 
 
 def s1_phase_card() -> None:
@@ -365,20 +392,21 @@ def s1_phase_card() -> None:
 
 
 # ============================================================ S2–S9 占位检查
-def need_pair(stem: str) -> list[str]:
+def need_pair(stem: str, png_min: int = 20000) -> list[str]:
     bad = []
-    for ext in (".puml", ".png"):
+    for ext, floor in ((".puml", 200), (".png", png_min)):
         p = UML_DIR / f"{stem}{ext}"
-        if not p.exists() or p.stat().st_size < 200:
-            bad.append(f"{p.name}")
+        if not p.exists() or p.stat().st_size < floor:
+            bad.append(f"{p.name}(<{floor}B)")
     return bad
 
 
 def s2_struct() -> None:
+    """S2 判据按阶段卡 S2「A 层」逐条落地（复验 D-10：原判据只有一个 png>200B）。"""
     stage = "S2"
     for stem in ("UML类图", "UML包图", "UML组件图"):
         bad = need_pair(stem)
-        record(stage, f"{stem}.puml/.png 成对且非空", not bad, f"缺/空: {bad}")
+        record(stage, f"{stem}.puml/.png 成对且非空（>20KB）", not bad, f"缺/空: {bad}")
     p = UML_DIR / "UML类图.puml"
     if p.exists():
         t = read(p)
@@ -389,6 +417,20 @@ def s2_struct() -> None:
         record(stage, "类图含 totalRooms 与 BookingNight", "totalRooms" in t and "BookingNight" in t, "")
         mult = len(re.findall(r'"[0-9*]+"\s*[*-]|"\d+\s*\.\.', t))
         record(stage, "多重度标注 ≥ 6 处", mult >= 6, f"实际 {mult}")
+        # 评审 A8：RoomInventory 的属性必须与 03 §2.4 逐字对齐，余量是方法不是字段
+        inv = [ln for ln in t.splitlines() if "RoomInventory" in ln or "库存" in ln and "可售" in ln]
+        block = "\n".join(inv)
+        three = all(k in block for k in ("可售间数", "已占用间数", "销售状态"))
+        record(stage, "RoomInventory 三属性齐全（可售/已占用/销售状态）", three,
+               "" if three else f"实际：{block[:120]}")
+        record(stage, "类图不把『余量』当字段（余量须是派生方法）",
+               not re.search(r"(-|\+)\s*余量\s*:", t), "把余量写成了持久化字段")
+        # 三条服务类：BookingService / InventoryService / BookingStateMachine
+        svc = [s for s in ("BookingService", "InventoryService", "BookingStateMachine") if s in t]
+        record(stage, f"三个服务类齐全（{EXPECT['class_services']} 个）", len(svc) == EXPECT["class_services"],
+               f"缺 {[s for s in ('BookingService','InventoryService','BookingStateMachine') if s not in t]}")
+        record(stage, "类图有组合关系（Booking *-- BookingNight）",
+               bool(re.search(r"\*\s*--", t)), "无组合关系")
     p = UML_DIR / "UML包图.puml"
     if p.exists():
         t = read(p)
@@ -399,6 +441,27 @@ def s2_struct() -> None:
         record(stage, "包图含 M1–M10 全名", not miss, f"缺 {miss}")
         rev = len(re.findall(r"\.\.\|>", t))
         record(stage, "反向实现箭头恰好 1 条", rev == 1, f"实际 {rev}")
+        record(stage, "包图写明这条反向箭头是依赖倒置（理由句）",
+               ("依赖倒置" in t or "倒置" in t) and ("理由" in t or "因为" in t or "therefore" in t.lower()),
+               "缺『为什么允许这一条反向』的说明")
+        record(stage, "包图区分依赖/实现两种箭头", bool(re.search(r"-->\s*$", t, re.M)) or "-->" in t,
+               "未见普通依赖箭头")
+    p = UML_DIR / "UML组件图.puml"
+    if p.exists():
+        t = read(p)
+        comps = re.findall(r'^\s*(?:\[|\bcomponent\b)', t, re.M)
+        ncomp = len(re.findall(r"component\s+", t)) or len(comps)
+        record(stage, "组件图组件 = 10（M1–M10）", ncomp >= 10, f"实际 {ncomp}")
+        iface = len(re.findall(r"interface\s+|\[[^\]]+\]", t))
+        record(stage, "每组件接口 ≥ 2（合计 ≥ 20 处接口）", iface >= 20, f"实际 {iface}")
+        kinds = [k for k in ("同步", "异步", "定时") if k in t]
+        record(stage, "组件图区分同步/异步/定时三类连接", len(kinds) == 3, f"只写了 {kinds}")
+    # 三张图首行必须有图名 + 版本（阶段卡"S2 产出"要求）
+    for stem in ("UML类图", "UML包图", "UML组件图"):
+        p = UML_DIR / f"{stem}.puml"
+        if p.exists():
+            head = "\n".join(lines_of(p)[:6])
+            record(stage, f"{stem} 首部有图名与版本", "版本" in head or "v1" in head.lower(), head[:80])
 
 
 def s3_behavior() -> None:
@@ -488,9 +551,41 @@ def s9_delivery() -> None:
                any("/UML/" in n for n in names) and any("/UI界面/" in n for n in names), "")
 
 
+def s1_gate_items() -> None:
+    """复验报告 R-03 / T-08 引入的两处口径，必须被机械检查看住。"""
+    stage = "S1"
+    b3 = read(B3)
+    m = re.search(r"##\s*9\.\s*唯一约束清单", b3)
+    record(stage, "03 有 §9『唯一约束清单』（R-03）", bool(m),
+           "" if m else "缺 §9：『6 条』必须给出可核对的清单")
+    if m:
+        tail = b3[m.start():]
+        u = len(re.findall(r"^\|\s*U\d\s*\|", tail, re.M))
+        t = len(re.findall(r"^\|\s*T\d\s*\|", tail, re.M))
+        record(stage, "§9 业务唯一 = 6 条（U1–U6）", u == EXPECT["unique_business"], f"实际 {u}")
+        record(stage, "§9 技术性唯一 = 4 条（T1–T4，另计不混入 6）", t == EXPECT["unique_tech"], f"实际 {t}")
+        record(stage, "§9 写明部分唯一拦不住区间重叠", "区间重叠" in tail,
+               "" if "区间重叠" in tail else "缺『拦不住区间重叠』这句")
+    # T-08：T5/T6 的时间点必须与"先后关系"一致，不能两边都要求 23:59 前
+    b1 = read(B1)
+    row5 = [ln for ln in b1.splitlines() if re.match(r"^\|\s*T5\s*\|", ln)]
+    row6 = [ln for ln in b1.splitlines() if re.match(r"^\|\s*T6\s*\|", ln)]
+    r5, r6 = (row5[0] if row5 else ""), (row6[0] if row6 else "")
+    record(stage, "T5 触发写『次日 00:05』且守卫锚定 23:59 时的快照",
+           "00:05" in r5 and "23:59 时仍为已确认" in r5,
+           "" if ("00:05" in r5 and "23:59 时仍为已确认" in r5) else r5[:90])
+    record(stage, "T6 明确『23:59 之前』且过时由 T5 兜底",
+           "23:59 之前" in r6 and "兜底" in r6, "" if ("23:59 之前" in r6 and "兜底" in r6) else r6[:80])
+    # 阶段卡 §5 必须记录标签与提交号，避免"标签落后 HEAD"再次发生（D-05/D-06）
+    phase = read(PHASE)
+    record(stage, "阶段卡 §5 记录 stage-1b 的提交号与结果",
+           "stage-1b" in phase and "43" in phase, "")
+
+
 STAGES = {
     "1": ("S1 基线与口径冻结", [s1_req_trace, s1_req_module_cover, s1_transitions,
-                              s1_tables, s1_stock_model, s1_ui, s1_class_spec, s1_banned, s1_phase_card]),
+                              s1_tables, s1_stock_model, s1_ui, s1_class_spec, s1_banned,
+                              s1_phase_card, s1_gate_items]),
     "2": ("S2 结构图", [s2_struct]),
     "3": ("S3 行为图", [s3_behavior]),
     "4": ("S4 交互图", [s4_interaction]),

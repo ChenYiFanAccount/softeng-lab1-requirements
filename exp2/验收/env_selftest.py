@@ -27,6 +27,19 @@ PY = ENV / "venv" / "Scripts" / "python.exe"
 EDGE = Path(r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe")
 WORK = ENV / "_selftest"
 
+
+def _apply_out_arg():
+    """--out <dir> 覆盖默认工作目录：评审机可能无权写 D:\\softeng-env（复验报告 T-02）。"""
+    global WORK
+    argv = sys.argv[1:]
+    if "--out" in argv:
+        i = argv.index("--out")
+        if i + 1 < len(argv):
+            WORK = Path(argv[i + 1]).resolve()
+        else:
+            print("  FAIL  --out 缺少目录参数")
+            sys.exit(2)
+
 results = []
 
 
@@ -41,6 +54,7 @@ def run(cmd, timeout=180):
 
 
 def main():
+    _apply_out_arg()
     WORK.mkdir(parents=True, exist_ok=True)
     out = WORK / "out"
     out.mkdir(exist_ok=True)
@@ -128,7 +142,7 @@ end note
     html.write_text("""<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
 <title>自检</title><style>body{font-family:"Microsoft YaHei",sans-serif}</style></head>
 <body><h1>中文 PDF 自检</h1><p>订单状态：待确认、已确认、已入住、已退房、已取消、未入住。</p>
-<p>库存口径：可售间数＝当日净剩余可订量。</p></body></html>""", encoding="utf-8")
+<p>库存口径：可售间数＝当日挂牌可售总量（下单不动）；已占用间数＝有效订单占用（下单加、取消减）；余量＝可售 − 占用。</p></body></html>""", encoding="utf-8")
     pdf = out / "selftest.pdf"
     if pdf.exists():
         pdf.unlink()
