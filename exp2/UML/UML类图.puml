@@ -1,5 +1,5 @@
 @startuml
-' 版本：v1.0（2026-11-12，S2 结构图）
+' 版本：v1.1（2026-11-12，S2 结构图' 人工修订：房型→库存/价格两处多重度按 03 §3 对齐为 1..*）
 ' 口径来源：exp2/设计基线/01_术语与追溯.md §1、03_数据设计.md §2/§8
 title UML类图 v1.0：酒店预订系统的领域模型
 
@@ -193,8 +193,8 @@ UserAccount "1" -- "0..*" IdempotencyKey : 提交键
 Hotel "1" *-- "1..*" RoomType : 包含
 Hotel "0..1" -- "0..*" HolidayCalendar : 参考节假日
 
-RoomType "1" *-- "0..*" RoomInventory : 按日挂牌
-RoomType "1" *-- "0..*" RoomPrice : 按日定价
+RoomType "1" *-- "1..*" RoomInventory : 按日挂牌（建房型即按 90 天滚动生成逐日库存行）
+RoomType "1" *-- "1..*" RoomPrice : 按日定价（逐日价格随库存行一同生成）
 
 Booking "1" *-- "1..*" BookingNight : 逐晚快照
 Booking "1" -- "1" BookingStatus : 状态

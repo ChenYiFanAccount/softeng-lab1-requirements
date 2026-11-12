@@ -145,6 +145,9 @@ note bottom of L2
   · 数据访问层不得调用应用服务层
   · 领域层不得引用框架/ORM 类型（只认接口与值对象）
   · 表现层不得跨层直接访问数据访问层
+  · 领域服务之间不互相调用：BookingService 不依赖 InventoryService，
+    库存的占用与释放一律经 InventoryRepository 完成——
+    两个服务若互相持有，会绕成"取消要释放库存、释放要先读订单"的环
 end note
 
 note top of L1
