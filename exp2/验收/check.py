@@ -638,6 +638,67 @@ def s4_interaction() -> None:
         bad = need_pair(stem)
         record(stage, f"{stem}.puml/.png 成对且非空", not bad, f"缺/空: {bad}")
 
+    # 按阶段卡 S4「A 层」与甲方复验 §7.6 逐条落地（复验 D-10：原判据只查文件成对）
+    def lifelines(t: str) -> int:
+        return len(re.findall(r"^\s*(?:actor|participant|boundary|control|entity|"
+                              r"database|collections|queue)\s+", t, re.M))
+
+    def messages(t: str) -> list[str]:
+        out = []
+        for ln in t.splitlines():
+            s = ln.strip()
+            if not s or s.startswith("'"):
+                continue
+            if re.search(r"-+>", s):
+                out.append(s)
+        return out
+
+    def first(msgs: list[str], needle: str) -> int:
+        return next((i for i, s in enumerate(msgs) if needle in s), -1)
+
+    for stem in ("UML时序图-下单锁库存", "UML时序图-超时取消"):
+        p = UML_DIR / f"{stem}.puml"
+        if not p.exists():
+            continue
+        t = read(p)
+        n = lifelines(t)
+        record(stage, f"{stem} 生命线 ≥ 5", n >= 5, f"只有 {n} 条")
+        has_alt = bool(re.search(r"^\s*alt\b", t, re.M))
+        has_opt = bool(re.search(r"^\s*opt\b", t, re.M))
+        record(stage, f"{stem} 含 alt 片段（并发/超时分支）", has_alt, "缺 alt")
+        record(stage, f"{stem} 含 opt 片段（条件分支）", has_opt, "缺 opt")
+        msgs = messages(t)
+        body = "\n".join(msgs)
+        record(stage, f"{stem} 消息里出现「逐日」", "逐日" in body, "消息中无「逐日」")
+        record(stage, f"{stem} 消息里出现「事务」", "事务" in body, "消息中无「事务」")
+
+    # 图 3-7：幂等键必须在消息里出现（REQ-014）
+    p = UML_DIR / "UML时序图-下单锁库存.puml"
+    if p.exists():
+        msgs = messages(read(p))
+        body = "\n".join(msgs)
+        record(stage, "下单时序图 消息里出现「幂等键」", "幂等键" in body, "消息中无「幂等键」")
+        # 红线：占用扣减必须落在 begin 与 commit 之间（画到事务外会丢房）
+        ib, ia, ic = first(msgs, "开启事务"), first(msgs, "已占用间数 +="), first(msgs, "提交事务")
+        ok = ib >= 0 and ia > ib and ic > ia
+        record(stage, "下单时序图 红线：`已占用间数 +=` 落在 begin 与 commit 之间", ok,
+               f"位置 begin={ib} 扣减={ia} commit={ic}" if not ok else "")
+
+    # 图 3-8：回补必须与状态变更同一事务，且要有幂等/回滚兜底
+    p = UML_DIR / "UML时序图-超时取消.puml"
+    if p.exists():
+        msgs = messages(read(p))
+        body = "\n".join(msgs)
+        ib = first(msgs, "开启事务")
+        ir = next((i for i, s in enumerate(msgs) if "已占用间数" in s and ("−=" in s or "-=" in s)), -1)
+        ic = first(msgs, "提交事务")
+        ok = ib >= 0 and ir > ib and ic > ir
+        record(stage, "超时时序图 红线：`已占用间数 −=` 落在 begin 与 commit 之间", ok,
+               f"位置 begin={ib} 回补={ir} commit={ic}" if not ok else "")
+        record(stage, "超时时序图 有状态前置判断（重复扫描不二次回补）", "状态前置判断" in body,
+               "消息中无状态前置判断")
+        record(stage, "超时时序图 有回滚分支（已被确认或已取消）", "回滚" in body, "消息中无回滚")
+
 
 def s5_ui_customer() -> None:
     stage = "S5"
