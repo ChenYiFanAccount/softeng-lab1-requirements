@@ -471,7 +471,9 @@ def s2_struct() -> None:
         # 评审 R2-03：终态注释不能说"已入住是终态"（T8 已入住→已退房 合法）
         m_note = re.search(r"note[^\n]*BookingStatus[\s\S]{0,600}?end note", t)
         note = m_note.group(0) if m_note else ""
-        term_ok = ("未入住" in note and "已退房" in note and "已入住**不是**终态" in note)
+        # D-13：PlantUML 注释里 `**` 会按字面星号打印，故图内改为裸文字；两种写法都算通过
+        term_ok = ("未入住" in note and "已退房" in note
+                   and ("已入住不是终态" in note or "已入住**不是**终态" in note))
         record(stage, "状态机注释写明终态 = 已退房/已取消/未入住，且已入住不是终态", term_ok,
                "" if term_ok else f"注释片段：{note[:120]}")
     p = UML_DIR / "UML包图.puml"
