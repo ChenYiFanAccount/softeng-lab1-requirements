@@ -699,6 +699,28 @@ def s4_interaction() -> None:
                "消息中无状态前置判断")
         record(stage, "超时时序图 有回滚分支（已被确认或已取消）", "回滚" in body, "消息中无回滚")
 
+    # 2026-11-12 补两条守门：口径卡与 02 §5 都要求「重复校验在事务内」「超时取消用订单行锁」，
+    # 图上画到事务外、或干脆没画锁，两条口径就永远对不上。
+    p = UML_DIR / "UML时序图-下单锁库存.puml"
+    if p.exists():
+        msgs = messages(read(p))
+        ib = first(msgs, "开启事务")
+        il = next((i for i, s in enumerate(msgs) if "锁内复核" in s and "重叠" in s), -1)
+        ok = ib >= 0 and il > ib
+        record(stage, "下单时序图 重复预订校验落在事务内（锁内复核在 begin 之后）", ok,
+               f"位置 begin={ib} 锁内复核={il}" if not ok else "")
+
+    p = UML_DIR / "UML时序图-超时取消.puml"
+    if p.exists():
+        msgs = messages(read(p))
+        ib = first(msgs, "开启事务")
+        ic = first(msgs, "提交事务")
+        il = next((i for i, s in enumerate(msgs) if "FOR UPDATE" in s.upper()), -1)
+        iu = next((i for i, s in enumerate(msgs) if "WHERE" in s and "影响行数" in s), -1)
+        ok = ib >= 0 and il > ib and iu > il and ic > iu
+        record(stage, "超时时序图 订单行锁 + 条件更新（且落在 begin 与 commit 之间）", ok,
+               f"位置 begin={ib} 行锁={il} 条件更新={iu} commit={ic}" if not ok else "")
+
 
 def s5_ui_customer() -> None:
     stage = "S5"

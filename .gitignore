@@ -1,4 +1,4 @@
-﻿# 仓库根 = D:\NJU\softengineering
+# 仓库根 = D:\NJU\softengineering
 # 目的：实验一（exp1/）与实验二（exp2/）共用同一个 git 仓库（沿用 lab1 远端）
 # 说明：实验一交付件与 lab1-final 逐字节一致，故仍禁用换行符转换（见 exp1/.gitattributes）
 
@@ -12,3 +12,4 @@
 Thumbs.db
 __pycache__/
 *.pyc
+exp2/验收/_*
