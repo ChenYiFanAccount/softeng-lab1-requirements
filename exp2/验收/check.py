@@ -930,9 +930,9 @@ def s8_ai() -> None:
     holes = [w for w in ("见 S8", "待补", "本节先留结构", "TODO", "待写") if w in t]
     record(stage, "全文无『见 S8 / 待补 / 待写』等占位语", not holes, "命中：" + "、".join(holes))
 
-    # 记录条目：### AI-01 … 每条 6 要素
-    recs = re.split(r"^###\s*AI-(\d+)[^\n]*$", ch7, flags=re.M)
-    starts = [m.start() for m in re.finditer(r"^###\s*AI-\d+", ch7, flags=re.M)]
+    # 记录条目：#### AI-01 … 每条 6 要素（与 6.4 的 #### 界面NN 同级，R-17）
+    recs = re.split(r"^#{3,4}\s*AI-(\d+)[^\n]*$", ch7, flags=re.M)
+    starts = [m.start() for m in re.finditer(r"^#{3,4}\s*AI-\d+", ch7, flags=re.M)]
     boxes = []
     for k, s in enumerate(starts):
         e = starts[k + 1] if k + 1 < len(starts) else len(ch7)

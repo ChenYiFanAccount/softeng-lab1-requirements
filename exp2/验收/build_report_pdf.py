@@ -65,7 +65,8 @@ h2 { font-size: 14pt; margin: 18pt 0 8pt; padding-bottom: 4pt; border-bottom: 1p
      page-break-before: always; page-break-after: auto; }
 h2:first-of-type { page-break-before: auto; }
 h3 { font-size: 12pt; margin: 14pt 0 6pt; page-break-after: avoid; }
-h4 { font-size: 11pt; margin: 12pt 0 5pt; page-break-after: avoid; }
+h4 { font-size: 11.5pt; font-weight: 700; margin: 13pt 0 5pt; padding-left: 6pt;
+     border-left: 2.5pt solid #9db4e8; page-break-after: avoid; }
 p { margin: 4pt 0; text-align: left; }
 ul { margin: 4pt 0 4pt 18pt; padding: 0; }
 li { margin: 2pt 0; }
