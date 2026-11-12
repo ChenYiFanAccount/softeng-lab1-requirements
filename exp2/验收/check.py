@@ -900,17 +900,60 @@ def s7_report() -> None:
 
 
 def s8_ai() -> None:
+    """S8：第 7 章 AI 使用记录 + 第 8 章两问。判据比"数出现次数"更硬：
+    每条记录必须凑齐 6 个要素、必须挂一个真实存在的 [人工] 提交号、必须有工具评价，
+    并且全文不得留占位语——否则"先写结构、回头补"的空壳也能骗过检查。"""
     stage = "S8"
     p = ROOT / "实验报告.md"
     if not p.exists():
         record(stage, "实验报告.md 存在", False, "未找到")
         return
     t = read(p)
-    n = len(re.findall(r"^### AI-\d+", t, re.M))
-    record(stage, "AI 使用记录 ≥ 6 条", n >= 6, f"实际 {n} 条")
-    for field in ("使用场景", "生成结果", "优缺点", "修改优化"):
-        record(stage, f"每条记录含『{field}』字段", t.count(field) >= 6, f"出现 {t.count(field)} 次")
-    record(stage, "章末两问均有回答", "工作流" in t and ("检查" in t or "校对" in t), "")
+
+    # 第 7 / 8 章必须已经成稿（不是占位标题）
+    ch7 = section(t, r"## 第 7 章", r"## 第 8 章")
+    ch8 = section(t, r"## 第 8 章", r"## 附录")
+    record(stage, "第 7 章已有正文（≥ 2500 字符）", len(ch7) >= 2500, f"实际 {len(ch7)} 字符")
+    record(stage, "第 8 章已有正文（≥ 800 字符）", len(ch8) >= 800, f"实际 {len(ch8)} 字符")
+
+    # 占位语：出现即说明还没写完，直接判失败
+    holes = [w for w in ("见 S8", "待补", "本节先留结构", "TODO", "待写") if w in t]
+    record(stage, "全文无『见 S8 / 待补 / 待写』等占位语", not holes, "命中：" + "、".join(holes))
+
+    # 记录条目：### AI-01 … 每条 6 要素
+    recs = re.split(r"^###\s*AI-(\d+)[^\n]*$", ch7, flags=re.M)
+    starts = [m.start() for m in re.finditer(r"^###\s*AI-\d+", ch7, flags=re.M)]
+    boxes = []
+    for k, s in enumerate(starts):
+        e = starts[k + 1] if k + 1 < len(starts) else len(ch7)
+        boxes.append(ch7[s:e])
+    record(stage, "AI 使用记录 ≥ 6 条", len(boxes) >= 6, f"实际 {len(boxes)} 条")
+
+    need = ("使用场景", "给了什么", "原样结果", "发现的问题", "人工改后", "工具优缺点")
+    bad = []
+    for k, b in enumerate(boxes, 1):
+        miss = [w for w in need if w not in b]
+        if miss:
+            bad.append(f"AI-{k:02d} 缺 " + "/".join(miss))
+    record(stage, "每条记录含 6 要素（场景/输入/原样结果/问题/人工改后/优缺点）",
+           bool(boxes) and not bad, "没有记录" if not boxes else "；".join(bad[:4]))
+
+    # 人工落点：每条记录都要指到一个真实的 [人工] 提交
+    known = ["2686e23", "1d48c09", "afb8ca2", "391d4aa", "13b693e", "7684412", "fff3023"]
+    hit = [h for h in known if h in ch7]
+    record(stage, "第 7 章引用真实 [人工] 提交号 ≥ 6 个", len(hit) >= 6, f"实际 {len(hit)} 个：{hit}")
+    record(stage, "第 7 章写明人改后与 AI 原稿的差别", "改后" in ch7 and "原" in ch7, "")
+
+    # 第 8 章两问
+    q1 = re.search(r"问题一|第一问|大模型如何辅助", ch8)
+    q2 = re.search(r"问题二|第二问|工作流", ch8)
+    record(stage, "第 8 章两问各有小标题", bool(q1) and bool(q2), "")
+    body_len = len(re.sub(r"\s", "", ch8))
+    record(stage, "第 8 章两问合计 ≥ 900 字（不是一句话应付）", body_len >= 900, f"实际 {body_len} 字")
+    record(stage, "第 8 章正面回答『能不能只做检查校对』", ("检查" in ch8 or "校对" in ch8) and
+           ("不能" in ch8 or "能" in ch8), "")
+    record(stage, "第 7 章不出现『评审报告』口径（按 m02820 定为自查 + 同学互看）",
+           "评审报告" not in ch7, "" if "评审报告" not in ch7 else "第 7 章仍出现『评审报告』")
 
 
 def s9_delivery() -> None:
