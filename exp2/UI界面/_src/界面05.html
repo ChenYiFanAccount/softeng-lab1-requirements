@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>预订确认 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 预订 / 确认</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>预订确认</h1>
+          <p>填写入住信息、核对逐晚价格后提交；提交即触发「校验 + 占用 + 建单 + 幂等键」同一事务</p>
+        </div>
+      </div>
+      
+<div class="confirm-grid">
+  <div>
+    <div class="card">
+      <div class="card-head"><h2>入住信息</h2><span class="sub">带 * 为必填</span></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="field"><div class="label">入住人姓名 *</div><div class="input">陈一帆</div></div>
+          <div class="field"><div class="label">手机号 *</div><div class="input">138 0013 8000</div>
+            <div class="hint">用于接收入住凭证与取消通知</div></div>
+          <div class="field"><div class="label">预计到店时间</div><div class="input">18:00 - 20:00 ▾</div></div>
+          <div class="field"><div class="label">房间数 *</div><div class="input">1 间 ▾</div>
+            <div class="hint">最多可订 3 间（同一房型单次预订上限）</div></div>
+        </div>
+        <div class="field mt16"><div class="label">特殊要求（选填）</div>
+          <div class="input" style="height:64px;align-items:flex-start;padding-top:10px;color:#98A2B3;">
+            如需高楼层、无烟房、婴儿床，请在此说明（酒店尽量安排，不保证）</div></div>
+        <div class="field mt16"><div class="label">发票</div>
+          <div class="row" style="gap:8px;">
+            <span class="pill blue">不需要</span><span class="pill">电子普通发票</span><span class="pill">专用发票</span>
+          </div>
+        </div>
+        <div class="alert a-warn mt16"><span class="ic">!</span>
+          <div><b>重复提交保护</b>：本页生成一个隐藏幂等键 —— 连点两次或网络重试，第二次直接返回首单，
+            不会出两张。同一时段（同顾客 + 同酒店 + 同房型 + 日期重叠）已有有效单时拒绝，
+            提示「你在这个时段已有一张有效订单」。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt16">
+      <div class="card-head"><h2>逐晚价格明细</h2><span class="sub">下单即固化，后续改价不影响本单</span></div>
+      <table class="grid">
+        <thead><tr><th>日期</th><th>房型</th><th>间数</th><th>每晚单价</th><th>小计</th></tr></thead>
+        <tbody>
+          <tr><td class="strong">11-15 周六</td><td>高级江景大床房</td><td class="num">1</td>
+            <td class="num">¥880</td><td class="num strong">¥880</td></tr>
+          <tr><td class="strong">11-16 周日</td><td>高级江景大床房</td><td class="num">1</td>
+            <td class="num">¥820</td><td class="num strong">¥820</td></tr>
+        </tbody>
+      </table>
+      <div class="card-body" style="padding-top:12px;">
+        <div class="hint">逐晚单价写入 <code>booking_night</code>（订单号 + 日期 联合唯一），
+          总价 = Σ（单价 × 间数）= 1700 元。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card summary">
+    <div class="card-head"><h2>订单摘要</h2></div>
+    <div class="card-body">
+      <div class="row" style="gap:12px;">
+        <div class="thumb" style="width:88px;height:66px;flex:0 0 88px;"></div>
+        <div>
+          <div style="font-size:13.5px;font-weight:650;">云栖·外滩江景酒店</div>
+          <div class="hint mt8">高级江景大床房 · 1 间</div>
+          <div class="hint">11-15 至 11-17 · 2 晚</div>
+        </div>
+      </div>
+
+      <div class="mt16">
+        <div class="row" style="justify-content:space-between;font-size:13px;color:#344054;">
+          <span>房费（2 晚 × 1 间）</span><span>¥1700</span>
+        </div>
+        <div class="row mt8" style="justify-content:space-between;font-size:13px;color:#344054;">
+          <span>服务费</span><span>¥0</span>
+        </div>
+        <div class="row mt8" style="justify-content:space-between;font-size:13px;color:#344054;">
+          <span>优惠</span><span style="color:#067647;">- ¥50</span>
+        </div>
+        <div class="row mt12" style="justify-content:space-between;border-top:1px solid #E4E7EC;padding-top:12px;">
+          <span style="font-weight:650;">应付总额</span>
+          <span class="price" style="font-size:20px;">¥1650</span>
+        </div>
+      </div>
+
+      <div class="countdown">
+        提交后酒店需在 <b>30 分钟</b> 内确认；超时未确认，系统自动取消并释放房间（T3）。
+        取消政策：入住前 48 小时免费取消。
+      </div>
+
+      <div class="btn primary" style="height:44px;justify-content:center;font-size:14.5px;">提交预订</div>
+      <div class="hint mt8" style="text-align:center;">提交即表示同意《预订条款》与《取消政策》</div>
+
+      <div class="alert a-info mt16"><span class="ic">i</span>
+        <div>全站库存口径只有一套：<b>可售</b>（酒店挂牌） − <b>已占用</b>（有效订单） = <b>余量</b>；
+          下单只加「已占用」，不动「可售」。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M5 预订与订单 · REQ-005 / REQ-006 · 界面05</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

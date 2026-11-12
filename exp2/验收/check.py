@@ -722,12 +722,53 @@ def s4_interaction() -> None:
                f"位置 begin={ib} 行锁={il} 条件更新={iu} commit={ic}" if not ok else "")
 
 
+def png_size(p) -> tuple[int, int]:
+    """不依赖 Pillow：直接读 PNG 的 IHDR。"""
+    import struct
+    with open(p, "rb") as f:
+        head = f.read(33)
+    if len(head) < 33 or head[:8] != b"\x89PNG\r\n\x1a\n":
+        return (0, 0)
+    w, h = struct.unpack(">II", head[16:24])
+    return (int(w), int(h))
+
+
 def s5_ui_customer() -> None:
+    """S5：顾客端 9 张界面，必须成对存在、尺寸统一、并有一张表说清"界面→模块→REQ"。"""
     stage = "S5"
     for i in range(1, 10):
         p = UI_DIR / f"界面{i:02d}.png"
-        ok = p.exists() and p.stat().st_size > 20_000
-        record(stage, f"界面{i:02d}.png 存在且非空", ok, "" if ok else "缺失或过小")
+        ok = p.exists() and p.stat().st_size > 200_000
+        record(stage, f"界面{i:02d}.png 存在且 >200KB（不是占位白图）", ok,
+               "" if ok else ("缺失" if not p.exists() else f"仅 {p.stat().st_size} B"))
+        if p.exists():
+            w, h = png_size(p)
+            record(stage, f"界面{i:02d}.png 尺寸 = 2880×1800", (w, h) == (2880, 1800), f"实际 {w}×{h}")
+
+    doc = UI_DIR / "界面说明.md"
+    if not doc.exists():
+        record(stage, "UI界面/界面说明.md 存在", False, "未找到：界面必须有文字说明")
+        return
+    t = read(doc)
+    record(stage, "界面说明.md 存在", True, "")
+    for i in range(1, 10):
+        row = [ln for ln in t.splitlines() if re.match(rf"^\|\s*界面{i:02d}\s*\|", ln)]
+        ok = bool(row)
+        record(stage, f"界面说明.md 有界面{i:02d} 的行", ok, "" if ok else "缺这一行")
+        if row:
+            cells = [c.strip() for c in row[0].strip("|").split("|")]
+            joined = " ".join(cells)
+            record(stage, f"界面{i:02d} 行标了模块（M\\d）与 REQ", bool(re.search(r"M\d", joined)) and "REQ" in joined.upper(),
+                   "" if (re.search(r"M\d", joined) and "REQ" in joined.upper()) else joined[:80])
+    record(stage, "界面说明.md 写明库存三值口径（可售 / 已占用 / 余量）",
+           all(k in t for k in ("可售", "已占用", "余量")), "")
+    record(stage, "界面说明.md 写明不可执行动作的处理（置灰并说明原因）",
+           "置灰" in t, "" if "置灰" in t else "缺『置灰并说明原因』这句")
+    # 顾客端只允许出现 M1/M2/M4/M5/M7 的界面，M3/M6/M8/M9 的界面必须留到 S6
+    rows = {i: [ln for ln in t.splitlines() if re.match(rf"^\|\s*界面{i:02d}\s*\|", ln)] for i in range(1, 10)}
+    bad = [i for i, v in rows.items() if v and re.search(r"M(3|6|8|9)\b", v[0])]
+    record(stage, "顾客端 01–09 未越界承担酒店端/管理端模块", not bad,
+           "" if not bad else f"这些行提到了 M3/M6/M8/M9：{bad}")
 
 
 def s6_ui_hotel_admin() -> None:

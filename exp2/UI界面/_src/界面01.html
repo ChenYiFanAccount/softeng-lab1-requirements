@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>登录 / 注册 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item on"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 登录</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content bare">
+      
+<div class="login">
+  <div class="login-left">
+    <div class="row">
+      <div class="brand-mark" style="width:40px;height:40px;font-size:17px;">云</div>
+      <div>
+        <div style="font-size:15px;font-weight:650;">云栖酒店预订</div>
+        <div style="font-size:11.5px;color:#9DB6D8;">多城市 · 多门店 · 一套账号</div>
+      </div>
+    </div>
+    <h1>把「查得到、订得下、<br>改得了」做扎实</h1>
+    <p>实时余量按「房型 × 日期」维护，下单在同一个事务里占房——
+       不会出现「页面显示有房、点下单却没房」。</p>
+    <div class="login-points">
+      <div class="login-point"><span class="n">1</span><div><b>六种订单状态，转换只有 8 条边</b><br>
+        每一步都能说清是谁触发的、失败返回什么。</div></div>
+      <div class="login-point"><span class="n">2</span><div><b>价格按日固化</b><br>
+        下单那一刻的每晚单价写进订单快照，之后改价不影响已下的单。</div></div>
+      <div class="login-point"><span class="n">3</span><div><b>越权返回 403，不是静默失败</b><br>
+        顾客看不到别家的库存与订单，酒店只动自己的房型。</div></div>
+    </div>
+  </div>
+
+  <div class="login-right">
+    <h2>欢迎回来</h2>
+    <div class="lead">用手机号登录；没有账号时同一表单直接注册。</div>
+
+    <div class="seg">
+      <div class="s on">登录</div>
+      <div class="s">注册</div>
+    </div>
+
+    <div class="field mt8">
+      <div class="label">手机号</div>
+      <div class="input"><span>+86</span><span style="color:#D0D5DD;">|</span><span>138 0013 8000</span></div>
+    </div>
+
+    <div class="field mt16">
+      <div class="label">密码</div>
+      <div class="input"><span style="letter-spacing:2px;">••••••••</span>
+        <span style="margin-left:auto;font-size:12.5px;color:#2F6FED;">显示</span></div>
+      <div class="hint">密码加盐哈希存储；连续 5 次失败锁定 10 分钟。</div>
+    </div>
+
+    <div class="field mt16">
+      <div class="label">图形验证码</div>
+      <div class="row">
+        <div class="input" style="flex:1;"><span class="ph">请输入右侧 4 位字符</span></div>
+        <div class="thumb" style="width:104px;height:40px;display:grid;place-items:center;
+             font-size:17px;letter-spacing:4px;color:#1B4FBF;font-weight:700;">7K3Q</div>
+      </div>
+      <div class="hint" style="color:#B42318;">验证码已过期，请点击图形刷新（E-01 输入类错误：就地提示，不清空已填内容）</div>
+    </div>
+
+    <div class="row mt16" style="justify-content:space-between;">
+      <div class="row" style="font-size:12.5px;color:#344054;">
+        <span class="box on"></span> 记住这台设备
+      </div>
+      <div style="font-size:12.5px;color:#2F6FED;">忘记密码？</div>
+    </div>
+
+    <div class="btn primary mt20" style="height:44px;justify-content:center;font-size:14px;">登录</div>
+
+    <div class="alert a-info mt16">
+      <span class="ic">i</span>
+      <div>权限按角色判定：顾客只能看自己的订单；酒店工作人员只在本店范围内操作；
+        平台管理员可查审计日志但不能改业务数据。越权请求返回 <b>403</b> 并提示「无权访问该资源」，
+        不是静默失败。</div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M1 账号与权限 · REQ-020 · 界面01</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

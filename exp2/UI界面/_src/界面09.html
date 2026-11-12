@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>取消确认 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 我的订单 / 取消</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>取消确认</h1>
+          <p>取消前必须让用户看清退款金额与不可取消区间；确认后同事务释放库存</p>
+        </div>
+      </div>
+      <div class="overlay" style="margin:-26px;min-height:838px;">
+<div class="dialog">
+  <div class="dh">
+    <h3>确认取消这张订单？</h3>
+    <span class="badge b-confirmed"><span class="d"></span>已确认</span>
+  </div>
+  <div class="db">
+    <div class="row" style="gap:12px;">
+      <div class="thumb" style="width:84px;height:62px;flex:0 0 84px;"></div>
+      <div>
+        <div style="font-size:13.5px;font-weight:650;">云栖·西湖山居 · 山景双床房 2 间</div>
+        <div class="hint mt8">11-20 → 11-22 · 订单 HT20261108000192</div>
+      </div>
+    </div>
+
+    <div class="mt16" style="padding:12px 14px;border:1px solid #E4E7EC;border-radius:11px;background:#FCFDFF;">
+      <div class="money"><span>已支付</span><span>¥2480</span></div>
+      <div class="money"><span>取消手续费（距入住 8 天，免费取消期内）</span><span style="color:#067647;">¥0</span></div>
+      <div class="money total"><span>预计退款</span><span style="color:#B42318;">¥2480</span></div>
+      <div class="hint mt8">原路退回，1–3 个工作日到账。</div>
+    </div>
+
+    <div class="alert a-warn mt16"><span class="ic">!</span>
+      <div><b>取消后房间立即释放</b>：这张订单占用的 2 间会在这笔操作提交后回到余量里，
+        其他人马上就能订到；若你只是想换日期，建议先「改期」再决定要不要取消。</div>
+    </div>
+
+    <div class="alert a-danger mt12"><span class="ic">×</span>
+      <div><b>不可取消区间</b>：11-14 至 11-16（展会期间）的订单不支持取消，页面会直接隐藏取消按钮并提示
+        「该订单处于不可取消区间，如需取消请联系酒店」，而不是点了才报错。</div>
+    </div>
+
+    <div class="field mt16">
+      <div class="label">取消原因（选填，用于改进服务）</div>
+      <div class="input"><span class="ph">行程有变 / 找到更合适的 / 价格原因 / 其他</span></div>
+    </div>
+  </div>
+  <div class="df">
+    <span class="btn">暂不取消</span>
+    <span class="btn danger">确认取消并退款</span>
+  </div>
+</div>
+</div>
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M7 取消与改期 · REQ-010 · 界面09</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

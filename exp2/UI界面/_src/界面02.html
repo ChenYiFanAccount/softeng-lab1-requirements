@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>搜索酒店 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item on"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 搜索</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>搜索酒店</h1>
+          <p>城市 + 日期 + 人数 + 价格的组合查询入口</p>
+        </div>
+      </div>
+      
+<div class="hero">
+  <h2>今天想住哪儿？</h2>
+  <p>按城市、日期、人数、价格筛选；余量按「房型 × 日期」实时计算，展示与下单同一口径。</p>
+  <div class="searchbar">
+    <div class="sb-cell"><div class="k">目的地 / 酒店名</div><div class="v">上海</div></div>
+    <div class="sb-cell"><div class="k">入住</div><div class="v">11-15 周六</div></div>
+    <div class="sb-cell"><div class="k">退房</div><div class="v">11-17 周一</div></div>
+    <div class="sb-cell"><div class="k">房间 / 人数</div><div class="v">1 间 · 2 人</div></div>
+    <div class="btn primary" style="height:46px;padding:0 22px;">搜索</div>
+  </div>
+  <div class="chips">
+    <span class="chip">热门：上海 · 外滩</span>
+    <span class="chip">杭州 · 西湖</span>
+    <span class="chip">厦门 · 鼓浪屿</span>
+    <span class="chip">成都 · 春熙路</span>
+    <span class="chip">广州 · 珠江新城</span>
+  </div>
+</div>
+
+<div class="row mt20" style="justify-content:space-between;">
+  <div style="font-size:15px;font-weight:650;">为你推荐（上海 · 11-15 至 11-17）</div>
+  <div class="muted">共 42 家 · 按推荐排序</div>
+</div>
+<div class="hotel-grid">
+      <div class="card hotel-card">
+        <div class="pic thumb"></div>
+        <div class="bd">
+          <div class="nm">云栖·外滩江景酒店</div>
+          <div class="meta"><span>上海 · 外滩</span><span>4.8 分 · 2186 条评价</span></div>
+          <div class="row wrap">
+            <span class="pill">高级江景大床房</span>
+            <span class="pill blue">仅剩 2 间</span>
+          </div>
+          <div class="foot">
+            <div><span class="price">¥880</span><small> / 晚起</small></div>
+            <div class="btn sm">查看房型</div>
+          </div>
+        </div>
+      </div>
+      <div class="card hotel-card">
+        <div class="pic thumb"></div>
+        <div class="bd">
+          <div class="nm">云栖·西湖山居</div>
+          <div class="meta"><span>杭州 · 西湖</span><span>4.7 分 · 1543 条评价</span></div>
+          <div class="row wrap">
+            <span class="pill">山景双床房</span>
+            <span class="pill blue">余 6 间</span>
+          </div>
+          <div class="foot">
+            <div><span class="price">¥620</span><small> / 晚起</small></div>
+            <div class="btn sm">查看房型</div>
+          </div>
+        </div>
+      </div>
+      <div class="card hotel-card">
+        <div class="pic thumb"></div>
+        <div class="bd">
+          <div class="nm">云栖·鼓浪屿海景</div>
+          <div class="meta"><span>厦门 · 鼓浪屿</span><span>4.6 分 · 987 条评价</span></div>
+          <div class="row wrap">
+            <span class="pill">亲子家庭房</span>
+            <span class="pill blue">余 9 间</span>
+          </div>
+          <div class="foot">
+            <div><span class="price">¥540</span><small> / 晚起</small></div>
+            <div class="btn sm">查看房型</div>
+          </div>
+        </div>
+      </div>
+</div>
+
+<div class="alert a-warn mt16">
+  <span class="ic">!</span>
+  <div>日期校验：退房日期必须晚于入住日期，且不能早于今天；选错时输入框下方就地提示
+    「退房日期需晚于入住日期」，不弹窗、不清空已选。跨年、跨月都按自然日计算。</div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M4 搜索与展示 · REQ-001 · 界面02</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

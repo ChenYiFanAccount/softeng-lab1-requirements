@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>订单详情 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 我的订单 / 详情</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>订单详情</h1>
+          <p>状态时间线 + 明细 + 可执行操作；不可执行的动作置灰并说明原因</p>
+        </div>
+      </div>
+      
+<div style="display:grid;grid-template-columns:1fr 336px;gap:18px;align-items:start;">
+  <div>
+    <div class="card">
+      <div class="card-head">
+        <h2>订单 HT20261108000192</h2>
+        <span class="badge b-confirmed"><span class="d"></span>已确认</span>
+        <span class="spacer" style="flex:1;"></span>
+        <span class="hint">创建于 2026-11-08 14:22 · 最后更新 11-08 14:31</span>
+      </div>
+      <div class="card-body">
+        <div class="timeline">
+          <div class="tl-step done"><div class="pt"></div><div class="lb">待确认</div></div>
+          <div class="tl-step done"><div class="pt"></div><div class="lb">已确认</div></div>
+          <div class="tl-step now"><div class="pt"></div><div class="lb">待入住</div></div>
+          <div class="tl-step"><div class="pt"></div><div class="lb">已入住</div></div>
+          <div class="tl-step"><div class="pt"></div><div class="lb">已退房</div></div>
+        </div>
+        <div class="hint mt12" style="text-align:center;">20:00 后到店请联系酒店；入住日当天 24:00 未到店将标记「未入住」</div>
+      </div>
+    </div>
+
+    <div class="card mt16">
+      <div class="card-head"><h2>订单明细</h2></div>
+      <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+        <dl class="kv">
+          <dt>酒店</dt><dd>云栖·西湖山居（杭州 · 西湖区）</dd>
+          <dt>房型</dt><dd>山景双床房 · 2 间</dd>
+          <dt>入住</dt><dd>2026-11-20（周五）14:00 后</dd>
+          <dt>退房</dt><dd>2026-11-22（周日）12:00 前</dd>
+        </dl>
+        <dl class="kv">
+          <dt>入住人</dt><dd>陈一帆 · 138 0013 8000</dd>
+          <dt>状态</dt><dd>已确认（酒店于 11-08 14:31 确认）</dd>
+          <dt>取消政策</dt><dd>入住前 48 小时免费取消</dd>
+          <dt>总价</dt><dd style="color:#B42318;font-weight:700;">¥2480</dd>
+        </dl>
+      </div>
+      <table class="grid">
+        <thead><tr><th>日期</th><th>单价</th><th>间数</th><th>小计</th></tr></thead>
+        <tbody>
+          <tr><td class="strong">11-20 周五</td><td class="num">¥620</td><td class="num">2</td><td class="num strong">¥1240</td></tr>
+          <tr><td class="strong">11-21 周六</td><td class="num">¥620</td><td class="num">2</td><td class="num strong">¥1240</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card mt16">
+      <div class="card-head"><h2>可执行操作</h2><span class="sub">按钮是否可点，由状态决定</span></div>
+      <div class="card-body">
+        <div class="actions">
+          <span class="btn danger">取消订单</span>
+          <span class="btn">改期</span>
+          <span class="btn ghost">联系酒店</span>
+          <span class="btn" disabled>标记未入住</span>
+        </div>
+        <div class="alert a-warn mt12"><span class="ic">!</span>
+          <div><b>为什么「标记未入住」是灰的</b>：那是酒店工作人员的权限（REQ-013），顾客看不到也点不动；
+            越权调用接口会返回 403 并提示「无权执行该操作」。</div>
+        </div>
+        <div class="alert a-danger mt12"><span class="ic">×</span>
+          <div><b>已入住之后不能再取消</b>：订单一旦「已入住」，取消按钮置灰并提示
+            「房费已消费，如遇特殊情况请联系酒店协商，或由平台管理员强制取消（T7，会写入审计）」。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>改期怎么算</h2></div>
+    <div class="card-body">
+      <div class="hint" style="line-height:1.9;">
+        1. 先校验新日期区间余量（任一日不足即整单失败）；<br>
+        2. 先占新日期（已占用 +2），成功后再放旧日期（已占用 −2）；<br>
+        3. 两步在同一事务内，中途失败不会出现「新占一半」的中间态；<br>
+        4. 若新日期单价不同，按新日期的每晚单价重新生成快照，总价随之变化。
+      </div>
+      <div class="alert a-info mt12"><span class="ic">i</span>
+        <div>改期只允许一次，避免反复改期把库存刷乱（REQ-009）。</div>
+      </div>
+      <div class="btn mt16" style="justify-content:center;">选择新日期</div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M5 预订与订单 / M7 取消与改期 · REQ-009 / REQ-010 / REQ-015 · 界面08</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

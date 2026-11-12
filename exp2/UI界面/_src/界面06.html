@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>提交结果 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 预订 / 结果</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>提交结果</h1>
+          <p>成功进入「待确认」并给出确认倒计时；重复提交返回同一订单号</p>
+        </div>
+      </div>
+      
+<div class="card done">
+  <div class="tick">✓</div>
+  <h2>预订已提交，等待酒店确认</h2>
+  <div class="ono mt8">订单号 <b>HT20261112000318</b></div>
+  <div class="row mt12" style="justify-content:center;gap:10px;">
+    <span class="badge b-pending"><span class="d"></span>待确认</span>
+    <span class="muted">云栖·外滩江景酒店 · 高级江景大床房 · 11-15 至 11-17</span>
+  </div>
+
+  <div class="timer">酒店确认剩余时间 <b>29:41</b></div>
+  <div class="hint">超时未确认将自动取消并释放房间，你会收到一条站内与短信通知。</div>
+
+  <div class="row mt20" style="justify-content:center;gap:10px;">
+    <span class="btn primary">查看订单详情</span>
+    <span class="btn">继续浏览</span>
+    <span class="btn ghost">联系酒店</span>
+  </div>
+
+  <div class="mt20" style="text-align:left;">
+    <div class="alert a-info"><span class="ic">i</span>
+      <div><b>关于重复提交</b>：如果刚才网络卡顿你点了两次，这里显示的仍是<b>同一张订单</b>——
+        幂等键在同一个事务里与订单一起写入，第二次请求命中键值后直接返回原单号，不会多扣房间。</div>
+    </div>
+    <div class="alert a-warn mt12"><span class="ic">!</span>
+      <div><b>提交失败长什么样</b>：库存被别人抢走时，本页不会出现，
+        而是回到确认页顶部显示红色提示「手慢了，最后一间已被订走（当前余量 0）」，并保留你填的入住信息。</div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt16">
+  <div class="card-head"><h2>你可能还关心</h2></div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div class="card" style="box-shadow:none;"><div class="card-body">
+        <div class="label">什么时候能确认？</div>
+        <div class="hint mt8">酒店在 30 分钟内确认；确认后状态变为「已确认」，你会在订单列表看到蓝色状态标。</div>
+      </div></div>
+      <div class="card" style="box-shadow:none;"><div class="card-body">
+        <div class="label">现在能改期吗？</div>
+        <div class="hint mt8">可以。已确认订单可改期一次：先占新日期再放旧日期，新日期余量不足则整单不变。</div>
+      </div></div>
+      <div class="card" style="box-shadow:none;"><div class="card-body">
+        <div class="label">能取消吗？</div>
+        <div class="hint mt8">入住前 48 小时免费取消；展会等不可取消区间按房型政策执行，取消前会显示退款金额。</div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M5 预订与订单 · REQ-005 / REQ-014 · 界面06</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

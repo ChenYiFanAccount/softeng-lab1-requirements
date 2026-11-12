@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>我的订单 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">顾客端 / 我的订单</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>我的订单</h1>
+          <p>按状态分组查看；每行给出该状态可做的动作，不可做的动作直接不显示</p>
+        </div>
+      </div>
+      
+<div class="card">
+  <div class="tabs" style="padding:0 6px;">
+    <div class="tab on">全部 <span class="muted">(5)</span></div>
+    <div class="tab">待确认 <span class="muted">(1)</span></div>
+    <div class="tab">已确认 <span class="muted">(1)</span></div>
+    <div class="tab">已入住 <span class="muted">(1)</span></div>
+    <div class="tab">历史订单 <span class="muted">(2)</span></div>
+    <div style="flex:1;"></div>
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;">
+      <div class="search-mini" style="width:200px;height:32px;">⌕ 订单号 / 酒店名</div>
+      <span class="btn sm">导出</span>
+    </div>
+  </div>
+  <table class="grid">
+    <thead><tr><th>订单号</th><th>酒店 / 房型</th><th>入住 → 退房</th><th>金额</th><th>状态</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="strong">HT20261112000318</td>
+        <td>云栖·外滩江景酒店<div class="hint">高级江景大床房</div></td>
+        <td>11-15 → 11-17<div class="hint">1 间</div></td>
+        <td class="num strong">¥1650</td>
+        <td><span class="badge b-pending"><span class="d"></span>待确认</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm">详情</span>
+          <span class="btn sm">取消订单</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="strong">HT20261108000192</td>
+        <td>云栖·西湖山居<div class="hint">山景双床房</div></td>
+        <td>11-20 → 11-22<div class="hint">2 间</div></td>
+        <td class="num strong">¥2480</td>
+        <td><span class="badge b-confirmed"><span class="d"></span>已确认</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm">详情</span>
+          <span class="btn sm">改期 / 取消</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="strong">HT20261026000087</td>
+        <td>云栖·鼓浪屿海景<div class="hint">亲子家庭房</div></td>
+        <td>10-30 → 11-02<div class="hint">1 间</div></td>
+        <td class="num strong">¥1620</td>
+        <td><span class="badge b-checkin"><span class="d"></span>已入住</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm">详情</span>
+          <span class="btn sm">查看凭证</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="strong">HT20261019000041</td>
+        <td>云栖·静安商务酒店<div class="hint">商务大床房</div></td>
+        <td>10-22 → 10-23<div class="hint">1 间</div></td>
+        <td class="num strong">¥720</td>
+        <td><span class="badge b-checkout"><span class="d"></span>已退房</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm">详情</span>
+          <span class="btn sm">再次预订</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="strong">HT20261003000012</td>
+        <td>云栖·虹桥枢纽酒店<div class="hint">标准双床房</div></td>
+        <td>10-05 → 10-06<div class="hint">1 间</div></td>
+        <td class="num strong">¥560</td>
+        <td><span class="badge b-cancel"><span class="d"></span>已取消</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm">详情</span>
+          <span class="btn sm">查看退款</span>
+        </td>
+      </tr></tbody>
+  </table>
+</div>
+
+<div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>状态说明</h2><span class="sub">六状态，只有 8 条转换边</span></div>
+    <div class="card-body">
+      <div class="row wrap" style="gap:8px;">
+        <span class="badge b-pending"><span class="d"></span>待确认</span>
+        <span class="badge b-confirmed"><span class="d"></span>已确认</span>
+        <span class="badge b-checkin"><span class="d"></span>已入住</span>
+        <span class="badge b-checkout"><span class="d"></span>已退房</span>
+        <span class="badge b-cancel"><span class="d"></span>已取消</span>
+        <span class="badge b-noshow"><span class="d"></span>未入住</span>
+      </div>
+      <div class="hint mt12">前三种状态占用库存；已取消与未入住会释放库存。
+        已入住不能取消、已退房不能重开——这类请求返回 409，状态与库存都不变，只记一条审计。</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>空态</h2></div>
+    <div class="card-body">
+      <div class="empty"><div class="big">🗂</div>
+        还没有订单<br>
+        <span class="hint">去「搜索酒店」看看，或者检查一下筛选的日期范围</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M5 预订与订单 · REQ-015 · 界面07</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>
