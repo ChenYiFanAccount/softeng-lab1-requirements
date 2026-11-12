@@ -62,7 +62,7 @@ body {
       text-align: center; }
 h1 { font-size: 16pt; margin: 0 0 8pt; }
 h2 { font-size: 14pt; margin: 18pt 0 8pt; padding-bottom: 4pt; border-bottom: 1pt solid #2f6fed;
-     page-break-before: always; page-break-after: avoid; }
+     page-break-before: always; page-break-after: auto; }
 h2:first-of-type { page-break-before: auto; }
 h3 { font-size: 12pt; margin: 14pt 0 6pt; page-break-after: avoid; }
 h4 { font-size: 11pt; margin: 12pt 0 5pt; page-break-after: avoid; }
@@ -78,7 +78,7 @@ table { border-collapse: collapse; width: 100%; margin: 6pt 0 10pt; font-size: 9
 th, td { border: .5pt solid #c7ced8; padding: 3pt 5pt; vertical-align: top; }
 th { background: #eef2f8; font-weight: 600; }
 tr { page-break-inside: avoid; }
-img { max-width: 100%; display: block; margin: 8pt auto 2pt; page-break-inside: avoid; }
+img { max-width: 100%; max-height: 205mm; display: block; margin: 8pt auto 2pt; page-break-inside: avoid; }
 hr { border: none; border-top: .5pt solid #c7ced8; margin: 10pt 0; }
 .cover { height: 245mm; display: flex; flex-direction: column; justify-content: center;
          align-items: center; text-align: center; page-break-after: always; }
