@@ -325,8 +325,10 @@ def page03() -> str:
 
     <div class="alert a-warn mt12">
       <span class="ic">!</span>
-      <div><b>无房空态</b>：所选日期已无房时，列表区显示「11-15 至 11-17 已无房」+ 前后 1 天可订日期按钮，
-        不隐藏筛选条件；单日余量不足时列表仍展示该酒店，但房型行标「该日余量不足」并禁用「预订」。</div>
+      <div><b>没房了（空态）</b>：11-15 至 11-17 已无房。换一天或换一家，两个按钮直接改日期，
+        刚选的价格区间和星级都留着，不用重选。
+        <b>加载失败（错误态）</b>才是红条「加载失败，点击重试」，已填的条件一样原样保留——两者不要混为一谈。
+        单日余量不够不算空态：酒店照常出现在列表里，只在房型行写「该日余量不足」并禁用「预订」。</div>
     </div>
   </div>
 </div>
@@ -815,4 +817,4 @@ if __name__ == "__main__":
     for name, fn in PAGES.items():
         p = OUT / f"{name}.html"
         p.write_text(fn(), encoding="utf-8")
-        print(name, len(p.read_text(encoding="utf-8")))
+        print(name, len(p.read_text(encoding="utf8 - gen.py:820")))
