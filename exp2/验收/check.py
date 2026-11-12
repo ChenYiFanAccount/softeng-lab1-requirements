@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -833,15 +834,69 @@ def s6_ui_hotel_admin() -> None:
 
 
 def s7_report() -> None:
+    """S7：报告 1–6 章。判据按评审给的 5 条门禁逐条落地（不是"有文件就算过"）。"""
     stage = "S7"
     p = ROOT / "实验报告.md"
     if not p.exists():
         record(stage, "实验报告.md 存在", False, "未找到")
         return
     t = read(p)
-    record(stage, "含 6 个一级章节骨架", len(re.findall(r"^## ", t, re.M)) >= 6, "")
-    record(stage, "正文引用 UML 图（图 3-x）", len(re.findall(r"图\s*3-\d", t)) >= 3, "")
-    record(stage, "正文引用界面编号", len(re.findall(r"界面\s*\d{2}", t)) >= 5, "")
+    record(stage, "实验报告.md 存在且 > 12000 字", len(t) > 12_000, f"实际 {len(t)} 字符")
+
+    # 1) 封面 / 目录 / 标识
+    head = t[:1500]
+    record(stage, "封面含课程名「软件工程」", "软件工程" in head, "")
+    record(stage, "封面含学号与姓名", "241220024" in head and "陈一帆" in head, "")
+    record(stage, "封面不写指导教师（口径：留空）", "指导教师" not in head, "封面出现了指导教师字样")
+    record(stage, "有目录", "## 目录" in t or "目录" in head, "")
+
+    # 2) 六个一级章节
+    for n, name in enumerate(["项目与需求范围", "软件的主要功能", "软件架构设计",
+                              "数据设计", "非功能设计", "界面设计"], start=1):
+        pat = rf"^##\s*第{n}章.*{name}"
+        record(stage, f"第{n}章《{name}》存在且顺序正确", bool(re.search(pat, t, re.M)), "")
+
+    # 3) 八张图：图注 + 正文引用（图号出现 ≥2 次：图注一次、引用一次），且每图后紧跟"为什么这样设计"
+    figs = ["类图", "包图", "组件图", "用例图", "状态图", "活动图",
+            "时序图：下单锁库存", "时序图：超时取消"]
+    for i, _ in enumerate(figs, start=1):
+        tag = f"图 3-{i}"
+        cnt = t.count(tag)
+        record(stage, f"{tag} 在图注与正文各出现一次（≥2 次）", cnt >= 2, f"实际 {cnt} 次")
+    caps = re.findall(r"^图 3-(\d)　(.+)$", t, re.M)
+    record(stage, "8 条图注齐全（图 3-1 … 图 3-8）",
+           sorted(int(n) for n, _ in caps) == list(range(1, 9)), f"实际 {[n for n, _ in caps]}")
+
+    # 每张图注之后 900 字内必须出现"为什么这样设计"（手册：只截图不解释要扣分）
+    missing = []
+    for n, cap in caps:
+        idx = t.find(f"图 3-{n}　")
+        window = t[idx: idx + 900]
+        if "为什么这样设计" not in window:
+            missing.append(f"图 3-{n}")
+    record(stage, "每张图后都有「为什么这样设计」段落", not missing,
+           "" if not missing else f"缺: {missing}")
+
+    # 4) 27 条 REQ 在正文出现（附录之外也要有）
+    body_only = t.split("## 附录 A")[0]
+    miss = [r["id"] for r in json.loads((ROOT / "验收" / "req_index.json").read_text(encoding="utf-8"))
+            if r["id"] not in body_only]
+    record(stage, "27 条 REQ 在正文（不含附录）各出现 ≥1 次", not miss,
+           "" if not miss else f"缺: {miss}")
+    record(stage, "附录 A 含 27 条 REQ 全文",
+           len(re.findall(r"^\*\*REQ-\d{3}　", t, re.M)) == 27,
+           f"实际 {len(re.findall(r'^\*\*REQ-\\d{3}　', t, re.M))} 条")
+
+    # 5) 关键口径不得回退（与 stage 1 的禁用词一致）
+    for bad in BANNED:
+        record(stage, f"报告中不出现旧口径「{bad}」", bad not in t, "出现了")
+
+    # 6) 版面骨架：每章都有小节，且第 3 章（架构）字数够
+    ch3 = t.split("## 第3章")[1].split("## 第4章")[0] if "## 第4章" in t else ""
+    record(stage, "第 3 章字数 ≥ 3000（架构是主章节）", len(ch3) >= 3000, f"实际 {len(ch3)} 字符")
+    record(stage, "第 3 章含 8 个小节（3.5.1–3.5.8）",
+           len(re.findall(r"^#### 3\.5\.\d", ch3, re.M)) == 8,
+           f"实际 {len(re.findall(r'^#### 3.5.\\d', ch3, re.M))} 个")
 
 
 def s8_ai() -> None:

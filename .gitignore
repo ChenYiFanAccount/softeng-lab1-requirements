@@ -13,3 +13,6 @@ Thumbs.db
 __pycache__/
 *.pyc
 exp2/验收/_*
+# 报告的中间产物（PDF 由 build_report_pdf.py 随时重生成，交付件在 S9 打包时生成）
+exp2/实验报告_预览.html
+exp2/实验报告_预览.pdf
