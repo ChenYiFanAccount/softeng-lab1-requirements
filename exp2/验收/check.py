@@ -21,6 +21,13 @@ import re
 import sys
 from pathlib import Path
 
+# Windows 控制台默认 GBK，遇到「−」「≤」等符号会 UnicodeEncodeError；统一改 UTF-8 输出
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:                                    # 非 tty / 旧解释器：忽略
+        pass
+
 EXPECT = {
     "req_count": 27,              # 实验一冻结需求条数（功能22 + 非功能4 + 约束1）
     "transition_edges": 8,        # 状态转换边数（6 种状态对，T2/T3、T4/T5 各两条）
@@ -43,6 +50,8 @@ BANNED = {
     "禁止反向箭头": "依赖倒置允许且仅允许一条反向实现箭头",
     "3.13.16": "本机 Python 实为 3.12.6",
     "11-14 23:59": "截止时间口径为 2026-11-14 00:00（= 11-13 全天结束前）",
+    "净剩余": "R-01：可售间数是酒店挂牌量，不是净剩余；已占用间数须落库",
+    "总房量 − 可售间数": "R-01：占用不得由总房量反推，须自成一列落库",
 }
 
 ROOT = Path(__file__).resolve().parent.parent          # exp2/
@@ -87,6 +96,10 @@ def section(text: str, heading_pat: str, stop_pat: str = r"^#{1,3} ") -> str:
                 break
             out.append(ln)
     return "\n".join(out)
+
+
+# 明细里出现这些字样说明写的是"哪里不对"（失败话术），PASS 行不得展示（评审 D-03③）
+FAILWORDS = re.compile(r"缺|未|不是|应为|非法|不符|异常|多余|残留")
 
 
 # ---------------------------------------------------------------- 模块卡解析
@@ -233,6 +246,35 @@ def s1_tables() -> None:
     record(stage, "执行方案 F 节含 booking_night", "booking_night" in plan, "缺少逐晚快照表")
 
 
+def s1_stock_model() -> None:
+    """R-01 复验：可售=挂牌量、已占用落库、余量=可售−占用（三查，对应评审 A1/A2/A5）。"""
+    stage = "S1"
+    b3 = read(B3)
+    b2 = read(B2)
+
+    sec24 = section(b3, r"^### 2\.4\s")
+    has_occ = "已占用间数" in sec24
+    record(stage, "A1：room_inventory 同时有『可售间数』与『已占用间数』",
+           has_occ and "可售间数" in sec24, "缺少已占用间数列")
+    record(stage, "A1：已占用间数明确标注为落库事实（非派生）",
+           has_occ and ("落库" in sec24 or "必须存" in sec24), "未写明已占用是否落库")
+
+    sec5 = section(b3, r"^## 5\.\s")
+    formula = re.search(r"余量\s*(?:\([^)]{0,40}\))?\s*=\s*可售间数\s*(?:\([^)]{0,40}\))?\s*[−-]\s*已占用间数", sec5)
+    record(stage, "A2：03 §5 余量公式为『可售间数 − 已占用间数』", bool(formula),
+           "§5 未找到 余量 = 可售 − 占用")
+    record(stage, "A3：03 §5 写明按日下调可售只改可售、不低过占用",
+           "按日" in sec5 and "可售" in sec5 and "占用" in sec5, "§5 缺少按日调整可售规则")
+
+    sec25 = section(b2, r"^## 5\.\s")
+    total_row = [ln for ln in sec25.splitlines() if "改总房量" in ln]
+    record(stage, "A5：02 §5『改总房量』行的判据含『已占用』（不是由总房量反推）",
+           bool(total_row) and "已占用" in total_row[0] and "新总房量" in total_row[0],
+           "02 §5 改总房量行未以已占用为判据")
+    record(stage, "A4：03 §7 对账比对『已占用』与订单汇总（不再比可售）",
+           "已占用" in section(b3, r"^## 7\.\s"), "§7 对账对象不对")
+
+
 def s1_ui() -> None:
     stage = "S1"
     rows = ui_rows()
@@ -242,9 +284,10 @@ def s1_ui() -> None:
     record(stage, f"H 节界面总数不超过 {EXPECT['ui_required'] + EXPECT['ui_optional']}",
            len(rows) <= EXPECT["ui_required"] + EXPECT["ui_optional"], f"实际 {len(rows)} 行")
 
-    # 必做界面每张都有归属模块，且 M1–M9 每个业务模块至少一张独占界面
+    # 必做界面每张都有归属模块，且 M1–M9 每个业务模块至少一张**独占**界面（模块列只有一个 M）
     mods_needed = {f"M{i}" for i in range(1, 10)}
     got: set[str] = set()
+    exclusive: set[str] = set()
     nomod = []
     for n in need:
         if n not in rows:
@@ -254,9 +297,12 @@ def s1_ui() -> None:
         if not ms:
             nomod.append(n)
         got |= set(ms)
+        if len(set(ms)) == 1:
+            exclusive |= set(ms)
     record(stage, "必做界面每张都标注归属模块", not nomod, f"未标注: {nomod}")
-    record(stage, "M1–M9 每个模块都有独占界面（M10 无界面）", mods_needed <= got,
-           f"缺模块界面: {sorted(mods_needed - got)}")
+    record(stage, "M1–M9 每个模块都有独占界面（模块列仅一个 M；M10 无界面）",
+           mods_needed <= exclusive,
+           f"缺独占界面模块: {sorted(mods_needed - exclusive)}（提及但非独占: {sorted(mods_needed - got)}）")
 
     title = {n: (rows[n][3] if len(rows[n]) > 3 else "") for n in rows}
     record(stage, "界面15=节假日表 / 16=统计看板 / 17=日志查询（已拆分）",
@@ -306,7 +352,8 @@ def s1_phase_card() -> None:
         "口径卡写『13 个核心类型』": "13 个核心类型" in phase,
         "口径卡写『17 张必做』": "17 张必做" in phase,
         "口径卡写依赖倒置": "依赖倒置" in phase,
-        "口径卡写库存口径（可售=净剩余）": "净剩余" in phase,
+        "口径卡写库存口径（可售挂牌 / 已占用落库 / 余量为派生）":
+            "可售" in phase and "已占用" in phase and "余量" in phase,
     }
     for k, ok in checks.items():
         record(stage, k, ok, "" if ok else "口径卡缺项")
@@ -362,9 +409,18 @@ def s3_behavior() -> None:
     p = UML_DIR / "UML状态图.puml"
     if p.exists():
         t = read(p)
-        arrows = re.findall(r"^\s*\S+\s*-->\s*\S+", t, re.M)
+        arrows = []
+        for ln in t.splitlines():
+            m = re.search(r"^\s*(\S+)\s*-->\s*(\S+)", ln)
+            if not m:
+                continue
+            a, b = m.group(1), m.group(2)
+            # [*] 是起止伪状态，不是六状态之间的转换；进出 [*] 的边不计入 8 条
+            if a.startswith("[*]") or b.startswith("[*]"):
+                continue
+            arrows.append((a, b))
         record(stage, f"状态图转换边 = {EXPECT['transition_edges']}", len(arrows) == EXPECT["transition_edges"],
-               f"实际 {len(arrows)} 条")
+               f"实际 {len(arrows)} 条（已排除 [*] 起止边）: {arrows}")
 
 
 def s4_interaction() -> None:
@@ -434,7 +490,7 @@ def s9_delivery() -> None:
 
 STAGES = {
     "1": ("S1 基线与口径冻结", [s1_req_trace, s1_req_module_cover, s1_transitions,
-                              s1_tables, s1_ui, s1_class_spec, s1_banned, s1_phase_card]),
+                              s1_tables, s1_stock_model, s1_ui, s1_class_spec, s1_banned, s1_phase_card]),
     "2": ("S2 结构图", [s2_struct]),
     "3": ("S3 行为图", [s3_behavior]),
     "4": ("S4 交互图", [s4_interaction]),
@@ -468,8 +524,10 @@ def main() -> int:
         for _, name, ok, detail in results[before:]:
             flag = "PASS" if ok else "FAIL"
             line = f"[{flag}] {name}"
-            if detail and (args.verbose or not ok):
+            if detail and not ok:
                 line += f"  ←  {detail}"
+            elif detail and args.verbose and not FAILWORDS.search(detail):
+                line += f"  （实测：{detail}）"
             print(line)
 
     fails = [r for r in results if not r[2]]
