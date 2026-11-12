@@ -967,19 +967,77 @@ def s8_ai() -> None:
 
 
 def s9_delivery() -> None:
+    """S9 交付：目录结构 / UML 成对 / UI 17 张 / zip 白名单与体积 / PDF 基本合规。"""
     stage = "S9"
+    name = "实验2_241220024_陈一帆"
+    out = ROOT / "交付"
+    pkg = out / name
+    zip_path = out / f"{name}.zip"
     pdf = ROOT / "实验报告.pdf"
-    record(stage, "实验报告.pdf 存在", pdf.exists() and pdf.stat().st_size > 50_000, "")
-    zips = list(ROOT.glob("实验2_241220024_陈一帆.zip"))
-    record(stage, "交付 zip 存在且命名合规", bool(zips), "未找到 实验2_241220024_陈一帆.zip")
-    if zips:
+
+    # 1) 报告 PDF
+    ok = pdf.exists() and pdf.stat().st_size > 2_000_000
+    head = pdf.open("rb").read(8) if pdf.exists() else b""
+    record(stage, "实验报告.pdf 存在且 >2MB", ok, "" if ok else f"{pdf.stat().st_size if pdf.exists() else 0} B")
+    record(stage, "实验报告.pdf 是 PDF 文件头（%PDF-）", head.startswith(b"%PDF-"), head[:8].decode("latin1"))
+
+    if pdf.exists():
+        blob = pdf.read_bytes()
+        pages = len(re.findall(rb"/Type\s*/Page[^s]", blob))
+        record(stage, "PDF 页数 35–45（含封面/目录/附录）", 35 <= pages <= 45, f"实际约 {pages} 页")
+        md = (ROOT / "实验报告.md")
+        md_txt = md.read_text(encoding="utf-8") if md.exists() else ""
+        record(stage, "封面日期 = 2026 年 11 月 12 日（与 md 一致，且不写未来日期）",
+               "2026 年 11 月 12 日" in md_txt,
+               "" if "2026 年 11 月 12 日" in md_txt else "md 封面日期不是 11-12")
+        # PDF 正文是压缩流，直接搜字符串不可靠；用「PDF 不旧于 md」证明 md 改完重出过
+        record(stage, "PDF 不旧于 实验报告.md（改了 md 必须重出 PDF）",
+               pdf.stat().st_mtime + 1 >= md.stat().st_mtime,
+               f"pdf {pdf.stat().st_mtime:.0f} < md {md.stat().st_mtime:.0f}")
+
+    # 2) 交付目录：恰好三项，不多套一层
+    record(stage, "交付目录存在", pkg.is_dir(), str(pkg))
+    if pkg.is_dir():
+        tops = sorted(x.name for x in pkg.iterdir())
+        record(stage, "交付目录恰好三项（实验报告.pdf / UML / UI界面）",
+               tops == sorted(["实验报告.pdf", "UML", "UI界面"]), str(tops))
+        record(stage, "实验报告.pdf 在交付目录根部（没有多套一层）",
+               (pkg / "实验报告.pdf").is_file(), "")
+
+        # 3) UML 成对且 png 不旧于 puml
+        pumls = sorted((pkg / "UML").glob("*.puml"))
+        pngs = sorted((pkg / "UML").glob("*.png"))
+        record(stage, "UML 至少 8 组", len(pumls) >= 8, f"实际 {len(pumls)} 组")
+        record(stage, "UML 组数 = 8（7 必做 + 1 张第二时序图）", len(pumls) == 8, f"实际 {len(pumls)}")
+        pairs_ok = all(p.with_suffix(".png").is_file() for p in pumls) and len(pumls) == len(pngs)
+        record(stage, "UML 每组 puml/png 同名成对、无孤儿", pairs_ok,
+               f"puml {len(pumls)} / png {len(pngs)}")
+        newer = [p.name for p in pumls if p.with_suffix(".png").exists()
+                 and p.with_suffix(".png").stat().st_mtime + 1 < p.stat().st_mtime]
+        record(stage, "每张 PNG 不旧于对应 .puml（改图后重渲过）", not newer, f"旧图: {newer}")
+
+        # 4) UI 17 张，且没有 _src
+        ui = pkg / "UI界面"
+        got = sorted(x.name for x in ui.glob("界面*.png")) if ui.is_dir() else []
+        want = [f"界面{i:02d}.png" for i in range(1, 18)]
+        record(stage, "UI界面 恰好 17 张 界面01–17.png", got == want,
+               f"实际 {len(got)} 张" + (f"，缺 {sorted(set(want) - set(got))[:3]}" if got != want else ""))
+        record(stage, "UI界面 里没有 _src/（源码不交付）", not (ui / "_src").exists(), "")
+
+    # 5) zip
+    record(stage, "zip 存在且与目录同名", zip_path.is_file(), str(zip_path))
+    if zip_path.is_file():
         import zipfile
-        with zipfile.ZipFile(zips[0]) as z:
+        with zipfile.ZipFile(zip_path) as z:
             names = z.namelist()
-        record(stage, "zip 内顶层目录 = 实验2_241220024_陈一帆/",
-               all(n.startswith("实验2_241220024_陈一帆/") for n in names), "")
-        record(stage, "zip 含 UML/ 与 UI界面/ 目录",
-               any("/UML/" in n for n in names) and any("/UI界面/" in n for n in names), "")
+        record(stage, "zip 内所有路径都在 实验2_241220024_陈一帆/ 下",
+               all(n.startswith(name + "/") for n in names), "")
+        record(stage, "zip 内文件数 = 34（1 pdf + 16 UML + 17 UI）", len(names) == 34, f"实际 {len(names)}")
+        record(stage, "zip 内无 _src / .md / .html / 预览件 / _pdfimg",
+               not any("/_src/" in n or n.endswith((".md", ".html")) or "预览" in n or "_pdfimg" in n
+                       for n in names), "")
+        mb = zip_path.stat().st_size / 1048576
+        record(stage, "zip ≤ 20 MB", mb <= 20, f"{mb:.2f} MB")
 
 
 def s1_gate_items() -> None:

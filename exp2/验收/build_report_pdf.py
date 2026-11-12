@@ -12,8 +12,11 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = Path(r"D:\NJU\softengineering\exp2")
 SRC = ROOT / "实验报告.md"
-HTML_OUT = ROOT / "实验报告_预览.html"
-PDF_OUT = ROOT / "实验报告_预览.pdf"
+# 用法：python build_report_pdf.py [输出文件名]（默认 实验报告_预览.pdf；
+# 交付时传 实验报告.pdf —— 预览件被 .gitignore 忽略，交付件要进仓库）
+_OUT_NAME = sys.argv[1] if len(sys.argv) > 1 else "实验报告_预览.pdf"
+HTML_OUT = ROOT / "实验报告_预览.html"   # 中间件固定这个名字，已被 .gitignore 忽略
+PDF_OUT = ROOT / _OUT_NAME
 EDGE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 PROFILE = Path(r"D:\softeng-env\_edge_profile_pdf")
 IMG_CACHE = ROOT / "验收" / "_pdfimg"   # 压缩后的图，被 exp2/验收/_* 忽略，不入库
@@ -230,7 +233,7 @@ def stamp_header_footer(pdf: Path) -> None:
                            color=(0.82, 0.85, 0.88), width=0.5)
         page.draw_line(pymupdf.Point(56, h - 40), pymupdf.Point(w - 56, h - 40),
                        color=(0.82, 0.85, 0.88), width=0.5)
-        foot = f"酒店预订系统 · 软件工程实验二 · 2026-11-13　　- {i + 1} / {n} -"
+        foot = f"酒店预订系统 · 软件工程实验二 · 2026-11-12　　- {i + 1} / {n} -"
         font = pymupdf.Font(fontfile=font_file)
         tw = font.text_length(foot, fontsize=8)
         page.insert_text(((w - tw) / 2, h - 28), foot, fontsize=8, fontname="msyh",
@@ -251,7 +254,12 @@ def stamp_header_footer(pdf: Path) -> None:
     out = pdf.with_name(pdf.stem + "_tmp.pdf")
     with out.open("wb") as fh:
         writer.write(fh)
-    out.replace(pdf)
+    try:
+        out.replace(pdf)
+    except PermissionError:
+        print(f"[!] {pdf.name} 被其他程序占用（可能在 PDF 阅读器里开着），"
+              f"已把盖章版本留在 {out.name}；关掉预览后重跑，或直接用 _tmp 改名。")
+        return
     tmp_stamp.unlink(missing_ok=True)
     print("stamped", n, "pages ->", round(pdf.stat().st_size / 1048576, 2), "MB")
 
