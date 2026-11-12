@@ -50,6 +50,7 @@ component "M7 取消与改期政策" as M7 {
 
 component "M8 报表统计" as M8 {
   interface "I15 指标汇总" as I15
+  interface "I21 趋势与导出" as I21
 }
 
 component "M9 审计与日志" as M9 {
@@ -119,5 +120,12 @@ end note
 note bottom of M1
   M1 不画指向其他模块的箭头：鉴权是"被调用方"，
   业务模块执行前主动来问 I2，M1 不反过来依赖它们。
+end note
+
+note top of WEB
+  本图共 12 个组件，但**业务组件只有 10 个**（M1–M10）：
+  另外两个是支撑件——「页面与接口入口」和「数据存储」，
+  报告 3.3 引用本图时须写"10 个业务组件 + 2 个支撑件"，
+  否则会和口径卡的"10 模块"对不上。
 end note
 @enduml

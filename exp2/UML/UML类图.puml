@@ -1,7 +1,7 @@
 @startuml
-' 版本：v1.1（2026-11-12，S2 结构图' 人工修订：房型→库存/价格两处多重度按 03 §3 对齐为 1..*）
+' 版本：v1.1（2026-11-12，S2 结构图；人工修订：房型→库存/价格两处多重度按 03 §3 对齐为 1..*）
 ' 口径来源：exp2/设计基线/01_术语与追溯.md §1、03_数据设计.md §2/§8
-title UML类图 v1.0：酒店预订系统的领域模型
+title UML类图 v1.1：酒店预订系统的领域模型
 
 skinparam classAttributeIconSize 0
 skinparam shadowing false
@@ -19,14 +19,10 @@ package "领域层 · 实体（13 个核心类型，对应 12 张表）" #F7F9FC
     - 账号ID: String
     - 手机号: String
     - 密码哈希: String
+    - 角色: 枚举（顾客 / 酒店工作人员 / 平台管理员）
     - 状态: String
     - 创建时间: DateTime
     + 校验密码(明文): Boolean
-  }
-
-  class "Role 角色" as Role {
-    - 角色ID: String
-    - 角色名: String
   }
 
   class "Hotel 酒店" as Hotel {
@@ -70,6 +66,9 @@ package "领域层 · 实体（13 个核心类型，对应 12 张表）" #F7F9FC
 
   class "Booking 订单" as Booking {
     - 订单号: String
+    - 顾客ID: String
+    - 酒店ID: String
+    - 房型ID: String
     - 入住日: Date
     - 退房日: Date
     - 间数: int
@@ -185,13 +184,12 @@ package "仓储接口（领域层定义，数据访问层实现）" #EEF6EE {
 }
 
 ' ---------- 实体之间的关系（多重度按 REQ 语义写） ----------
-UserAccount "1" -- "1" Role : 拥有
 UserAccount "1" -- "0..*" Booking : 下单
 UserAccount "1" -- "0..*" AuditLog : 产生
 UserAccount "1" -- "0..*" IdempotencyKey : 提交键
 
 Hotel "1" *-- "1..*" RoomType : 包含
-Hotel "0..1" -- "0..*" HolidayCalendar : 参考节假日
+Hotel "1" -- "0..*" Booking : 属于（酒店ID 冗余在订单上，供数据隔离与"本店统计"直读）
 
 RoomType "1" *-- "1..*" RoomInventory : 按日挂牌（建房型即按 90 天滚动生成逐日库存行）
 RoomType "1" *-- "1..*" RoomPrice : 按日定价（逐日价格随库存行一同生成）
@@ -215,7 +213,24 @@ note right of BookingStatus
   6 个状态、8 条转换边（6 种状态对）。
   状态字段只能经 BookingStateMachine 修改，
   业务代码不得直接赋值。
-  已入住/已退房/已取消 为终态，不可回退。
+
+  **终态 = 已退房 / 已取消 / 未入住**，进了这三个不再改变。
+  已入住**不是**终态：它还能走 T8 → 已退房。
+  5 条禁止转换（画成允许就是错）：
+  已入住→已取消、已退房→已取消、已取消→已确认、
+  已入住→已确认、已退房→已入住。
+end note
+
+note top of UserAccount
+  「角色」是枚举字段，不是独立实体：
+  03 §2.1 `user_account.角色` 只有枚举值（顾客/酒店工作人员/平台管理员），
+  没有角色表，所以这里不单列 Role 类——否则类图会比表多一个无表可对应的类型。
+end note
+
+note bottom of HolidayCalendar
+  平台级字典：节假日由平台统一维护（03 §2.12，日期唯一），
+  供取消政策（T7 的不可取消区间）与价格策略引用，
+  不归属任何一家酒店，所以不画 Hotel--HolidayCalendar 关联。
 end note
 
 note bottom of RoomInventory

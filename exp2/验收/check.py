@@ -344,7 +344,7 @@ def s1_banned() -> None:
         targets += sorted(exp_dir.glob("*.md")) + sorted(exp_dir.glob("*.py"))
     # 白名单：外部评审材料按"原样归档"保留，其引述旧口径属正常（不得改写评审方原文）；
     # 以及任何标注了"禁用词/旧口径/勘误"的行，属于讨论该词本身。
-    external = {"评审报告_S0_S1.md", "评审报告_S0_S1_复验.md", "返工单_R-01.md"}
+    external = {"评审报告_S0_S1.md", "评审报告_S0_S1_复验.md", "评审报告_S1_S2.md", "返工单_R-01.md"}
     exempt_line = re.compile(r"禁用词|旧口径|勘误|口径变更|引述")
     hits = []
     scanned = 0
@@ -401,9 +401,9 @@ def need_pair(stem: str, png_min: int = 20000) -> list[str]:
     return bad
 
 
-def class_body(text: str, alias: str) -> str:
-    """取出 `class "标签" as <alias> { ... }` 的花括号内正文（用于核对属性清单）。"""
-    m = re.search(r"^\s*(?:class|interface)\s+[^\n]*\bas\s+" + re.escape(alias) + r"\b[^\n]*\{", text, re.M)
+def class_body(text: str, alias: str, kinds: str = "class|interface") -> str:
+    """取出 `<kinds> "标签" as <alias> { ... }` 的花括号内正文（用于核对属性清单、逐组件接口数）。"""
+    m = re.search(r"^\s*(?:" + kinds + r")\s+[^\n]*\bas\s+" + re.escape(alias) + r"\b[^\n]*\{", text, re.M)
     if not m:
         return ""
     start = m.end()
@@ -449,6 +449,31 @@ def s2_struct() -> None:
                f"缺 {[s for s in ('BookingService','InventoryService','BookingStateMachine') if s not in t]}")
         record(stage, "类图有组合关系（Booking *-- BookingNight）",
                bool(re.search(r"\*\s*--", t)), "无组合关系")
+
+        # 评审 R2-01：实体包里必须恰好 13 个 class（12 张表 + BookingStatus 枚举），
+        # 多一个（例如把「角色」画成独立类）就会与口径卡的"13 个核心类型"打架
+        ent = class_body(t, "L0", kinds="package")
+        ent_body = ent or t.split("package \"领域服务")[0]
+        n_ent = len(re.findall(r"^\s*class\s+", ent_body, re.M))
+        record(stage, f"实体包恰好 {EXPECT['class_types']} 个 class（不含领域服务）",
+               n_ent == EXPECT["class_types"], f"实际 {n_ent}")
+        record(stage, "实体包没有独立的『Role 角色』类（角色是枚举字段，没有角色表）",
+               "Role 角色" not in ent_body, "仍画了 Role 类，13 会变 14")
+
+        # 评审 R2-02：订单必须能直读所属酒店（REQ-001/015/016/020 的隔离与统计都靠它）
+        bk = class_body(t, "Booking")
+        record(stage, "Booking 有『酒店ID』字段（隔离与按店统计直读）", "酒店ID" in bk, "缺 酒店ID")
+        record(stage, "类图有 Booking—Hotel 关联",
+               bool(re.search(r'Booking\s+"[^"]*"\s*(?:--|\*--)\s*"[^"]*"\s*Hotel', t))
+               or bool(re.search(r'Hotel\s+"[^"]*"\s*(?:--|\*--)\s*"[^"]*"\s*Booking', t)),
+               "没有 Booking—Hotel 关联")
+
+        # 评审 R2-03：终态注释不能说"已入住是终态"（T8 已入住→已退房 合法）
+        m_note = re.search(r"note[^\n]*BookingStatus[\s\S]{0,600}?end note", t)
+        note = m_note.group(0) if m_note else ""
+        term_ok = ("未入住" in note and "已退房" in note and "已入住**不是**终态" in note)
+        record(stage, "状态机注释写明终态 = 已退房/已取消/未入住，且已入住不是终态", term_ok,
+               "" if term_ok else f"注释片段：{note[:120]}")
     p = UML_DIR / "UML包图.puml"
     if p.exists():
         t = read(p)
@@ -471,7 +496,15 @@ def s2_struct() -> None:
         ncomp = len(re.findall(r"component\s+", t)) or len(comps)
         record(stage, "组件图组件 = 10（M1–M10）", ncomp >= 10, f"实际 {ncomp}")
         iface = len(re.findall(r"interface\s+|\[[^\]]+\]", t))
-        record(stage, "每组件接口 ≥ 2（合计 ≥ 20 处接口）", iface >= 20, f"实际 {iface}")
+        record(stage, "接口总数 ≥ 20", iface >= 20, f"实际 {iface}")
+        # 逐组件计数：M1–M10 每个 component 块内必须 ≥ 2 个 interface
+        per = {}
+        for i in range(1, 11):
+            body = class_body(t, f"M{i}", kinds="component")
+            per[f"M{i}"] = len(re.findall(r"^\s*interface\s+", body, re.M))
+        thin = {k: v for k, v in per.items() if v < 2}
+        record(stage, "M1–M10 每个业务组件对外接口 ≥ 2 个（逐组件计数）", not thin,
+               f"接口不足的组件：{thin}")
         kinds = [k for k in ("同步", "异步", "定时") if k in t]
         record(stage, "组件图区分同步/异步/定时三类连接", len(kinds) == 3, f"只写了 {kinds}")
     # 三张图首行必须有图名 + 版本（阶段卡"S2 产出"要求）
