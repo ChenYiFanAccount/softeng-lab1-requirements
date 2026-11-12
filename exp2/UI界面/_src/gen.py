@@ -1160,7 +1160,7 @@ def page15() -> str:
       <tr>
         <td class="strong">{a}</td><td>{b}</td><td>{name}</td><td>{policy}</td>
         <td><span class="badge {'b-checkin' if st == '启用' else 'b-checkout'}"><span class="d"></span>{st}</span></td>
-        <td style="text-align:right;"><span class="btn sm">编辑</span><span class="btn sm">删除</span></td>
+        <td style="text-align:right;"><span class="btn sm">编辑</span><span class="btn sm">{'启用' if st == '已停用' else '停用'}</span></td>
       </tr>""" for a, b, name, policy, st in rows)
 
     body = f"""
@@ -1198,6 +1198,11 @@ def page15() -> str:
       <span class="pill">11-11 平日</span><span class="pill">11-12 平日</span><span class="pill">11-13 平日</span>
       <span class="pill blue">11-14 展会</span><span class="pill blue">11-15 展会</span><span class="pill blue">11-16 展会</span>
       <span class="pill">11-17 平日</span><span class="pill">11-18 平日</span>
+    </div>
+    <div class="alert a-warn mt12"><span class="ic">!</span>
+      <div><b>没有「删除」，只有「停用」。</b>区间一旦被历史订单引用过就不能物理删——
+        取消政策要按「下单当时」的日历集合追溯，删掉行会让历史订单的「当时为什么不可取消」查不到。
+        停用只是不再命中新订单，行还在，可随时启用回来。</div>
     </div>
   </div>
 </div>
@@ -1347,4 +1352,4 @@ if __name__ == "__main__":
     for name, fn in PAGES.items():
         p = OUT / f"{name}.html"
         p.write_text(fn(), encoding="utf-8")
-        print(name, len(p.read_text(encoding="utf8 - gen.py:1350")), "chars")
+        print(name, len(p.read_text(encoding="utf-8")), "chars")
