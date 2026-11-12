@@ -772,11 +772,64 @@ def s5_ui_customer() -> None:
 
 
 def s6_ui_hotel_admin() -> None:
+    """S6：酒店端与管理端 8 张，必须满足评审给的五条硬门禁（11 三值 / 13 时间窗 / 16 两接口两视角 / 17 三约束）。"""
     stage = "S6"
     for i in range(10, EXPECT["ui_required"] + 1):
         p = UI_DIR / f"界面{i:02d}.png"
-        ok = p.exists() and p.stat().st_size > 20_000
-        record(stage, f"界面{i:02d}.png 存在且非空", ok, "" if ok else "缺失或过小")
+        ok = p.exists() and p.stat().st_size > 200_000
+        record(stage, f"界面{i:02d}.png 存在且 >200KB", ok,
+               "" if ok else ("缺失" if not p.exists() else f"仅 {p.stat().st_size} B"))
+        if p.exists():
+            w, h = png_size(p)
+            record(stage, f"界面{i:02d}.png 尺寸 = 2880×1800", (w, h) == (2880, 1800), f"实际 {w}×{h}")
+
+    doc = UI_DIR / "界面说明.md"
+    if not doc.exists():
+        record(stage, "UI界面/界面说明.md 存在", False, "未找到")
+        return
+    t = read(doc)
+    for i in range(10, EXPECT["ui_required"] + 1):
+        row = [ln for ln in t.splitlines() if re.match(rf"^\|\s*界面{i:02d}\s*\|", ln)]
+        record(stage, f"界面说明.md 有界面{i:02d} 的行", bool(row), "" if row else "缺这一行")
+        if row:
+            joined = " ".join(c.strip() for c in row[0].strip("|").split("|"))
+            record(stage, f"界面{i:02d} 行标了模块与 REQ",
+                   bool(re.search(r"M\d", joined)) and "REQ-" in joined, joined[:80])
+
+    # 门禁 2：界面 11 必须三值齐全，并画出"改可售低于已占用被拒"
+    row11 = " ".join([ln for ln in t.splitlines() if re.match(r"^\|\s*界面11\s*\|", ln)])
+    record(stage, "界面11 三值齐全（可售 / 已占用 / 余量）",
+           all(k in row11 for k in ("可售", "已占用", "余量")), row11[:90])
+    record(stage, "界面11 写明改可售低于已占用会被拒绝",
+           ("低于已占用" in row11) or ("不能低于" in row11), row11[:90])
+
+    # 门禁 3：界面 13 的 no-show 时间窗
+    row13 = " ".join([ln for ln in t.splitlines() if re.match(r"^\|\s*界面13\s*\|", ln)])
+    record(stage, "界面13 写明 no-show 时间窗（23:59 前 / 次日 00:05）",
+           "23:59" in row13 and "00:05" in row13, row13[:90])
+
+    # 门禁 4：界面 16 两个接口 + 两个视角
+    row16 = " ".join([ln for ln in t.splitlines() if re.match(r"^\|\s*界面16\s*\|", ln)])
+    record(stage, "界面16 体现 I15 与 I21 两个接口", "I15" in row16 and "I21" in row16, row16[:90])
+    record(stage, "界面16 区分本店 / 全平台两视角", "本店" in row16 and "全平台" in row16, row16[:90])
+
+    # 门禁 5：界面 17 三条硬约束
+    row17 = " ".join([ln for ln in t.splitlines() if re.match(r"^\|\s*界面17\s*\|", ln)])
+    record(stage, "界面17 写明只追加 / 180 天 / 403 三条硬约束",
+           ("只追加" in row17) and ("180" in row17) and ("403" in row17), row17[:90])
+
+    # 门禁 7：模块覆盖 —— M1–M9 每块都要有独占界面，M10 明确无界面
+    sec = re.search(r"##\s*2\.[^\n]*\n(.+?)(?=\n##\s|\Z)", t, re.S)
+    body = sec.group(1) if sec else ""
+    missing = []
+    for m in range(1, 10):
+        row = [ln for ln in body.splitlines() if re.match(rf"^\|\s*M{m}\s", ln)]
+        if not row or not re.search(r"\b0\d\b|\b1\d\b", row[0]):
+            missing.append(f"M{m}")
+    record(stage, "模块覆盖表里 M1–M9 都列出了界面号", not missing,
+           "" if not missing else f"这些模块没有界面号：{missing}")
+    record(stage, "模块覆盖表里 M10 明确写「无独立界面」", "无独立界面" in body,
+           "" if "无独立界面" in body else "M10 行没写清")
 
 
 def s7_report() -> None:

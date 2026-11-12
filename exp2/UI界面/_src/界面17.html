@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>审计日志查询 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item on"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">平台管理 / 审计日志</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>审计日志查询</h1>
+          <p>只追加、保留 180 天、越权 403——三条硬约束写在页面上，不是只写在文档里</p>
+        </div>
+      </div>
+      
+<div class="card">
+  <div class="card-head"><h2>查询条件</h2><span class="sub">只读查询：没有编辑、没有删除按钮</span></div>
+  <div class="card-body">
+    <div class="row wrap" style="gap:10px;">
+      <div class="search-mini" style="width:190px;height:34px;">⌕ 操作人</div>
+      <div class="search-mini" style="width:150px;height:34px;">角色：全部 ▾</div>
+      <div class="search-mini" style="width:210px;height:34px;">对象（订单号 / 房型 / 用户）</div>
+      <div class="search-mini" style="width:180px;height:34px;">2026-11-12 ▾</div>
+      <div class="search-mini" style="width:150px;height:34px;">动作：全部 ▾</div>
+      <span class="btn primary sm">查询</span>
+      <span class="btn sm">导出（需申请）</span>
+    </div>
+  </div>
+</div>
+
+<div class="card mt16">
+  <div class="card-head"><h2>结果</h2><span class="sub">共 5 条 · 按时间倒序 · 变更前后状态成对出现</span></div>
+  <table class="grid">
+    <thead><tr><th>时间</th><th>操作人 / 角色</th><th>对象</th><th>动作</th><th>变更</th><th>备注</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="hint" style="white-space:nowrap;">2026-11-12 14:31:07</td>
+        <td class="strong">陈一帆<div class="hint">顾客</div></td>
+        <td>订单 HT20261108000192</td>
+        <td>状态变更</td>
+        <td>已确认 → 已入住</td>
+        <td class="hint">前台核验身份证 2 人</td>
+      </tr>
+      <tr>
+        <td class="hint" style="white-space:nowrap;">2026-11-12 14:30:52</td>
+        <td class="strong">周敏<div class="hint">酒店工作人员</div></td>
+        <td>库存 豪华双床房 / 11-16</td>
+        <td>库存调整</td>
+        <td>可售 15 → 12（已占用 12）</td>
+        <td class="hint">维修封房 3 间</td>
+      </tr>
+      <tr>
+        <td class="hint" style="white-space:nowrap;">2026-11-12 14:05:11</td>
+        <td class="strong">系统<div class="hint">系统任务</div></td>
+        <td>订单 HT20261112000399</td>
+        <td>状态变更</td>
+        <td>待确认 → 已取消</td>
+        <td class="hint">超时未确认（T3），回补 1 间</td>
+      </tr>
+      <tr>
+        <td class="hint" style="white-space:nowrap;">2026-11-12 13:58:40</td>
+        <td class="strong">刘浩然<div class="hint">平台管理员</div></td>
+        <td>用户 139****9000</td>
+        <td>越权尝试</td>
+        <td>—</td>
+        <td class="hint">跨店查询被拒 403</td>
+      </tr>
+      <tr>
+        <td class="hint" style="white-space:nowrap;">2026-11-12 11:20:03</td>
+        <td class="strong">周敏<div class="hint">酒店工作人员</div></td>
+        <td>价格 行政套房 / 11-19</td>
+        <td>价格调整</td>
+        <td>¥1380 → ¥1280</td>
+        <td class="hint">周中促销</td>
+      </tr></tbody>
+  </table>
+</div>
+
+<div class="stats mt16">
+  <div class="stat"><div class="k">只追加</div><div class="v" style="font-size:15px;line-height:1.6;">不可改、不可删</div>
+    <div class="d">写入口径只有 append；改历史只能靠新记录说明</div></div>
+  <div class="stat"><div class="k">保留 180 天</div><div class="v" style="font-size:15px;line-height:1.6;">过期转归档</div>
+    <div class="d">超期查询提示「已归档，需申请导出」</div></div>
+  <div class="stat"><div class="k">越权 403</div><div class="v" style="font-size:15px;line-height:1.6;">按数据归属判定</div>
+    <div class="d">酒店只看本店；跨店查询返回 403 并记一条越权尝试</div></div>
+</div>
+
+<div class="alert a-warn mt16"><span class="ic">!</span>
+  <div>审计里连「被拒绝的请求」也要留痕：越权查询、非法状态转换（409）都会写一条，只是不写业务变更。
+    否则事后复盘看不出"有人试图做过什么"。</div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M9 审计与日志 · REQ-017 · 界面17</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

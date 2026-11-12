@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>入驻申请与审核 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item on"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">平台管理 / 入驻审核</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>入驻申请与审核</h1>
+          <p>审核只改酒店状态与账号，不动业务数据；驳回必须写理由</p>
+        </div>
+      </div>
+      
+<div class="card">
+  <div class="card-head"><h2>入驻申请</h2><span class="sub">审核通过后自动创建酒店账号并初始化每日库存行</span>
+    <div style="flex:1;"></div><span class="btn sm">导出</span></div>
+  <table class="grid">
+    <thead><tr><th>酒店</th><th>等级</th><th>提交时间</th><th>状态</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="strong">云栖·苏州平江府<div class="hint">苏州 · 平江路</div></td>
+        <td>8.5 分 · 4 星</td>
+        <td>2026-11-11 09:12</td>
+        <td><span class="badge b-pending"><span class="d"></span>待审核</span></td>
+        <td style="text-align:right;"><span class="btn sm">查看</span><span class="btn sm primary">审核</span></td>
+      </tr>
+      <tr>
+        <td class="strong">云栖·成都宽窄巷<div class="hint">成都 · 青羊区</div></td>
+        <td>8.1 分 · 3 星</td>
+        <td>2026-11-10 16:40</td>
+        <td><span class="badge b-noshow"><span class="d"></span>待补充材料</span></td>
+        <td style="text-align:right;"><span class="btn sm">查看</span><span class="btn sm primary">审核</span></td>
+      </tr>
+      <tr>
+        <td class="strong">云栖·杭州西溪湿地<div class="hint">杭州 · 余杭区</div></td>
+        <td>9.0 分 · 5 星</td>
+        <td>2026-11-09 11:05</td>
+        <td><span class="badge b-checkin"><span class="d"></span>已通过</span></td>
+        <td style="text-align:right;"><span class="btn sm">查看</span><span class="btn sm primary">审核</span></td>
+      </tr></tbody>
+  </table>
+</div>
+
+<div style="display:grid;grid-template-columns:1.15fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>资料详情 · 云栖·苏州平江府</h2><span class="sub">只读，来自申请表单</span></div>
+    <div class="card-body">
+      <div class="kv">
+        <dt>营业执照</dt><dd>已上传 · 91320500MA1XXX（与主体名称一致）</dd>
+        <dt>消防 / 特种行业</dt><dd>已上传 · 有效期至 2028-06</dd>
+        <dt>房型与房量</dt><dd>大床房 12 间 / 双床房 10 间 / 套房 3 间（总房量 25）</dd>
+        <dt>联系人</dt><dd>周敏 · 139 0013 9000</dd>
+        <dt>结算账户</dt><dd>已核验（开户名与主体一致）</dd>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>审核意见</h2></div>
+    <div class="card-body">
+      <div class="field"><div class="label">结论</div>
+        <div class="row wrap" style="gap:8px;">
+          <span class="pill blue">通过</span><span class="pill">驳回</span><span class="pill">要求补充材料</span>
+        </div>
+      </div>
+      <div class="field"><div class="label">理由（驳回 / 补充材料时必填）</div>
+        <div class="input" style="height:64px;"><span class="ph">例：消防证已过有效期，请重新上传</span></div>
+      </div>
+      <div class="hint">通过后：酒店状态 → 已入驻、自动创建酒店账号（角色=酒店工作人员）、
+        按总房量为未来 90 天建每日库存行（幂等，重复点不出重复行）。</div>
+      <div class="row mt12"><span class="btn primary">提交审核结果</span><span class="btn ghost">退回</span></div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M2 酒店与房型 · REQ-025 · 界面14</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

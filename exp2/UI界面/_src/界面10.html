@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>酒店工作台 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item on"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">酒店端 / 工作台</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>酒店工作台</h1>
+          <p>确认/拒单、今日入住退房、超时预警三件事集中在一屏</p>
+        </div>
+      </div>
+      
+<div class="stats">
+  <div class="stat"><div class="k">待确认</div><div class="v">3</div><div class="d">最早一单剩 4 分 12 秒</div></div>
+  <div class="stat"><div class="k">今日入住</div><div class="v">12</div><div class="d">已办理 5 · 未到 7</div></div>
+  <div class="stat"><div class="k">今日退房</div><div class="v">9</div><div class="d">已办理 6 · 待办 3</div></div>
+  <div class="stat"><div class="k">本店今日余量</div><div class="v">17</div><div class="d">可售 42 − 已占用 25</div></div>
+</div>
+
+<div class="card mt16">
+  <div class="card-head"><h2>待确认队列</h2><span class="sub">按剩余确认时间升序；超时由系统置为已取消（T3）并释放房间</span></div>
+  <table class="grid">
+    <thead><tr><th>订单号 / 顾客</th><th>房型 × 间数</th><th>入住 → 退房</th><th>金额</th><th>确认倒计时</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="strong">HT20261112000318<div class="hint">陈一帆</div></td>
+        <td>高级江景大床房 × 1</td>
+        <td>11-15 → 11-17</td>
+        <td class="num strong">¥1650</td>
+        <td><span class="timer">剩 04:12</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm primary">确认</span>
+          <span class="btn sm">拒单</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="strong">HT20261112000401<div class="hint">李思远</div></td>
+        <td>山景双床房 × 2</td>
+        <td>11-18 → 11-20</td>
+        <td class="num strong">¥2480</td>
+        <td><span class="timer">剩 21:40</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm primary">确认</span>
+          <span class="btn sm">拒单</span>
+        </td>
+      </tr>
+      <tr>
+        <td class="strong">HT20261112000455<div class="hint">王雨桐</div></td>
+        <td>亲子家庭房 × 1</td>
+        <td>11-16 → 11-17</td>
+        <td class="num strong">¥820</td>
+        <td><span class="timer">剩 28:05</span></td>
+        <td style="text-align:right;">
+          <span class="btn sm primary">确认</span>
+          <span class="btn sm">拒单</span>
+        </td>
+      </tr></tbody>
+  </table>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>今日入住</h2><span class="sub">核验订单号或手机号后办理</span></div>
+    <div class="card-body">
+      <div class="row wrap" style="gap:10px;">
+        <div class="badge b-checkin"><span class="d"></span>已入住 5</div>
+        <div class="badge b-confirmed"><span class="d"></span>待到店 7</div>
+      </div>
+      <div class="hint mt12">到店时间集中在 18:00–20:00；办理入口见「入住与退房（界面13）」。</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>超时预警</h2><span class="sub">30 分钟阈值可配置</span></div>
+    <div class="card-body">
+      <div class="alert a-warn"><span class="ic">!</span>
+        <div>有 <b>1</b> 单剩余不足 5 分钟。超时未确认不会占房：状态转「已取消」、<b>已占用间数 −= 间数</b>、
+          给顾客发站内与短信通知；整批扫描由 M10 每 5 分钟触发一次。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M6 履约与调度 · REQ-007 / REQ-011 · 界面10</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

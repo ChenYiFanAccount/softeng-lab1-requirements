@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>价格日历与停售 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item on"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">酒店端 / 价格与停售</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>价格日历与停售</h1>
+          <p>逐日改价、单房型停售、整店停业三件事分开做；改价不追改历史</p>
+        </div>
+      </div>
+      
+<div class="card">
+  <div class="card-head">
+    <h2>房型 × 日期价格</h2>
+    <span class="sub">改价只影响<b>新订单</b>，已确认订单按逐晚快照结算</span>
+    <div style="flex:1;"></div>
+    <span class="btn sm">批量调价</span>
+  </div>
+  <table class="grid matrix">
+    <thead><tr><th>房型 / 状态</th><th>11-15 六</th><th>11-16 日</th><th>11-17 一</th><th>11-18 二</th><th>11-19 三</th><th></th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="strong">高级江景大床房<div class="hint"><span class="badge b-checkin"><span class="d"></span>在售</span></div></td>
+        <td class="cell"><div class="tri">¥880</div></td><td class="cell"><div class="tri">¥880</div></td><td class="cell"><div class="tri">¥720</div></td><td class="cell"><div class="tri">¥720</div></td><td class="cell"><div class="tri">¥720</div></td>
+        <td style="text-align:right;"><span class="btn sm">停售</span></td>
+      </tr>
+      <tr>
+        <td class="strong">豪华双床房<div class="hint"><span class="badge b-checkin"><span class="d"></span>在售</span></div></td>
+        <td class="cell"><div class="tri">¥960</div></td><td class="cell"><div class="tri">¥960</div></td><td class="cell"><div class="tri">¥800</div></td><td class="cell"><div class="tri">¥800</div></td><td class="cell"><div class="tri">¥800</div></td>
+        <td style="text-align:right;"><span class="btn sm">停售</span></td>
+      </tr>
+      <tr>
+        <td class="strong">行政套房<div class="hint"><span class="badge b-noshow"><span class="d"></span>停售</span></div></td>
+        <td class="cell"><div class="tri">—</div></td><td class="cell"><div class="tri">—</div></td><td class="cell"><div class="tri">—</div></td><td class="cell"><div class="tri">—</div></td><td class="cell"><div class="tri">—</div></td>
+        <td style="text-align:right;"><span class="btn sm">恢复销售</span></td>
+      </tr></tbody>
+  </table>
+</div>
+
+<div class="alert a-warn mt16"><span class="ic">!</span>
+  <div><b>改价不追改历史。</b>下单那一刻的每晚单价写进 <code>booking_night</code>（订单号 + 日期联合唯一），
+    总价 = Σ（单价 × 间数）。所以 11-15 改成 ¥980 之后，已确认订单的 ¥880 不会变——报表里能同时看到"当时价"和"当前价"。</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>停售 / 停业</h2><span class="sub">两个不同动作</span></div>
+    <div class="card-body">
+      <div class="kv">
+        <dt>停售</dt><dd>单房型开关，不改库存数字。页面写「暂停销售」，不是「已订满」——两者含义不同，不能混用一句文案。</dd>
+        <dt>停业</dt><dd>整店停止接单（装修/证照/不可抗力）。<b>需二次确认</b>，并提示「已确认订单须逐单协商取消，平台会记录通知与协商结果（REQ-023）」。</dd>
+      </div>
+      <div class="alert a-danger mt12"><span class="ic">×</span>
+        <div>停业前系统先列出受影响的已在店订单数与间夜数，避免"一键停业"造成大批无法履约的订单。</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>不可取消区间</h2><span class="sub">由 M3 节假日表驱动，界面只读</span></div>
+    <div class="card-body">
+      <div class="row wrap" style="gap:8px;">
+        <span class="pill">11-14 ~ 11-16 展会</span>
+        <span class="pill">12-31 ~ 01-02 元旦</span>
+      </div>
+      <div class="hint mt12">这些日期内可选「不可取消」政策；顾客端取消页会直接隐藏取消按钮并提示联系酒店，
+        不是点了才报错。维护入口见「节假日字典（界面15）」。</div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M3 库存与价格 · REQ-024 / REQ-012 / REQ-023 · 界面12</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

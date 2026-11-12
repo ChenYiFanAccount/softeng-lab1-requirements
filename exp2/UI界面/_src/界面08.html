@@ -15,10 +15,11 @@
         <div class="brand-sub">软工实验二 · 设计原型</div>
       </div>
     </div>
-    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20</span></div></div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item on"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
     <div class="sidebar-foot">
       顾客 · 酒店工作人员 · 平台管理员<br>
-      三端同一套账号体系（M1 统一鉴权）
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
     </div>
   </aside>
 
@@ -55,7 +56,7 @@
           <div class="tl-step"><div class="pt"></div><div class="lb">已入住</div></div>
           <div class="tl-step"><div class="pt"></div><div class="lb">已退房</div></div>
         </div>
-        <div class="hint mt12" style="text-align:center;">20:00 后到店请联系酒店；入住日当天 24:00 未到店将标记「未入住」</div>
+        <div class="hint mt12" style="text-align:center;">20:00 后到店请联系酒店；<b>23:59 前</b>酒店可标记「未入住」，此后系统于<b>次日 00:05 自动置为「已入住」</b>（宁可多算一晚，也不误判未到店）</div>
       </div>
     </div>
 
@@ -94,7 +95,7 @@
           <span class="btn" disabled>标记未入住</span>
         </div>
         <div class="alert a-warn mt12"><span class="ic">!</span>
-          <div><b>为什么「标记未入住」是灰的</b>：那是酒店工作人员的权限（REQ-013），顾客看不到也点不动；
+          <div><b>为什么「标记未入住」是灰的</b>：那是酒店工作人员的权限（REQ-011 未入住标记），顾客看不到也点不动；
             越权调用接口会返回 403 并提示「无权执行该操作」。</div>
         </div>
         <div class="alert a-danger mt12"><span class="ic">×</span>

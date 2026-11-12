@@ -337,3 +337,32 @@ table.grid td.strong { color: var(--ink); font-weight: 600; }
 .empty { text-align: center; padding: 34px 10px; color: var(--ink-3); font-size: 13px; }
 .empty .big { font-size: 26px; margin-bottom: 8px; }
 
+
+/* ---------- S6：统计卡、矩阵、柱状图 ---------- */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.stat {
+  background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04);
+}
+.stat .k { font-size: 12px; color: var(--ink-3); }
+.stat .v { font-size: 22px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.stat .d { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.5; }
+
+.matrix td.cell { padding: 6px 8px; }
+.matrix .tri { font-size: 11.5px; color: var(--ink-2); white-space: nowrap; }
+.matrix .tri b { font-size: 13px; color: var(--ink); }
+.matrix .rem { color: #067647; font-weight: 700; }
+.matrix .odo { color: #B42318; font-weight: 700; }
+
+.bars { display: flex; align-items: flex-end; gap: 12px; height: 148px; padding: 0 4px; }
+.bars .b {
+  flex: 1; background: linear-gradient(180deg, #4C8DFF, #2F6FED);
+  border-radius: 6px 6px 0 0; position: relative; min-height: 8px;
+}
+.bars .b span {
+  position: absolute; top: -16px; left: 0; right: 0; text-align: center;
+  font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums;
+}
+.blrow { display: flex; gap: 12px; padding: 6px 4px 0; }
+.blrow .bl { flex: 1; text-align: center; font-size: 11.5px; color: var(--ink-3); }
+.timer { font-size: 12px; font-weight: 700; color: #B54708; font-variant-numeric: tabular-nums; }

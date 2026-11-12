@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>库存日历 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item on"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">酒店端 / 库存日历</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>库存日历</h1>
+          <p>按「房型 × 日期」维护可售；已占用只读、余量派生——三者同屏，改错当场被拒</p>
+        </div>
+      </div>
+      
+<div class="card">
+  <div class="card-head">
+    <h2>房型 × 日期库存</h2>
+    <span class="sub">每格 = <b>可售 / 已占用 / 余量</b>，余量 = 可售 − 已占用（03 §5 口径）</span>
+    <div style="flex:1;"></div>
+    <span class="btn sm">批量编辑</span><span class="btn sm">导出</span>
+  </div>
+  <table class="grid matrix">
+    <thead><tr><th>房型</th><th>11-15 六</th><th>11-16 日</th><th>11-17 一</th><th>11-18 二</th><th>11-19 三</th><th>11-20 四</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="strong">高级江景大床房<div class="hint">总房量 20</div></td>
+        <td class="cell"><div class="tri"><b>12</b> / 10 / <span class="rem">2</span></div></td><td class="cell"><div class="tri"><b>12</b> / 11 / <span class="rem">1</span></div></td><td class="cell"><div class="tri"><b>12</b> / 12 / <span class="odo">0</span></div></td><td class="cell"><div class="tri"><b>12</b> / 8 / <span class="rem">4</span></div></td><td class="cell"><div class="tri"><b>12</b> / 6 / <span class="rem">6</span></div></td><td class="cell"><div class="tri"><b>12</b> / 4 / <span class="rem">8</span></div></td>
+      </tr>
+      <tr>
+        <td class="strong">豪华双床房<div class="hint">总房量 15</div></td>
+        <td class="cell"><div class="tri"><b>15</b> / 10 / <span class="rem">5</span></div></td><td class="cell"><div class="tri"><b>15</b> / 12 / <span class="rem">3</span></div></td><td class="cell"><div class="tri"><b>15</b> / 9 / <span class="rem">6</span></div></td><td class="cell"><div class="tri"><b>15</b> / 9 / <span class="rem">6</span></div></td><td class="cell"><div class="tri"><b>15</b> / 7 / <span class="rem">8</span></div></td><td class="cell"><div class="tri"><b>15</b> / 5 / <span class="rem">10</span></div></td>
+      </tr>
+      <tr>
+        <td class="strong">行政套房<div class="hint">总房量 6</div></td>
+        <td class="cell"><div class="tri"><b>6</b> / 4 / <span class="rem">2</span></div></td><td class="cell"><div class="tri"><b>6</b> / 5 / <span class="rem">1</span></div></td><td class="cell"><div class="tri"><b>6</b> / 6 / <span class="odo">0</span></div></td><td class="cell"><div class="tri"><b>6</b> / 3 / <span class="rem">3</span></div></td><td class="cell"><div class="tri"><b>6</b> / 2 / <span class="rem">4</span></div></td><td class="cell"><div class="tri"><b>6</b> / 1 / <span class="rem">5</span></div></td>
+      </tr></tbody>
+  </table>
+  <div class="card-body" style="border-top:1px solid var(--line);">
+    <div class="row wrap" style="gap:18px;">
+      <span class="hint"><b>可售</b>：酒店按日挂牌的可售总量，可直接改（维修封房就是调小它，范围 0 ~ 总房量）</span>
+      <span class="hint"><b>已占用</b>：待确认 / 已确认 / 已入住三类订单的间数之和，只读</span>
+      <span class="hint"><b>余量</b>：派生值，不落库，查询与下单共用同一算法</span>
+    </div>
+  </div>
+</div>
+
+<div class="alert a-danger mt16"><span class="ic">×</span>
+  <div><b>改可售低于已占用 → 直接拒绝。</b>例：11-16 豪华双床房已占用 12 间，把可售改成 10 会被拒，
+    并回显「该日已占用 12 间，可售不能低于 12」——不允许把已卖出的房间"改没了"。</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>本次编辑待提交</h2><span class="sub">同事务提交，逐日行级校验</span></div>
+    <table class="grid">
+      <thead><tr><th>房型</th><th>日期</th><th>可售（原 → 新）</th><th>已占用</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td class="strong">豪华双床房</td><td>11-18 二</td><td class="num">15 → <b>8</b></td><td class="num">9</td>
+          <td><span class="badge b-noshow"><span class="d"></span>拒绝</span></td></tr>
+        <tr><td class="strong">高级江景大床房</td><td>11-19 三</td><td class="num">12 → <b>14</b></td><td class="num">6</td>
+          <td><span class="badge b-checkin"><span class="d"></span>可提交</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>批量编辑规则</h2></div>
+    <div class="card-body">
+      <div class="hint">① 一次可改多天，任一天校验失败则整批回滚（不留"改了一半"的中间态）；<br>
+        ② 停售日期要改库存，先恢复销售状态；<br>
+        ③ 改总房量（如 20 → 18）同样要 ≥ 各日已占用，超额时把该日可售一并钳制。</div>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M3 库存与价格 · REQ-003 / REQ-012 · 界面11</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

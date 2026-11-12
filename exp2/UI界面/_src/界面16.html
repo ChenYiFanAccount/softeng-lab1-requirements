@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>统计看板 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item on"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">酒店端 / 统计报表</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>统计看板</h1>
+          <p>本店与全平台两个视角；只读指标 + 趋势导出，不碰业务数据</p>
+        </div>
+      </div>
+      
+<div class="row" style="justify-content:space-between;align-items:center;">
+  <div class="seg" style="margin:0;">
+    <span class="s on">本店</span><span class="s">全平台</span>
+  </div>
+  <div class="row" style="gap:10px;">
+    <span class="pill blue">近 7 天</span><span class="pill">近 30 天</span><span class="pill">按日</span><span class="pill">按月</span>
+    <span class="btn sm">导出</span>
+  </div>
+</div>
+
+<div class="stats mt16">
+  <div class="stat"><div class="k">入住率</div><div class="v">78.4%</div><div class="d">已住间夜 / 可售间夜</div></div>
+  <div class="stat"><div class="k">订单量</div><div class="v">1,246</div><div class="d">较上周期 +12.6%</div></div>
+  <div class="stat"><div class="k">取消率</div><div class="v">9.8%</div><div class="d">含超时未确认（T3）</div></div>
+  <div class="stat"><div class="k">RevPAR</div><div class="v">¥612</div><div class="d">房费收入 / 可售间夜</div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>出租率趋势</h2><span class="sub">按日聚合（I15 指标汇总 → I21 趋势与导出）</span></div>
+    <div class="card-body">
+      <div class="bars"><div class="b" style="height:62%"><span>62</span></div><div class="b" style="height:74%"><span>74</span></div><div class="b" style="height:58%"><span>58</span></div><div class="b" style="height:81%"><span>81</span></div><div class="b" style="height:69%"><span>69</span></div><div class="b" style="height:77%"><span>77</span></div><div class="b" style="height:88%"><span>88</span></div></div>
+      <div class="blrow"><div class="bl">11-06</div><div class="bl">11-07</div><div class="bl">11-08</div><div class="bl">11-09</div><div class="bl">11-10</div><div class="bl">11-11</div><div class="bl">11-12</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>指标口径</h2><span class="sub">看板只读，不参与业务决策</span></div>
+    <div class="card-body">
+      <div class="kv">
+        <dt>入住率</dt><dd>已住间夜 ÷ 可售间夜。可售按每日挂牌量算，<b>不是</b>总房量</dd>
+        <dt>取消率</dt><dd>取消单 ÷ 全部单，区分顾客取消 / 超时取消 / 酒店原因取消</dd>
+        <dt>RevPAR</dt><dd>房费收入 ÷ 可售间夜，只算房费不含服务费</dd>
+        <dt>数据来源</dt><dd>只读 M3 / M4 / M5 的仓储接口，不反写业务库</dd>
+      </div>
+      <div class="alert a-info mt12"><span class="ic">i</span>
+        <div>导出走 I21：<b>只有汇总数据</b>（指标、趋势、区间），不含逐条订单明细——明细导出不在 M8 职责内。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="alert a-warn mt16"><span class="ic">!</span>
+  <div>无数据时不留白：空态写明「所选区间没有成交订单」并给出指标口径与最短可选区间，而不是画一条 0 的假趋势线。</div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M8 报表统计 · REQ-016 · 界面16</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

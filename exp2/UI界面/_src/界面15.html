@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>节假日日期表维护 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item on"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">平台管理 / 节假日字典</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>节假日日期表维护</h1>
+          <p>平台级字典，管的是「哪些日子特殊」；酒店的价格与取消政策都从这里取默认值</p>
+        </div>
+      </div>
+      
+<div style="display:grid;grid-template-columns:1.35fr 1fr;gap:16px;">
+  <div class="card">
+    <div class="card-head"><h2>节假日日期区间</h2><span class="sub">平台级字典，所有酒店共用（不归属某一家酒店）</span>
+      <div style="flex:1;"></div><span class="btn sm">批量导入</span><span class="btn sm primary">新增</span></div>
+    <table class="grid">
+      <thead><tr><th>开始</th><th>结束</th><th>名称</th><th>默认政策</th><th>状态</th><th></th></tr></thead>
+      <tbody>
+      <tr>
+        <td class="strong">2026-11-14</td><td>2026-11-16</td><td>展会</td><td>不可取消</td>
+        <td><span class="badge b-checkin"><span class="d"></span>启用</span></td>
+        <td style="text-align:right;"><span class="btn sm">编辑</span><span class="btn sm">删除</span></td>
+      </tr>
+      <tr>
+        <td class="strong">2026-12-31</td><td>2027-01-02</td><td>元旦</td><td>不可取消</td>
+        <td><span class="badge b-checkin"><span class="d"></span>启用</span></td>
+        <td style="text-align:right;"><span class="btn sm">编辑</span><span class="btn sm">删除</span></td>
+      </tr>
+      <tr>
+        <td class="strong">2026-10-01</td><td>2026-10-07</td><td>国庆</td><td>加价 20%</td>
+        <td><span class="badge b-checkin"><span class="d"></span>启用</span></td>
+        <td style="text-align:right;"><span class="btn sm">编辑</span><span class="btn sm">删除</span></td>
+      </tr>
+      <tr>
+        <td class="strong">2027-02-06</td><td>2027-02-12</td><td>春节</td><td>加价 30%</td>
+        <td><span class="badge b-checkout"><span class="d"></span>已停用</span></td>
+        <td style="text-align:right;"><span class="btn sm">编辑</span><span class="btn sm">删除</span></td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>新增区间</h2><span class="sub">日期唯一，重复即拒绝</span></div>
+    <div class="card-body">
+      <div class="field"><div class="label">开始 / 结束日期</div><div class="input">2027-05-01 → 2027-05-05</div></div>
+      <div class="field"><div class="label">名称</div><div class="input">劳动节</div></div>
+      <div class="field"><div class="label">默认取消政策</div><div class="input">不可取消</div></div>
+      <div class="alert a-danger mt12"><span class="ic">×</span>
+        <div><b>日期重复 → 拒绝并高亮冲突行。</b>例：2026-12-31 ~ 2027-01-02 已有记录，
+          新增与之重叠的 2027-01-01 ~ 2027-01-03 会被拒，提示「与『元旦』重叠」。</div>
+      </div>
+      <div class="alert a-info mt10"><span class="ic">i</span>
+        <div>新增或修改后<b>即刻生效</b>：顾客端取消页的「不可取消区间」、价格日历的默认政策都读这张表。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt16">
+  <div class="card-head"><h2>日期与日历对照（2026-11）</h2><span class="sub">有标记的日期采用该区间的取消政策</span></div>
+  <div class="card-body">
+    <div class="row wrap" style="gap:8px;">
+      <span class="pill">11-11 平日</span><span class="pill">11-12 平日</span><span class="pill">11-13 平日</span>
+      <span class="pill blue">11-14 展会</span><span class="pill blue">11-15 展会</span><span class="pill blue">11-16 展会</span>
+      <span class="pill">11-17 平日</span><span class="pill">11-18 平日</span>
+    </div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M3 库存与价格 · REQ-027 · 界面15</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>

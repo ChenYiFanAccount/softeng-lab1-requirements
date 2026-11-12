@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>入住 / 退房办理 · 云栖酒店预订</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">云</div>
+      <div>
+        <div class="brand-name">云栖酒店预订</div>
+        <div class="brand-sub">软工实验二 · 设计原型</div>
+      </div>
+    </div>
+    <div class="nav-group"><div class="nav-title">顾客端</div><div class="nav-item"><span class="dot"></span>登录 / 注册<span class="tag">界面01</span></div><div class="nav-item"><span class="dot"></span>搜索酒店<span class="tag">界面02</span></div><div class="nav-item"><span class="dot"></span>我的订单<span class="tag">界面07</span></div></div><div class="nav-group"><div class="nav-title">酒店端</div><div class="nav-item"><span class="dot"></span>酒店工作台<span class="tag">界面10</span></div><div class="nav-item"><span class="dot"></span>库存日历<span class="tag">界面11</span></div><div class="nav-item"><span class="dot"></span>价格与停售<span class="tag">界面12</span></div><div class="nav-item on"><span class="dot"></span>入住与退房<span class="tag">界面13</span></div><div class="nav-item"><span class="dot"></span>统计报表<span class="tag">界面16</span></div></div><div class="nav-group"><div class="nav-title">平台管理</div><div class="nav-item"><span class="dot"></span>入驻审核<span class="tag">界面14</span></div><div class="nav-item"><span class="dot"></span>节假日字典<span class="tag">界面15</span></div><div class="nav-item"><span class="dot"></span>审计日志<span class="tag">界面17</span></div><div class="nav-item"><span class="dot"></span>用户与角色<span class="tag">界面19 可选</span></div><div class="nav-item"><span class="dot"></span>运维与对账<span class="tag">界面20 可选</span></div></div>
+    <div class="sidebar-foot">
+      顾客 · 酒店工作人员 · 平台管理员<br>
+      三端同一套账号体系（M1 统一鉴权）<br>
+      <span style="color:#6C82A1">界面19/20 为可选项；M10 不做独立界面，运维与对账走配置项与告警通道</span>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb">酒店端 / 入住与退房</div>
+      <div class="spacer"></div>
+      <div class="search-mini">⌕ 搜索订单号 / 酒店名</div>
+      <div class="user"><span class="avatar">陈</span>陈一帆 · 顾客</div>
+    </header>
+
+    <section class="content">
+      <div class="page-head">
+        <div>
+          <h1>入住 / 退房办理</h1>
+          <p>先核验后办理；no-show 标记按时间窗开关，过了 23:59 就交回系统兜底</p>
+        </div>
+      </div>
+      
+<div style="display:grid;grid-template-columns:1fr 1.15fr;gap:16px;">
+  <div class="card">
+    <div class="card-head"><h2>核对订单</h2><span class="sub">订单号或手机号任一项即可</span></div>
+    <div class="card-body">
+      <div class="field"><div class="label">订单号</div><div class="input">HT20261108000192</div></div>
+      <div class="field"><div class="label">或 手机号后四位</div><div class="input"><span class="ph">8000</span></div></div>
+      <div class="row mt12"><span class="btn primary">核验并调出订单</span><span class="btn ghost">扫证件</span></div>
+      <div class="alert a-danger mt12"><span class="ic">×</span>
+        <div>状态不是「已确认」时不得办理入住：返回 409 并显示当前状态（如「该订单已取消」），库存与状态都不变。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>核对结果</h2><span class="sub">核验通过后才出现动作按钮</span></div>
+    <div class="card-body">
+      <div class="row" style="justify-content:space-between;">
+        <div><b>HT20261108000192</b> <span class="badge b-confirmed"><span class="d"></span>已确认</span></div>
+        <span class="hint">陈一帆 · 138 0013 8000</span>
+      </div>
+      <div class="kv mt12">
+        <dt>房型</dt><dd>山景双床房 × 2 间</dd>
+        <dt>入住 → 退房</dt><dd>2026-11-20 14:00 后 → 2026-11-22 12:00 前</dd>
+        <dt>取消政策</dt><dd>入住前 48 小时免费取消</dd>
+        <dt>身份核验</dt><dd>已核对 2 位入住人证件</dd>
+      </div>
+      <div class="row wrap mt16" style="gap:10px;">
+        <span class="btn primary">办理入住（T4）</span>
+        <span class="btn">办理退房（T8）</span>
+        <span class="btn" disabled>标记未入住（T6）</span>
+      </div>
+      <div class="alert a-warn mt12"><span class="ic">!</span>
+        <div><b>「标记未入住」为什么是灰的：</b>现在是入住日 23:59 之后。规则是
+          <b>23:59 之前</b>酒店可标记「未入住」并释放房间；<b>过了 23:59 按钮置灰</b>，
+          系统会在<b>次日 00:05</b> 把这单自动置为「已入住」（T5）——宁可多算一晚房费，也不误判顾客没来。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;" class="mt16">
+  <div class="card">
+    <div class="card-head"><h2>办理入住的副作用</h2></div>
+    <div class="card-body"><div class="hint">状态 已确认 → 已入住，库存不变（本来就占着）；写一条审计，记操作人、时间、来源=前台。</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>办理退房</h2></div>
+    <div class="card-body"><div class="hint">状态 已入住 → 已退房（终态）。房态回「可售」是次日库存行的事，不回补当天的已占用。</div></div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>标记未入住</h2></div>
+    <div class="card-body"><div class="hint">只在入住日 23:59 前可做：状态 → 未入住、<b>已占用间数 −= 间数</b>、写审计（来源=人工）。</div></div>
+  </div>
+</div>
+
+    </section>
+
+    <footer class="stamp">
+      <span>云栖酒店预订系统 · UI 原型 v1.0（2026-11-12）</span>
+      <span class="r">M6 履约与调度 · REQ-013 / REQ-011 · 界面13</span>
+    </footer>
+  </main>
+</div>
+</body>
+</html>
