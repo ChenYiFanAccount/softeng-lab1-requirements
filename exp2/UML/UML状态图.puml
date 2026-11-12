@@ -1,0 +1,71 @@
+@startuml
+' 版本：v1.0（2026-11-12，S3 行为图）
+' 口径来源：exp2/设计基线/01_术语与追溯.md §2（六状态字典 + T1–T8 + 5 条禁止转换）、
+'           exp2/设计基线/03_数据设计.md §2.6（订单状态字段）
+' 硬约束：状态 = 6 个，带触发的转换边 = 8 条（T1–T8），与口径卡"8 条边 / 6 种状态对"逐条一致；
+'         5 条禁止转换画在注释里，不画成边——画成边就等于允许，评审会直接判红线。
+title UML状态图 v1.0：订单六状态与 T1–T8 八条转换
+
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam ArrowColor #44546A
+skinparam state {
+  BackgroundColor #F7F9FC
+  BorderColor #44546A
+  FontSize 13
+}
+
+state "待确认" as PENDING
+state "已确认" as CONFIRMED
+state "已入住" as CHECKED_IN
+state "已退房" as CHECKED_OUT
+state "已取消" as CANCELLED
+state "未入住" as NO_SHOW
+
+[*] --> PENDING : 创建订单（占用间数已在同一事务内完成）
+
+' ---------- T1–T3：待确认的两条出路 ----------
+PENDING --> CONFIRMED : T1 酒店确认（手工或自动确认）
+PENDING --> CANCELLED : T2 酒店拒单（写取消原因）
+PENDING --> CANCELLED : T3 超时未确认（默认 30 分钟，可配置）
+
+' ---------- T4–T7：已确认的四条出路 ----------
+CONFIRMED --> CHECKED_IN : T4 到店核验（前台办理入住）
+CONFIRMED --> CHECKED_IN : T5 系统兜底（入住日次日 00:05）
+CONFIRMED --> NO_SHOW : T6 酒店标记未到店（入住日 23:59 前）
+CONFIRMED --> CANCELLED : T7 政策窗口内取消 / 停业 / 超售 / 管理员强制
+
+' ---------- T8：已入住的唯一出路 ----------
+CHECKED_IN --> CHECKED_OUT : T8 办理退房
+
+CHECKED_OUT --> [*]
+CANCELLED --> [*]
+NO_SHOW --> [*]
+
+note bottom of PENDING
+  **T1–T8 与"6 种状态对"的口径**
+  8 条边，但只有 6 种状态对：T2/T3 同为「待确认→已取消」，
+  T4/T5 同为「已确认→已入住」，各是两个触发者共用一个状态对。
+  图上必须画成两条边、各带触发条件——合成一条就说不清"谁是触发者"。
+end note
+
+note right of CHECKED_IN
+  **终态 = 已退房 / 已取消 / 未入住**（这三个不再改变）
+  已入住**不是**终态，它还能走 T8 → 已退房。
+  ——这一句在 S2 评审里被当成红线改过一次，别再写反。
+end note
+
+note bottom of NO_SHOW
+  **5 条禁止转换（图上不画边，代码里返回 409 且状态不变）**
+  · 已入住→已取消：房已消费，退钱走退款/协商，不是状态回退
+  · 已退房→已取消：同上，历史订单只可加备注
+  · 已取消→已确认：取消已回补库存，复活会造成超卖
+  · 已入住→已确认：状态只能向前，回退会丢入住事实
+  · 已退房→已入住：退房后房间已释放给下一位顾客
+
+  拒绝时的后果（写进报告，也是 B 层问的那句）：
+  返回 409 Conflict + 当前状态与目标状态 + 不可转换原因，
+  **状态一个字段都不改、库存不回补、只写一条审计日志**。
+  例：对已退房订单发"取消"请求 → 409，订单仍是已退房，占用不回补，审计记一条被拒。
+end note
+@enduml

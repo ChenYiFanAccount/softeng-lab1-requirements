@@ -1,0 +1,111 @@
+@startuml
+' 版本：v1.1（2026-11-12，S3 行为图；分组后重排版面）
+' 口径来源：exp1/requirements.md（REQ-001~027）、exp2/设计基线/02_模块划分与交互.md §2 模块卡片
+' 画法：4 类参与者（游客/顾客/酒店工作人员/平台管理员）画在系统边界外；
+' 用三个用例包把 20 个用例按"谁在用"分组，避免连线交叉成一团；
+' 用例名后带 REQ 编号，便于报告 3.x 逐条指回需求；include=必然发生，extend=条件性发生。
+title UML用例图 v1.1：4 类参与者与 20 个用例
+
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam ArrowColor #44546A
+skinparam nodesep 25
+skinparam ranksep 35
+skinparam usecase {
+  BackgroundColor #F7F9FC
+  BorderColor #44546A
+}
+left to right direction
+
+actor "游客（未登录）" as Guest
+actor "顾客" as Customer
+actor "酒店工作人员" as Staff
+actor "平台管理员" as Admin
+
+rectangle "酒店预订系统" {
+
+  package "浏览与预订（游客 / 顾客）" {
+    usecase "UC01 注册 / 登录\n(REQ-026、REQ-020)" as UC01
+    usecase "UC02 按条件查询酒店与房型\n(REQ-004)" as UC02
+    usecase "UC03 查看酒店与房型详情\n(REQ-002)" as UC03
+    usecase "UC04 查询区间余量与价格\n(REQ-004)" as UC04
+    usecase "UC05 提交预订\n(REQ-005、REQ-006、REQ-014、REQ-019)" as UC05
+    usecase "UC06 查看我的订单\n(REQ-015)" as UC06
+    usecase "UC07 取消订单\n(REQ-010、REQ-023)" as UC07
+    usecase "UC08 改期\n(REQ-009)" as UC08
+  }
+
+  package "酒店运营（酒店工作人员）" {
+    usecase "UC09 维护房型、每日库存与停售停业\n(REQ-002、REQ-003、REQ-012)" as UC09
+    usecase "UC10 维护每日价格\n(REQ-024)" as UC10
+    usecase "UC11 确认 / 拒单\n(REQ-007、REQ-008)" as UC11
+    usecase "UC12 办理入住 / 退房\n(REQ-013)" as UC12
+    usecase "UC13 标记未入住\n(REQ-011)" as UC13
+    usecase "UC14 查看本店报表\n(REQ-016)" as UC14
+  }
+
+  package "平台管理（平台管理员）" {
+    usecase "UC15 审核酒店入驻\n(REQ-025)" as UC15
+    usecase "UC16 强制取消订单\n(REQ-023、REQ-008)" as UC16
+    usecase "UC17 维护节假日字典\n(REQ-027)" as UC17
+    usecase "UC18 查询审计日志\n(REQ-017、REQ-020)" as UC18
+    usecase "UC19 用户与角色管理\n(REQ-001、REQ-026)" as UC19
+    usecase "UC20 运维配置与对账\n(REQ-019、REQ-021)" as UC20
+  }
+}
+
+' ---------- 参与者与用例 ----------
+Guest --> UC01
+Guest --> UC02
+Guest --> UC03
+Guest --> UC04
+
+Customer --> UC05
+Customer --> UC06
+Customer --> UC07
+Customer --> UC08
+
+Staff --> UC01
+Staff --> UC09
+Staff --> UC10
+Staff --> UC11
+Staff --> UC12
+Staff --> UC13
+Staff --> UC14
+Staff --> UC18
+
+Admin --> UC01
+Admin --> UC15
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+
+' ---------- include：必然发生（下单/改期都必须先拿到余量；取消必须先判政策） ----------
+UC05 ..> UC04 : <<include>>
+UC07 ..> UC17 : <<include>>
+
+' ---------- extend：条件发生 ----------
+UC16 ..> UC07 : <<extend>> 管理员越权取消
+
+note bottom of UC05
+  下单这条用例串了三件必须同时成立的事：
+  幂等键去重（同一次点击只出一单）→ 重复预订校验（同时段同房型只留一单）
+  → 区间余量校验（任一日不足即拒），三者在同一事务里完成。
+end note
+
+note right of UC08
+  **另外两条包含/扩展关系为了让版面临可读，写在注释里：**
+  · UC08 改期同样 <<include>> UC04：改期必须先查新日期的区间余量，
+    否则"新日期无房"会在释放旧库存之后才暴露（那是最坏的顺序）。
+  · UC13 标记未入住 <<extend>> UC12：只有"入住日 23:59 前没到店"这个条件下
+    才会发生；过了 23:59 由 T5 兜底置为已入住，不再允许人工标记。
+end note
+
+note right of Admin
+  平台管理员的用例都不改业务数据本身：
+  审核只改酒店状态，强制取消走的是 T7（会写审计），
+  节假日与配置是字典维护，对账只告警、不自动改库存。
+end note
+@enduml

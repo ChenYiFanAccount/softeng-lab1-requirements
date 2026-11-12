@@ -520,21 +520,114 @@ def s3_behavior() -> None:
     for stem in ("UML用例图", "UML状态图", "UML活动图"):
         bad = need_pair(stem)
         record(stage, f"{stem}.puml/.png 成对且非空", not bad, f"缺/空: {bad}")
-    p = UML_DIR / "UML状态图.puml"
-    if p.exists():
-        t = read(p)
-        arrows = []
+
+    # 三张图的开头都要有图名与版本号（报告 3.x 引用时要能对上号）
+    vers_ok, vers_bad = True, []
+    for stem in ("UML用例图", "UML状态图", "UML活动图"):
+        p = UML_DIR / f"{stem}.puml"
+        if not p.exists():
+            vers_ok = False
+            vers_bad.append(f"{stem} 缺失")
+            continue
+        head = "\n".join(lines_of(p)[:6])
+        if "版本" not in head and "v1" not in head.lower():
+            vers_ok = False
+            vers_bad.append(f"{stem} 首 6 行无版本号")
+    record(stage, "三张行为图首 6 行都写了版本号", vers_ok, "；".join(vers_bad))
+
+    # ---------- 用例图：4 类参与者 + include/extend + 用例能指回 REQ ----------
+    uc_p = UML_DIR / "UML用例图.puml"
+    if uc_p.exists():
+        t = read(uc_p)
+        actors = re.findall(r'^\s*actor\s+"([^"]+)"', t, re.M)
+        need = ("游客", "顾客", "酒店工作人员", "平台管理员")
+        hit = [n for n in need if any(n in a for a in actors)]
+        record(stage, "用例图参与者恰为 游客/顾客/酒店工作人员/平台管理员 四类",
+               len(hit) == 4 and len(actors) == 4,
+               f"实际 {len(actors)} 个: {actors}")
+        ucs = re.findall(r'^\s*usecase\s+"([^"]+)"', t, re.M)
+        with_req = [u for u in ucs if "REQ-" in u]
+        record(stage, "用例图每个用例都带 REQ 编号（能指回需求）",
+               len(ucs) >= 12 and len(with_req) == len(ucs),
+               f"共 {len(ucs)} 个用例，其中带 REQ 的 {len(with_req)} 个")
+        inc = len(re.findall(r"<<include>>", t))
+        ext = len(re.findall(r"<<extend>>", t))
+        record(stage, "用例图 <<include>> ≥ 2", inc >= 2, f"实际 {inc} 处")
+        record(stage, "用例图 <<extend>> ≥ 1", ext >= 1, f"实际 {ext} 处")
+        reqs = set(re.findall(r"REQ-(\d{3})", "\n".join(ucs)))
+        record(stage, "用例覆盖到的 REQ 数 ≥ 18（非功能性 REQ 不必进用例图）",
+               len(reqs) >= 18,
+               f"覆盖 {len(reqs)} 条: {sorted(reqs)}")
+        # 用注释补齐没画成边的关系是允许的，但注释里必须真的点了 <<include>>/<<extend>>
+        tail_notes = "\n".join(ln for ln in t.splitlines() if "注释" in ln or "<<include>>" in ln or "<<extend>>" in ln)
+        record(stage, "用例图注释里说明了省略的 include/extend",
+               "注释" in tail_notes and ("include" in tail_notes and "extend" in tail_notes),
+               "注释没写清哪两条被省略")
+
+    # ---------- 状态图：6 状态 / 8 条边 / 6 种状态对 / 5 条禁止转换 ----------
+    st_p = UML_DIR / "UML状态图.puml"
+    if st_p.exists():
+        t = read(st_p)
+        decl = re.findall(r'^\s*state\s+"([^"]+)"\s+as\s+(\w+)', t, re.M)
+        names = [n for n, _ in decl]
+        alias = {n: a for n, a in decl}
+        want = ("待确认", "已确认", "已入住", "已退房", "已取消", "未入住")
+        record(stage, "状态图状态恰为 6 个且名称与口径一致",
+               len(decl) == 6 and all(w in names for w in want),
+               f"实际 {len(decl)} 个: {names}")
+
+        arrows, edge_lines = [], []
         for ln in t.splitlines():
             m = re.search(r"^\s*(\S+)\s*-->\s*(\S+)", ln)
             if not m:
                 continue
+            edge_lines.append(ln)
             a, b = m.group(1), m.group(2)
             # [*] 是起止伪状态，不是六状态之间的转换；进出 [*] 的边不计入 8 条
             if a.startswith("[*]") or b.startswith("[*]"):
                 continue
             arrows.append((a, b))
-        record(stage, f"状态图转换边 = {EXPECT['transition_edges']}", len(arrows) == EXPECT["transition_edges"],
+        record(stage, f"状态图转换边 = {EXPECT['transition_edges']}",
+               len(arrows) == EXPECT["transition_edges"],
                f"实际 {len(arrows)} 条（已排除 [*] 起止边）: {arrows}")
+        pairs = {frozenset(x) for x in arrows}
+        record(stage, f"状态图状态对 = {EXPECT['transition_pairs']} 种（T2/T3、T4/T5 各共用一对）",
+               len(pairs) == EXPECT["transition_pairs"], f"实际 {len(pairs)} 种: {sorted(map(tuple, pairs))}")
+
+        forbidden_cn = ("已入住→已取消", "已退房→已取消", "已取消→已确认", "已入住→已确认", "已退房→已入住")
+        miss = [f for f in forbidden_cn if f not in t]
+        record(stage, "状态图注释写明 5 条禁止转换（逐条列出）", not miss, f"缺: {miss}")
+
+        inv = {v: k for k, v in alias.items()}
+        forbidden_alias = [("CHECKED_IN", "CANCELLED"), ("CHECKED_OUT", "CANCELLED"),
+                           ("CANCELLED", "CONFIRMED"), ("CHECKED_IN", "CONFIRMED"),
+                           ("CHECKED_OUT", "CHECKED_IN")]
+        bad = [p for p in forbidden_alias if p in arrows]
+        bad_cn = [f"{inv.get(a, a)}→{inv.get(b, b)}" for a, b in bad]
+        record(stage, "状态图未把禁止转换画成允许的边（红线）", not bad,
+               f"被画成边: {bad_cn}" if bad else f"已画 {len(arrows)} 条合法边")
+
+    # ---------- 活动图：3 条泳道 / 判定 ≥3 / 并发与回滚 ----------
+    ac_p = UML_DIR / "UML活动图.puml"
+    if ac_p.exists():
+        t = read(ac_p)
+        lanes = []
+        for ln in t.splitlines():
+            m = re.match(r"^\|([^|]+)\|", ln.strip())
+            if m:
+                lanes.append(m.group(1).strip())
+        uniq = list(dict.fromkeys(lanes))
+        record(stage, "活动图泳道 = 3 条", len(uniq) == 3, f"实际 {len(uniq)} 条: {uniq}")
+        ifs = len(re.findall(r"^\s*if\s*\(", t, re.M))
+        record(stage, "活动图判定分支 ≥ 3", ifs >= 3, f"实际 {ifs} 个 if")
+        has_fork = bool(re.search(r"^\s*fork\s*$", t, re.M)) and bool(re.search(r"^\s*end\s*fork\s*$", t, re.M))
+        record(stage, "活动图有并发分支（fork/end fork）", has_fork, "" if has_fork else "缺 fork/end fork")
+        record(stage, "活动图有失败回滚节点", "回滚" in t, "" if "回滚" in t else "没有任何『回滚』节点")
+        # B 层那句"两请求抢最后一间只有一单成功"要能在图上看到：锁 + 锁后复核 + 回滚三件事齐
+        ok_race = ("加锁" in t) and ("复核" in t) and ("回滚" in t)
+        record(stage, "活动图画出并发抢房路径（加锁→锁后复核→回滚）", ok_race,
+               "" if ok_race else "缺加锁/锁后复核/回滚之一")
+
 
 
 def s4_interaction() -> None:
