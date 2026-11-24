@@ -1,0 +1,20 @@
+# S0 判据 S0-5 工具链（生成于 2026-11-25 03:18:49）
+--- pylint --version ---
+pylint 4.1.4
+astroid 4.3.4
+Python 3.12.6 (tags/v3.12.6:a4a2d2b, Sep  6 2024, 20:11:23) [MSC v.1940 64 bit (AMD64)]
+--- .wheels/*.whl 计数 = 10 ---
+astroid-4.3.4-py3-none-any.whl
+colorama-0.4.6-py2.py3-none-any.whl
+coverage-7.17.5-cp312-cp312-win_amd64.whl
+dill-0.4.1-py3-none-any.whl
+isort-9.0.2-cp312-cp312-win_amd64.whl
+mccabe-0.7.0-py2.py3-none-any.whl
+mypy_extensions-1.2.0-py3-none-any.whl
+platformdirs-4.14.8-py3-none-any.whl
+pylint-4.1.4-py3-none-any.whl
+tomlkit-0.15.3-py3-none-any.whl
+--- pylint 评分（本阶段唯一脚本）---
+------------------------------------
+Your code has been rated at 10.00/10
+

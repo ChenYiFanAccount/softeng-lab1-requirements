@@ -1,0 +1,6 @@
+# S0 判据 S0-4 运行环境（生成于 2026-11-25 03:18:49）
+python 3.12.6
+prefix D:\NJU\softengineering\exp3\.venv
+tk 8.6
+sqlite 3.45.3
+journal_mode(default) memory

@@ -1,0 +1,23 @@
+# S0 判据 S0-2'/S0-8'（按 CR-03 重述）仓库归属实测（生成于 2026-11-25 03:22）
+
+注 1：本文件不写死提交哈希——`amend` 会改写哈希，一律以 `git -C D:\NJU\softengineering log -1 --stat` 为准。
+注 2：本文件自身刷新会让 `git status` 出现 `M` 行，因此 S0-2' 不在文件内留快照；评审时执行
+      `git -C D:\NJU\softengineering status --porcelain -- exp3`，期望输出为空（提交后实测为空）。
+
+--- 父仓库 ---
+分支 = main
+origin(fetch) = git@github.com:ChenYiFanAccount/softeng-lab1-requirements.git
+origin(push)  = git@github.com:ChenYiFanAccount/softeng-lab1-requirements.git
+
+--- 无嵌套仓库（S0-8' 前半）---
+Test-Path exp3\.git = False（期望 False；无嵌套 .git，父仓库不会把 exp3 记成 gitlink）
+
+--- 父仓库已跟踪 exp3 文件数（S0-8' 后半）---
+git ls-files exp3 计数 = 35（期望 > 0）
+
+--- 被忽略项抽样（S0-3：5 条规则全部命中）---
+exp3/.gitignore:2:.venv/	exp3/.venv/Scripts/python.exe
+exp3/.gitignore:3:.wheels/	exp3/.wheels/pylint-4.1.4-py3-none-any.whl
+exp3/.gitignore:6:pip-*/	exp3/pip-unpack-abc/pylint-4.1.4-py3-none-any.whl
+exp3/.gitignore:9:__pycache__/	exp3/code/app/domain/__pycache__/x.cpython-312.pyc
+exp3/.gitignore:18:*.db	exp3/code/data/hotel.db

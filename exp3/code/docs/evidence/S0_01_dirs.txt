@@ -1,0 +1,15 @@
+# S0 判据 S0-1 目录骨架（生成于 2026-11-25 03:18:49）
+exp3\code\app\domain                     Test-Path = True
+exp3\code\app\application                Test-Path = True
+exp3\code\app\infrastructure             Test-Path = True
+exp3\code\app\ui                         Test-Path = True
+exp3\code\tests                          Test-Path = True
+exp3\code\tools                          Test-Path = True
+exp3\code\docs                           Test-Path = True
+exp3\code\docs\evidence                  Test-Path = True
+exp3\code\config                         Test-Path = True
+exp3\code\data                           Test-Path = True
+exp3\docs\screenshots                    Test-Path = True
+exp3\协作\交付\S0                            Test-Path = True
+缺失目录数 = 0（期望 0）
+code/app 下 .gitkeep 计数 = 4

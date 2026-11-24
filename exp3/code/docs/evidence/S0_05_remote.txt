@@ -1,0 +1,20 @@
+# S0 判据 S0-6 远程连通实测（生成于 2026-11-25 03:23）
+
+命令：git -C D:\NJU\softengineering ls-remote origin
+远端：git@github.com:ChenYiFanAccount/softeng-lab1-requirements.git
+结果：refs 行数 = 46（heads 1 + tags 22，其余为 `^{}` 解引用行）
+口径变更（CR-03）：不新建空的 lab3 仓库，改为复用父仓库 origin；本判据只验证"能连上、能读到 refs"。
+
+a5120f64e672ac1bad26e0e10c0d0ec875d96c69	HEAD
+a5120f64e672ac1bad26e0e10c0d0ec875d96c69	refs/heads/main
+58f04859a1501e39c5dc6d902c6f57ef4d12c9c4	refs/tags/lab1-ai-draft
+3c4771842dd42f20f7ea4db4ec0d8acd77b42fc0	refs/tags/lab1-ai-draft^{}
+1a2a8908086669d632bdb17cba3ed0b729ab06a5	refs/tags/lab1-final
+01822ad0e57efe8b018a4c6f04152afc8a972620	refs/tags/lab1-final^{}
+4e4369686aff335cf3e0673a7c398e77a663201a	refs/tags/lab2-ai-draft
+851e8bd9ceaa107426e0d0a8ea5956aeb8eca5b7	refs/tags/lab2-ai-draft^{}
+6ac0a80c4f9fed963fd85d5eeb379ce21b145f27	refs/tags/lab2-final
+a5120f64e672ac1bad26e0e10c0d0ec875d96c69	refs/tags/lab2-final^{}
+f580c1117f2f81e4898412398da7844cf76d46e2	refs/tags/stage-1
+65ce1def5da513cd33ea13e901dd47130805ca15	refs/tags/stage-1^{}
+...（其余 34 行略，复跑命令可完整打印）
