@@ -1,0 +1,4 @@
+﻿command: git -C D:\NJU\softengineering status --porcelain -uall -- exp3
+status_lines=3
+command: git -C D:\NJU\softengineering ls-files exp3 | Select-String 'venv/|\.db$|__pycache__'
+forbidden_hits=0

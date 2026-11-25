@@ -1,0 +1,10 @@
+command: git -C D:\NJU\softengineering tag -l "gate-S*"
+gate-S0
+gate-S1
+gate-S2
+gate-S3
+gate-S4
+gate-S5
+gate-S6
+count=7
+expected>=8 (S0-S7); gate-S7 pending reviewer round-2

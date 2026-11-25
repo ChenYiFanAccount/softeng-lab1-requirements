@@ -1,0 +1,8 @@
+﻿origin	git@github.com:ChenYiFanAccount/softeng-lab1-requirements.git (fetch)
+origin	git@github.com:ChenYiFanAccount/softeng-lab1-requirements.git (push)
+--- ls-remote (first 5) ---
+3e8e202fefe0ecbbb18d5351f18efb8b035002c5	HEAD
+3e8e202fefe0ecbbb18d5351f18efb8b035002c5	refs/heads/main
+505f75fb50c50bee12c05d17c907ec91ee3e2d9f	refs/tags/gate-S0
+505f75fb50c50bee12c05d17c907ec91ee3e2d9f	refs/tags/gate-S1
+505f75fb50c50bee12c05d17c907ec91ee3e2d9f	refs/tags/gate-S2
