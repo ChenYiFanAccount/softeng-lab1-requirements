@@ -1,0 +1,25 @@
+﻿python.exe : test_busy_timeout_is_explicit (code.tests.test_tx.TransactionTest.test_busy_timeout_is_explicit)
+所在位置 行:7 字符: 1
++ & $py -m unittest code.tests.test_tx -v 2>&1 | Out-File -FilePath "$e ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_busy_timeo...ut_is_explicit):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+``busy_timeout`` 显式设置，锁冲突时等待重试而不是立刻 ``database is locked``。 ... ok
+test_concurrent_writers_serialize (code.tests.test_tx.TransactionTest.test_concurrent_writers_serialize)
+8 线程各 +1、各 25 轮：总占用必须是 200，且没有一次 ``database is locked``。 ... ok
+test_driver_autocommit_is_disabled (code.tests.test_tx.TransactionTest.test_driver_autocommit_is_disabled)
+连接处于 ``isolation_level=None``（自动提交），事务边界由我们控制。 ... ok
+test_foreign_keys_on_every_connection (code.tests.test_tx.TransactionTest.test_foreign_keys_on_every_connection)
+每新建的连接都开外键（SQLite 默认是关的，漏一处就等于没约束）。 ... ok
+test_immediate_after_dml_does_not_raise (code.tests.test_tx.TransactionTest.test_immediate_after_dml_does_not_raise)
+先 DML（自动提交）再 ``BEGIN IMMEDIATE`` 不得抛「事务内开事务」。 ... ok
+test_nested_transaction_is_rejected (code.tests.test_tx.TransactionTest.test_nested_transaction_is_rejected)
+嵌套事务被显式拒绝，避免静默把内层当外层的一部分提交。 ... ok
+test_rollback_on_exception (code.tests.test_tx.TransactionTest.test_rollback_on_exception)
+事务体内抛异常时整批回滚，占用不会被改脏。 ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.852s
+
+OK

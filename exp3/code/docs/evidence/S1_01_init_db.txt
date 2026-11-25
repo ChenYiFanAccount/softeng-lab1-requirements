@@ -1,0 +1,13 @@
+﻿reset=yes
+migrations_applied=none
+seed_applied=True
+db=D:\NJU\softengineering\exp3\code\data\app.db
+tables=12
+tables_list=audit_log,booking,booking_night,holiday_calendar,hotel,idempotency_key,notification_record,room_inventory,room_price,room_type,stay_record,user_account
+foreign_keys=1
+foreign_key_check=[]
+integrity_check=ok
+journal_mode=wal
+user_version=1
+rows=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=4
+check=passed

@@ -1,0 +1,13 @@
+﻿python.exe : Unable to create directory C:\Users\思虑\AppData\Local\pylint\pylint\Cache
+所在位置 行:10 字符: 1
++ & $py -m pylint code/app code/tools code/tests 2>&1 | Out-File -FileP ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Unable to creat...nt\pylint\Cache:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+------------------------------------
+Your code has been rated at 10.00/10
+
+Unable to create file C:\Users\思虑\AppData\Local\pylint\pylint\Cache\code.tests_1.stats: [Errno 2] No such file or direc
+tory: 'C:\\Users\\思虑\\AppData\\Local\\pylint\\pylint\\Cache\\code.tests_1.stats'

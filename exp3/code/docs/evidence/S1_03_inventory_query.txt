@@ -1,0 +1,31 @@
+﻿python.exe : test_daily_remaining_matches_hardcoded_expectation (code.tests.test_inventory_query.InventoryQueryTest.tes
+t_daily_remaining_matches_hardcoded_expectation)
+所在位置 行:6 字符: 1
++ & $py -m unittest code.tests.test_inventory_query -v 2>&1 | Out-File  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_daily_rema...ed_expectation):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+三天余量必须逐日等于硬编码字典（3 / 0 / 5）。 ... ok
+test_daily_rows_exposes_three_values (code.tests.test_inventory_query.InventoryQueryTest.test_daily_rows_exposes_three_
+values)
+界面要并列显示可售 / 占用 / 余量三个数，不能只给一个剩余量。 ... ok
+test_empty_range_returns_zero (code.tests.test_inventory_query.InventoryQueryTest.test_empty_range_returns_zero)
+退房日不晚于入住日时区间为空，上限为 0 而不是报错。 ... ok
+test_missing_row_is_not_silently_available (code.tests.test_inventory_query.InventoryQueryTest.test_missing_row_is_not_
+silently_available)
+没有库存行的日期不进余量字典，且区间上限按 0 处理（不允许默认无限可订）。 ... ok
+test_range_limit_is_minimum_over_nights (code.tests.test_inventory_query.InventoryQueryTest.test_range_limit_is_minimum
+_over_nights)
+区间上限取各日最小值：含 0 余量的那一晚 → 0；只订首晚 → 3。 ... ok
+test_range_limit_zero_when_suspended (code.tests.test_inventory_query.InventoryQueryTest.test_range_limit_zero_when_sus
+pended)
+停售是开关：可售间数 > 0 也订不了，区间上限必须是 0。 ... ok
+test_remaining_is_derived_not_stored (code.tests.test_inventory_query.InventoryQueryTest.test_remaining_is_derived_not_
+stored)
+余量派生自「可售 − 占用」，改占用立刻反映，没有独立字段可漂移。 ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.245s
+
+OK

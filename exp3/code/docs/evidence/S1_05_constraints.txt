@@ -1,0 +1,33 @@
+﻿python.exe : test_cancelled_booking_does_not_block_new_one (code.tests.test_constraints.ConstraintTest.test_cancelled_b
+ooking_does_not_block_new_one)
+所在位置 行:8 字符: 1
++ & $py -m unittest code.tests.test_constraints -v 2>&1 | Out-File -Fil ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_cancelled_..._block_new_one):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+旧单取消后可重订同一时段——U6 只拦有效状态，否则顾客取消一次就永远订不了。 ... ok
+test_checkout_not_after_checkin_rejected (code.tests.test_constraints.ConstraintTest.test_checkout_not_after_checkin_re
+jected)
+退房日必须晚于入住日；相等或更早都被 CHECK 挡住。 ... ok
+test_duplicate_active_booking_rejected (code.tests.test_constraints.ConstraintTest.test_duplicate_active_booking_reject
+ed)
+有效状态内，同顾客+同酒店+同房型+同时段只能有一单（U6 部分唯一索引）。 ... ok
+test_duplicate_room_date_rejected (code.tests.test_constraints.ConstraintTest.test_duplicate_room_date_rejected)
+同一房型同一天只能有一行库存（U4）。 ... ok
+test_foreign_key_violation_rejected (code.tests.test_constraints.ConstraintTest.test_foreign_key_violation_rejected)
+外键真的生效：指向不存在的顾客必须失败（证明 PRAGMA foreign_keys=ON）。 ... ok
+test_negative_available_rooms_rejected (code.tests.test_constraints.ConstraintTest.test_negative_available_rooms_reject
+ed)
+可售间数不能被改成负数（CHECK available_rooms >= 0）。 ... ok
+test_occupied_over_available_rejected (code.tests.test_constraints.ConstraintTest.test_occupied_over_available_rejected
+)
+占用不得超过可售（行内区间约束），否则余量会变成负数。 ... ok
+test_overlapping_dates_are_not_blocked_by_index (code.tests.test_constraints.ConstraintTest.test_overlapping_dates_are_
+not_blocked_by_index)
+U6 的边界：起止日不同的重叠单索引拦不住，必须由应用层在事务内校验。 ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.261s
+
+OK

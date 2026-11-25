@@ -1,0 +1,14 @@
+﻿db=D:\NJU\softengineering\exp3\code\data\app.db
+user_version_before=1
+applied=none
+user_version=1
+rows_before=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=4
+rows_after=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=4
+status=up_to_date
+db=D:\NJU\softengineering\exp3\code\data\app.db
+user_version_before=1
+applied=none
+user_version=1
+rows_before=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=4
+rows_after=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=4
+status=up_to_date

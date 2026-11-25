@@ -1,0 +1,23 @@
+{
+  "database": {
+    "path": "data/app.db",
+    "busy_timeout_ms": 5000,
+    "journal_mode": "WAL",
+    "synchronous": "NORMAL",
+    "foreign_keys": true
+  },
+  "seed": {
+    "hotels": 3,
+    "room_types": 8,
+    "horizon_days": 90,
+    "holidays": [
+      {"date": "2026-12-25", "name": "圣诞节"},
+      {"date": "2027-01-01", "name": "元旦"},
+      {"date": "2027-02-17", "name": "春节"}
+    ]
+  },
+  "runtime": {
+    "money_unit": "cent",
+    "timezone": "Asia/Shanghai"
+  }
+}

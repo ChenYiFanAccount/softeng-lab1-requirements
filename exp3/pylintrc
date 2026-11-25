@@ -1,0 +1,23 @@
+# pylint 配置（S1 起生效）
+#
+# 为什么需要 init-hook：本项目把可执行入口放在 ``code/`` 下，包名是 ``app``，
+# 因此导入形如 ``from app.infrastructure.db import connection``。
+# pylint 在仓库根目录 ``exp3/`` 运行时，``code/`` 不在 sys.path 上，会把所有
+# 内部导入判成 E0401 import-error。init-hook 把 ``<cwd>/code`` 补进 sys.path，
+# 所以**必须在 ``exp3/`` 目录下运行 pylint**（交付说明与证据里同理）。
+
+[MAIN]
+init-hook=import os, sys; sys.path.insert(0, os.path.join(os.getcwd(), "code"))
+py-version=3.12
+
+[FORMAT]
+max-line-length=100
+
+[MESSAGES CONTROL]
+# C0413 wrong-import-position：工具脚本与测试夹具必须"先引导 sys.path，
+# 再导入 app.*"，这是有意为之的顺序；挪到文件顶部会直接 ImportError。
+disable=
+    C0413
+
+[REPORTS]
+score=y

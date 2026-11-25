@@ -1,0 +1,4 @@
+﻿code\app files=8 total_lines=799 non_blank_non_comment=632
+code\tests files=5 total_lines=506 non_blank_non_comment=423
+code\tools files=3 total_lines=373 non_blank_non_comment=303
+note=主口径为 code/app（有效行=非空非注释行）；tests/tools 单列，不计入 1500 行判据。
