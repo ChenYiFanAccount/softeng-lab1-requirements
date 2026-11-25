@@ -1,0 +1,42 @@
+# pylint 配置（S1 起生效；S7 判据命令固定用 `code/.pylintrc`）
+#
+# 为什么需要 init-hook：本项目把可执行入口放在 ``code/`` 下，包名是 ``app``，
+# 因此导入形如 ``from app.infrastructure.db import connection``。
+# pylint 在仓库根目录 ``exp3/`` 运行时，``code/`` 不在 sys.path 上，会把所有
+# 内部导入判成 E0401 import-error。init-hook 同时把 ``<cwd>/code`` 与 ``<cwd>``
+# 补进 sys.path，因此在 ``exp3/`` 或 ``exp3/code/`` 下运行都能解析：
+#
+#   python -m pylint code/app --rcfile=code/.pylintrc      # 在 exp3/ 下
+#   python -m pylint app --rcfile=.pylintrc                # 在 exp3/code/ 下
+#
+# 交付说明、证据文件与报告里一律使用第一条命令。
+
+[MAIN]
+init-hook=import os, sys; sys.path.insert(0, os.path.join(os.getcwd(), "code")); sys.path.insert(0, os.getcwd())
+py-version=3.12
+
+[FORMAT]
+max-line-length=100
+
+[BASIC]
+# 用例名刻意用中文（"test_T1_酒店确认待确认订单转为已确认"），因为 S2-2/S2-4 判据
+# 要求用例名本身可读、含"0 间/恰好等于余量/超出余量"等中文片段；下面的正则允许
+# 标识符里出现 CJK，但 ASCII 部分仍必须是 snake_case。
+function-rgx=[a-z_\u4e00-\u9fff][a-z0-9_\u4e00-\u9fff]{1,60}
+method-rgx=[a-z_\u4e00-\u9fff][a-z0-9_\u4e00-\u9fff]{1,60}
+class-rgx=[A-Z_][a-zA-Z0-9]{1,50}
+variable-rgx=[a-z_][a-z0-9_]{1,40}
+
+[MESSAGES CONTROL]
+# C0413 wrong-import-position：工具脚本与测试夹具必须"先引导 sys.path，
+# 再导入 app.*"，这是有意为之的顺序；挪到文件顶部会直接 ImportError。
+# C2401 non-ascii-name：见上面 function-rgx 的理由，中文名是本课程的显式要求。
+# R0801 duplicate-code：测试夹具（造订单/造库存）在不同用例文件里天然相似，
+# 强行抽公共工厂会把"每个用例要什么数据"藏进参数，反而降低可读性。
+disable=
+    C0413,
+    C2401,
+    R0801
+
+[REPORTS]
+score=y

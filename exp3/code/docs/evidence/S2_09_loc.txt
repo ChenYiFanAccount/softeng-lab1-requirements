@@ -1,4 +1,10 @@
-﻿code\app files=17 total_lines=2223 non_blank_non_comment=1797
-code\tests files=10 total_lines=1419 non_blank_non_comment=1180
-code\tools files=4 total_lines=518 non_blank_non_comment=420
-note: 主口径 = code\app（S7-5 判据 >1500 有效行）；tests/tools 单列，不计入主口径
+app    files=17  phys=2223  code=1797  effective=1317 
+tests  files=10  phys=1419  code=1180  effective=999  
+tools  files=5   phys=696   code=572   effective=499  
+total  files=32  phys=4338  code=3549  effective=2815 
+口径：effective = 非空 且 非纯注释 且 非 docstring（报告主口径）
+csv=code\docs\loc.csv
+
+note: 主口径 = effective（非空 且 非纯注释 且 非 docstring），S7-5 判据 >1500；tests/tools 单列
+订正（G1-R1-01）：S2 交付当时把 code=1797 误标为有效行；按 P0 口径 app 有效行为 1317。
+exit=0

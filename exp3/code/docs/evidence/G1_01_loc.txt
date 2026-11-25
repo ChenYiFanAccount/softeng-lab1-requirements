@@ -1,0 +1,11 @@
+app    files=17  phys=2223  code=1797  effective=1317 
+tests  files=10  phys=1419  code=1180  effective=999  
+tools  files=5   phys=696   code=572   effective=499  
+total  files=32  phys=4338  code=3549  effective=2815 
+口径：effective = 非空 且 非纯注释 且 非 docstring（报告主口径）
+csv=code\docs\loc.csv
+app    files=17  phys=2223  code=1797  effective=1317 
+total  files=17  phys=2223  code=1797  effective=1317 
+口径：effective = 非空 且 非纯注释 且 非 docstring（报告主口径）
+
+exit_all=0 exit_root=0

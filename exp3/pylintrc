@@ -1,13 +1,18 @@
 # pylint 配置（S1 起生效）
 #
+# **本文件是副本**：权威版本在 ``code/.pylintrc``，S7 判据命令固定为
+#   python -m pylint code/app --rcfile=code/.pylintrc
+# 保留本副本只为让 S1/S2 交付说明里"在 exp3/ 下直接跑 pylint 不指定 rcfile"
+# 的历史命令仍可复现。两处内容必须一致，改动请同步（G1-R1-02）。
+#
 # 为什么需要 init-hook：本项目把可执行入口放在 ``code/`` 下，包名是 ``app``，
 # 因此导入形如 ``from app.infrastructure.db import connection``。
 # pylint 在仓库根目录 ``exp3/`` 运行时，``code/`` 不在 sys.path 上，会把所有
-# 内部导入判成 E0401 import-error。init-hook 把 ``<cwd>/code`` 补进 sys.path，
-# 所以**必须在 ``exp3/`` 目录下运行 pylint**（交付说明与证据里同理）。
+# 内部导入判成 E0401 import-error。init-hook 同时把 ``<cwd>/code`` 与 ``<cwd>``
+# 补进 sys.path，所以在 ``exp3/`` 或 ``exp3/code/`` 下运行都能解析。
 
 [MAIN]
-init-hook=import os, sys; sys.path.insert(0, os.path.join(os.getcwd(), "code"))
+init-hook=import os, sys; sys.path.insert(0, os.path.join(os.getcwd(), "code")); sys.path.insert(0, os.getcwd())
 py-version=3.12
 
 [FORMAT]
