@@ -1,0 +1,3 @@
+﻿S2-3 转移表单一定义点：state_machine.py 的 TRANSITIONS / FORBIDDEN_TRANSITIONS / _INDEX（详见 S2_01 与源码）
+S2-3 'if ... .status ==' 命中数 = 0（要求 0）
+S2-5 float(/round( 命中数 = 0（要求 0）

@@ -1,0 +1,4 @@
+﻿code\app files=17 total_lines=2223 non_blank_non_comment=1797
+code\tests files=10 total_lines=1419 non_blank_non_comment=1180
+code\tools files=4 total_lines=518 non_blank_non_comment=420
+note: 主口径 = code\app（S7-5 判据 >1500 有效行）；tests/tools 单列，不计入主口径
