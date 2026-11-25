@@ -1,0 +1,12 @@
+# S5-3 阈值配置改动后扫描行为真的变（5 例：30 分钟不取消 / 1 分钟取消 / 同时刻对比 / 已确认不受影响）
+test_同一时刻先按三十再按一分钟才取消 (code.tests.test_config_override.ConfigOverrideTest.test_同一时刻先按三十再按一分钟才取消) ... ok
+test_配置文件存在且阈值与默认值一致 (code.tests.test_config_override.ConfigOverrideTest.test_配置文件存在且阈值与默认值一致) ... ok
+test_阈值三十时建单后两分钟仍待确认 (code.tests.test_config_override.ConfigOverrideTest.test_阈值三十时建单后两分钟仍待确认) ... ok
+test_阈值不影响已确认订单 (code.tests.test_config_override.ConfigOverrideTest.test_阈值不影响已确认订单) ... ok
+test_阈值改成一分钟后订单真的被取消并回补 (code.tests.test_config_override.ConfigOverrideTest.test_阈值改成一分钟后订单真的被取消并回补) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.169s
+
+OK
+exit=0

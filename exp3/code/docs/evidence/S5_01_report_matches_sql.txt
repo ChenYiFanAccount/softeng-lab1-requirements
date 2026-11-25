@@ -1,0 +1,13 @@
+# S5-1 报表数字与独立 SQL 比对（6 组：逐日营收/逐日入住率/状态计数/区间汇总/按月/只读）
+test_区间汇总与独立SQL一致 (code.tests.test_report_matches_sql.ReportMatchesSqlTest.test_区间汇总与独立SQL一致) ... ok
+test_报表只读不影响订单与库存 (code.tests.test_report_matches_sql.ReportMatchesSqlTest.test_报表只读不影响订单与库存) ... ok
+test_按月汇总等于逐日之和 (code.tests.test_report_matches_sql.ReportMatchesSqlTest.test_按月汇总等于逐日之和) ... ok
+test_状态计数与独立SQL一致 (code.tests.test_report_matches_sql.ReportMatchesSqlTest.test_状态计数与独立SQL一致) ... ok
+test_逐日入住率与独立SQL一致 (code.tests.test_report_matches_sql.ReportMatchesSqlTest.test_逐日入住率与独立SQL一致) ... ok
+test_逐日营收与独立SQL一致 (code.tests.test_report_matches_sql.ReportMatchesSqlTest.test_逐日营收与独立SQL一致) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.242s
+
+OK
+exit=0

@@ -5,6 +5,8 @@
 - ``booking_service``：M1 下单、M4 取消、M5 改期；
 - ``inventory_service``：M2 库存维护（调可售、停售、复售）；
 - ``fulfillment_service``：M3 履约调度（超时取消、自动入住、no-show），时钟必须可注入；
+- ``report_service``：M8 统计报表（入住率/营收/订单量，只读）；
+- ``reconcile_service``：M10 对账（库存占用 vs 有效订单汇总，只读只告警）；
 - ``commands``：用例入参（不可变）；
 - ``actor``：调用者身份与角色；
 - ``clock``：可注入时钟（测试用 ``FrozenClock`` 钉住时间）；
@@ -23,6 +25,18 @@ from app.application.errors import (
 )
 from app.application.fulfillment_service import FulfillmentService, ScanReport
 from app.application.inventory_service import InventoryAppService
+from app.application.reconcile_service import (
+    ReconcileDifference,
+    ReconcileReport,
+    ReconcileService,
+)
+from app.application.report_service import (
+    OccupancyRow,
+    ReportService,
+    ReportSummary,
+    RevenueRow,
+    permille,
+)
 
 __all__ = [
     "MASKED_BOOKING_MESSAGE",
@@ -33,11 +47,19 @@ __all__ = [
     "FrozenClock",
     "FulfillmentService",
     "InventoryAppService",
+    "OccupancyRow",
     "PlaceBookingCommand",
+    "ReconcileDifference",
+    "ReconcileReport",
+    "ReconcileService",
+    "ReportService",
+    "ReportSummary",
     "RescheduleCommand",
+    "RevenueRow",
     "ScanReport",
     "SystemClock",
     "bad_request",
     "masked_booking_error",
+    "permille",
     "utc_now",
 ]

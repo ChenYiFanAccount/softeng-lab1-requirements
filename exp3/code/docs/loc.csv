@@ -1,6 +1,6 @@
 path,physical_lines,non_blank_non_comment,effective_lines
 app/__init__.py,11,8,0
-app/application/__init__.py,43,39,29
+app/application/__init__.py,65,61,49
 app/application/actor.py,75,59,43
 app/application/booking_service.py,531,465,388
 app/application/clock.py,59,41,25
@@ -8,7 +8,9 @@ app/application/commands.py,37,27,18
 app/application/errors.py,34,21,10
 app/application/fulfillment_service.py,275,213,149
 app/application/inventory_service.py,197,176,151
-app/domain/__init__.py,103,99,95
+app/application/reconcile_service.py,131,108,85
+app/application/report_service.py,151,121,95
+app/domain/__init__.py,117,113,109
 app/domain/enums.py,169,123,104
 app/domain/errors.py,80,52,34
 app/domain/inventory.py,113,88,52
@@ -27,11 +29,13 @@ app/infrastructure/db/inventory_query.py,126,107,76
 app/infrastructure/db/inventory_repository.py,113,95,74
 app/infrastructure/db/mapping.py,47,35,24
 app/infrastructure/db/migrate_runner.py,161,124,91
+app/infrastructure/db/report_repository.py,173,148,128
 app/infrastructure/db/seed.py,278,223,191
 app/infrastructure/security.py,62,43,27
 tests/__init__.py,1,1,0
 tests/support.py,162,139,116
 tests/test_audit.py,180,141,127
+tests/test_config_override.py,154,125,114
 tests/test_constraints.py,104,85,70
 tests/test_domain_models.py,210,173,150
 tests/test_flows.py,257,200,188
@@ -42,6 +46,8 @@ tests/test_inventory_query.py,113,93,75
 tests/test_noshow_clock.py,202,143,117
 tests/test_permission.py,192,158,147
 tests/test_pricing.py,118,95,83
+tests/test_reconcile_alert.py,164,138,125
+tests/test_report_matches_sql.py,238,194,178
 tests/test_reschedule_rollback.py,144,110,98
 tests/test_services.py,248,204,175
 tests/test_state_machine.py,269,227,193
@@ -54,8 +60,9 @@ tools/count_loc.py,223,191,164
 tools/fetch_wheels.py,180,154,138
 tools/init_db.py,125,98,89
 tools/migrate.py,68,51,43
+tools/reconcile_report.py,181,159,147
 tools/scan_once.py,122,101,86
-#app,4140,3388,2584
-#tests,2848,2277,1990
-#tools,1278,1060,915
-#total,8266,6725,5489
+#app,4631,3801,2926
+#tests,3404,2734,2407
+#tools,1459,1219,1062
+#total,9494,7754,6395

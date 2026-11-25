@@ -1,0 +1,6 @@
+# pylint（权威配置 code/.pylintrc）
+
+------------------------------------
+Your code has been rated at 10.00/10
+
+exit=0

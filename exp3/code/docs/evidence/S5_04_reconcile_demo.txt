@@ -1,0 +1,12 @@
+# 对账工具现场输出：先平账 diff=0，再人为 +1 打出带订单号与日期的 ALERT
+demo_booking_no=BK202702010900006D64 room_type_id=1
+--- 平账（库存占用与订单汇总一致） ---
+range=2027-03-01~2027-03-05
+checked_pairs=4 diff=0
+status=OK
+--- 人为把 2027-03-02 的占用 +1 之后 ---
+range=2027-03-01~2027-03-05
+checked_pairs=4 diff=1
+ALERT room_type=1 stay_date=2027-03-02 inventory=3 orders=2 diff=1 bookings=BK202702010900006D64
+check=passed
+exit=0

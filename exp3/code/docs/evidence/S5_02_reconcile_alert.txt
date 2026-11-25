@@ -1,0 +1,12 @@
+# S5-2 对账差异告警（5 例：平账 diff=0 / +1 告警带订单号与日期 / -1 / 取消单不计 / 只读）
+test_人为把库存占用加一会告警并带订单号与日期 (code.tests.test_reconcile_alert.ReconcileAlertTest.test_人为把库存占用加一会告警并带订单号与日期) ... ok
+test_对账只读不修改库存与审计 (code.tests.test_reconcile_alert.ReconcileAlertTest.test_对账只读不修改库存与审计) ... ok
+test_已取消订单不计入右侧所以账仍然平 (code.tests.test_reconcile_alert.ReconcileAlertTest.test_已取消订单不计入右侧所以账仍然平) ... ok
+test_库存漏占也能发现且差额为负 (code.tests.test_reconcile_alert.ReconcileAlertTest.test_库存漏占也能发现且差额为负) ... ok
+test_账平时输出diff等于0 (code.tests.test_reconcile_alert.ReconcileAlertTest.test_账平时输出diff等于0) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.208s
+
+OK
+exit=0
