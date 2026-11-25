@@ -17,6 +17,7 @@ from app.domain.enums import ActorRole
 from app.domain.errors import PermissionDeniedError, ValidationError
 from app.domain.models import AuditLog
 from app.infrastructure.db.audit_repository import SqliteAuditLogRepository
+from app.infrastructure.db.catalog_repository import SqlitePriceRepository
 from app.infrastructure.db.connection import immediate_transaction
 from app.infrastructure.db.inventory_repository import SqliteInventoryRepository
 from app.infrastructure.db.mapping import date_text
@@ -37,6 +38,7 @@ class InventoryAppService:
         self._conn = conn
         self._clock: Clock = clock or SystemClock()
         self._inventories = SqliteInventoryRepository(conn)
+        self._prices = SqlitePriceRepository(conn)
         self._audits = SqliteAuditLogRepository(conn)
 
     def adjust_available(
@@ -111,6 +113,52 @@ class InventoryAppService:
     ) -> None:
         """恢复某日销售。"""
         self._switch_sale_status(room_type_id, stay_date, actor, "ON_SALE", reason)
+
+    def range_rows(self, room_type_id: int, days: list[date]):
+        """按日期升序取库存行（只读，给界面铺表用）。"""
+        return self._inventories.lock_rows(room_type_id, sorted(days))
+
+    def set_unit_price(
+        self,
+        room_type_id: int,
+        stay_date: date,
+        unit_price_cents: int,
+        actor: Actor,
+    ) -> None:
+        """改某日单价（整数分）；只允许本酒店员工或平台管理员。
+
+        Args:
+            room_type_id: 房型。
+            stay_date: 具体某一天。
+            unit_price_cents: 新单价（分），必须大于 0。
+            actor: 操作者。
+        """
+        hotel_id, _ = self._room_type_scope(room_type_id)
+        self._assert_staff(actor, hotel_id)
+        if unit_price_cents <= 0:
+            raise ValidationError("单价必须大于 0", unit_price_cents=unit_price_cents)
+        with immediate_transaction(self._conn):
+            before = self._current_price(room_type_id, stay_date)
+            self._prices.upsert(room_type_id, stay_date, unit_price_cents)
+            self._audit(
+                room_type_id,
+                stay_date,
+                "UPDATE_PRICE",
+                "-" if before is None else str(before),
+                str(unit_price_cents),
+                actor,
+            )
+
+    def current_price(self, room_type_id: int, stay_date: date) -> int | None:
+        """读某日单价；未配置返回 None。"""
+        return self._current_price(room_type_id, stay_date)
+
+    def _current_price(self, room_type_id: int, stay_date: date) -> int | None:
+        row = self._conn.execute(
+            "SELECT unit_price_cents FROM room_price WHERE room_type_id = ? AND stay_date = ?",
+            (room_type_id, date_text(stay_date)),
+        ).fetchone()
+        return None if row is None else int(row["unit_price_cents"])
 
     def _switch_sale_status(
         self,

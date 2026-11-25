@@ -75,21 +75,40 @@ class SqliteAuditLogRepository(AuditLogRepository):
             "WHERE target_type = ? AND target_id = ? ORDER BY id DESC LIMIT ?",
             (target_type, str(target_id), limit),
         ).fetchall()
-        return [
-            AuditLog(
-                operator_id=int(row["operator_id"]),
-                operator_role=str(row["operator_role"]),
-                target_type=str(row["target_type"]),
-                target_id=str(row["target_id"]),
-                action=str(row["action"]),
-                before_state=row["before_state"],
-                after_state=row["after_state"],
-                created_at=parse_time(row["created_at"]),
-                log_id=int(row["id"]),
-            )
-            for row in rows
-        ]
+        return [_to_log(row) for row in rows]
+
+    def list_recent(self, target_type: str | None = None, limit: int = 200) -> list[AuditLog]:
+        """按类型（或全部）取最近的审计，新记录在前；界面审计页用。"""
+        if target_type is None:
+            rows = self._conn.execute(
+                "SELECT id, operator_id, operator_role, target_type, target_id, action, "
+                "before_state, after_state, created_at FROM audit_log "
+                "ORDER BY id DESC LIMIT ?",
+                (limit,),
+            ).fetchall()
+        else:
+            rows = self._conn.execute(
+                "SELECT id, operator_id, operator_role, target_type, target_id, action, "
+                "before_state, after_state, created_at FROM audit_log "
+                "WHERE target_type = ? ORDER BY id DESC LIMIT ?",
+                (target_type, limit),
+            ).fetchall()
+        return [_to_log(row) for row in rows]
 
     def count(self) -> int:
         """审计总条数（用例断言"失败也留痕"时用）。"""
         return int(self._conn.execute("SELECT COUNT(*) FROM audit_log").fetchone()[0])
+
+def _to_log(row) -> AuditLog:
+    """把一行 `audit_log` 映射成领域对象（query 与 list_recent 共用）。"""
+    return AuditLog(
+        operator_id=int(row["operator_id"]),
+        operator_role=str(row["operator_role"]),
+        target_type=str(row["target_type"]),
+        target_id=str(row["target_id"]),
+        action=str(row["action"]),
+        before_state=row["before_state"],
+        after_state=row["after_state"],
+        created_at=parse_time(row["created_at"]),
+        log_id=int(row["id"]),
+    )

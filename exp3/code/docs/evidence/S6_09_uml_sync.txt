@@ -1,0 +1,30 @@
+puml=UML类图.puml symbols=19
+app=app classes=93 whitelist=19
+------------------------------------------------------------------------------
+OK  UserAccount            L18   -> code/app/domain/models.py
+OK  Hotel                  L28   -> code/app/domain/models.py
+OK  RoomType               L39   -> code/app/domain/models.py
+OK  RoomInventory          L48   -> code/app/domain/models.py
+OK  RoomPrice              L60   -> code/app/domain/models.py
+OK  Booking                L67   -> code/app/domain/models.py
+OK  BookingStatus          L84   -> code/app/domain/enums.py
+OK  BookingNight           L93   -> code/app/domain/models.py
+OK  IdempotencyKey         L100  -> code/app/domain/models.py
+OK  StayRecord             L107  -> code/app/domain/models.py
+OK  AuditLog               L115  -> code/app/domain/models.py
+OK  NotificationRecord     L127  -> code/app/domain/models.py
+OK  HolidayCalendar        L135  -> code/app/domain/models.py
+OK  BookingStateMachine    L144  -> code/app/domain/state_machine.py
+OK  BookingService         L151  -> code/app/domain/services.py
+OK  InventoryService       L158  -> code/app/domain/services.py
+OK  BookingRepository      L168  -> code/app/domain/repositories.py
+OK  InventoryRepository    L174  -> code/app/domain/repositories.py
+OK  AuditLogRepository     L180  -> code/app/domain/repositories.py
+------------------------------------------------------------------------------
+missing_in_code = []
+missing_in_uml  = []
+extra_in_code   = ['AccountRow', 'AccountService', 'AccountStatus', 'Actor', 'ActorRole', 'AdminScreen', 'AdminService', 'AuditOutcome', 'AuditScreen', 'AuditService', 'BaseScreen', 'BookingAppService', 'BookingEvent', 'CatalogService', 'Clock', 'ConflictError', 'DomainError', 'DuplicateBookingError', 'FrozenClock', 'FulfillmentService', 'HolidayStatus', 'HotelAuditStatus', 'HotelCard', 'HotelConsoleScreen', 'HotelDetail', 'HotelRow', 'IllegalTransitionError', 'InvalidStateError', 'InventoryAppService', 'InventoryRow', 'InventoryScreen', 'LoginScreen', 'MainWindow', 'Migration', 'MyOrdersScreen', 'NoAvailabilityError', 'OccupancyPlan', 'OccupancyRow', 'OrderNightRow', 'PermissionDeniedError', 'PlaceBookingCommand', 'Quote', 'ReconcileDifference', 'ReconcileReport', 'ReconcileScreen', 'ReconcileService', 'ReportScreen', 'ReportService', 'ReportSummary', 'RescheduleCommand', 'ResultsScreen', 'RevenueRow', 'RoomRow', 'RoomTypeCard', 'RoomTypeRow', 'ScanReport', 'ScreenSpec', 'SearchScreen', 'SeedOutcome', 'Session', 'SqliteAccountRepository', 'SqliteAccountWriter', 'SqliteAuditLogRepository', 'SqliteBookingRepository', 'SqliteCatalogQueryRepository', 'SqliteHotelAdminRepository', 'SqliteIdempotencyRepository', 'SqliteInventoryRepository', 'SqlitePriceRepository', 'SqliteReconcileRepository', 'SqliteReportRepository', 'SystemClock', 'Transition', 'ValidationError']（未登记，供评审核对，不判失败）
+line_mismatch   = []
+结果：PASS（19 个符号一一对应，白名单行号一致）
+
+exit=0

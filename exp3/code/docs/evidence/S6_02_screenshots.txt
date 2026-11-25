@@ -1,0 +1,16 @@
+# 截图清单（S6-2）
+count=10
+01_login.png 1639x959 103696B
+02_search.png 1639x959 104351B
+03_results.png 1639x959 171162B
+04_my_orders.png 1639x959 173581B
+05_hotel_console.png 1639x959 176068B
+06_inventory.png 1639x959 147805B
+07_audit.png 1639x959 219346B
+08_reconcile.png 1639x959 109325B
+09_admin.png 1639x959 141187B
+10_reports.png 1639x959 164568B
+index_md_rows=10
+index_md_exists=True
+check=passed
+exit=0

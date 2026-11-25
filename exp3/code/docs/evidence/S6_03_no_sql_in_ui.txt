@@ -1,0 +1,7 @@
+# S6-3 界面层不直接写 SQL
+scope=code/app/ui
+files=17
+regex=SELECT |INSERT |UPDATE 
+hits=0
+check=passed
+exit=0

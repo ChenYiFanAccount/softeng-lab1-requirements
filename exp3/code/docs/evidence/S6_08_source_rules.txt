@@ -1,0 +1,14 @@
+rule=status_compare scope=code/app files=57 expected=0 hits=0 result=OK
+  regex=\.status\s*==
+rule=float_round scope=code/app files=57 expected=0 hits=0 result=OK
+  regex=float\(|round\(
+rule=time_sleep scope=code/app_tests files=78 expected=0 hits=0 result=OK
+  regex=time\.sleep|\bsleep\(
+rule=audit_delete scope=code files=93 expected=0 hits=0 result=OK
+  regex=delete\s+from\s+audit_log
+rule=shared_connection scope=code files=93 expected=0 hits=0 result=OK
+  regex=check_same_thread\s*=\s*False
+rules=5 total_hits=0
+check=passed
+
+exit=0

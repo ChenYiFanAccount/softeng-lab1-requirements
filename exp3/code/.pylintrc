@@ -33,10 +33,13 @@ variable-rgx=[a-z_][a-z0-9_]{1,40}
 # C2401 non-ascii-name：见上面 function-rgx 的理由，中文名是本课程的显式要求。
 # R0801 duplicate-code：测试夹具（造订单/造库存）在不同用例文件里天然相似，
 # 强行抽公共工厂会把"每个用例要什么数据"藏进参数，反而降低可读性。
+# R0901 too-many-ancestors：界面类继承 ttk.Frame，Tk 自身的祖先链就有 9 层，
+# 这条与"本类设计是否合理"无关，界面层统一放开。
 disable=
     C0413,
     C2401,
-    R0801
+    R0801,
+    R0901
 
 [REPORTS]
 score=y

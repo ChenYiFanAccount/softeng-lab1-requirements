@@ -64,8 +64,8 @@ RULES: tuple[Rule, ...] = (
     Rule(
         name="time_sleep",
         pattern=_NO_SLEEP,
-        scope="code",
-        note="扫描必须注入假时钟，代码与测试都不得真实等待（S4-1）",
+        scope="app_tests",
+        note="扫描必须注入假时钟，业务代码与测试都不得真实等待（S4-1）",
     ),
     Rule(
         name="audit_delete",
@@ -86,16 +86,26 @@ def iter_sources(scope: str) -> list[Path]:
     """列出作用范围内所有 ``.py`` 文件（跳过本工具自身）。
 
     Args:
-        scope: 相对 ``code/`` 的目录名，如 ``"app"``、``"code"``（``code`` 表示整个工程）。
+        scope: ``"app"``/``"tests"``/``"tools"`` 为单个子目录，``"code"`` 为整个工程，
+            ``"app_tests"`` 为业务代码加测试（``tools/`` 下的截图脚本要等窗口重绘，
+            不属于"用真实等待代替假时钟"那一类，故排除在 S4-1 之外）。
 
     Returns:
         按路径排序的 Python 文件列表。
     """
-    root = CODE_ROOT if scope == "code" else CODE_ROOT / scope
+    if scope == "code":
+        roots = [CODE_ROOT]
+    elif scope == "app_tests":
+        roots = [CODE_ROOT / "app", CODE_ROOT / "tests"]
+    else:
+        roots = [CODE_ROOT / scope]
     this_file = Path(__file__).resolve()
-    return sorted(
-        path for path in root.rglob("*.py") if path.resolve() != this_file
-    )
+    files: list[Path] = []
+    for root in roots:
+        files.extend(
+            path for path in root.rglob("*.py") if path.resolve() != this_file
+        )
+    return sorted(files)
 
 
 def scan(rule: Rule) -> tuple[list[str], int]:

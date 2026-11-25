@@ -1,0 +1,16 @@
+screen_count_expected=10
+screen[01] key=login name=登录 / 注册 ok=True
+screen[02] key=search name=酒店搜索 ok=True
+screen[03] key=results name=搜索结果 ok=True
+screen[04] key=my_orders name=我的订单 ok=True
+screen[05] key=hotel_console name=酒店订单台 ok=True
+screen[06] key=inventory name=库存与房价 ok=True
+screen[07] key=audit name=审计日志 ok=True
+screen[08] key=reconcile name=库存对账 ok=True
+screen[09] key=admin name=平台管理 ok=True
+screen[10] key=reports name=经营报表 ok=True
+screen_names=登录 / 注册 | 酒店搜索 | 搜索结果 | 我的订单 | 酒店订单台 | 库存与房价 | 审计日志 | 库存对账 | 平台管理 | 经营报表
+screen_total=10 failures=0
+check=passed
+
+exit=0
