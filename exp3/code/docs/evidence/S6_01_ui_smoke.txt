@@ -12,5 +12,4 @@ screen[10] key=reports name=经营报表 ok=True
 screen_names=登录 / 注册 | 酒店搜索 | 搜索结果 | 我的订单 | 酒店订单台 | 库存与房价 | 审计日志 | 库存对账 | 平台管理 | 经营报表
 screen_total=10 failures=0
 check=passed
-
 exit=0

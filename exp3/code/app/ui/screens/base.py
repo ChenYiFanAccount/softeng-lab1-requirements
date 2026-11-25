@@ -67,9 +67,14 @@ class BaseScreen(ttk.Frame):
         columns: Sequence[ColumnSpec],
         height: int = 12,
         selectmode: str = "browse",
-        stretch: bool = True,
+        stretch: bool = False,
     ) -> ttk.Treeview:
-        """带滚动条与斑马纹的表格；``columns`` 为 (列 id, 表头, 像素宽)。"""
+        """带滚动条与斑马纹的表格；``columns`` 为 (列 id, 表头, 像素宽)。
+
+        ``stretch`` 默认 ``False``：列宽就是给定像素值，窗口变宽也不放大。
+        一旦按比例拉伸，末列会被推出可视区——S6-R1-01 抓到的"合计/状态被截"
+        就是表格把宽度吃满造成的。确实想均分多余宽度时才传 ``True``。
+        """
         holder = ttk.Frame(parent, style="Card.TFrame")
         holder.pack(fill="both", expand=True, pady=(4, 8))
         tree = ttk.Treeview(

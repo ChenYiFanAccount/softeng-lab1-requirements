@@ -64,8 +64,8 @@ RULES: tuple[Rule, ...] = (
     Rule(
         name="time_sleep",
         pattern=_NO_SLEEP,
-        scope="app_tests",
-        note="扫描必须注入假时钟，业务代码与测试都不得真实等待（S4-1）",
+        scope="code",
+        note="扫描必须注入假时钟；全仓（含测试与工具）不得真实等待（S4-1 / S6-R1-02）",
     ),
     Rule(
         name="audit_delete",

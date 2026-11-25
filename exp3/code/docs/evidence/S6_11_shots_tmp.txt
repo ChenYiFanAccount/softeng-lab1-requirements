@@ -1,0 +1,12 @@
+shot=01_login.png screen=login size=1662x1016 ok=True
+shot=02_search.png screen=search size=1662x1016 ok=True
+shot=03_results.png screen=results size=1662x1016 ok=True
+shot=04_my_orders.png screen=my_orders size=1662x1016 ok=True
+shot=06_inventory.png screen=inventory size=1662x1016 ok=True
+shot=05_hotel_console.png screen=hotel_console size=1662x1016 ok=True
+shot=09_admin.png screen=admin size=1662x1016 ok=True
+shot=07_audit.png screen=audit size=1662x1016 ok=True
+shot=08_reconcile.png screen=reconcile size=1662x1016 ok=True
+shot=10_reports.png screen=reports size=1662x1016 ok=True
+shots=10 out=D:\NJU\softengineering\exp3\tmp_shots
+exit=0
