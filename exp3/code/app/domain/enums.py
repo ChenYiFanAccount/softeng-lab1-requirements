@@ -68,6 +68,52 @@ class ActorRole(StrEnum):
         return _ROLE_LABELS[self]
 
 
+class AccountStatus(StrEnum):
+    """账号状态（``user_account.status``）：只有 ``ACTIVE`` 能登录。"""
+
+    ACTIVE = "ACTIVE"
+    DISABLED = "DISABLED"
+
+    @property
+    def label(self) -> str:
+        """中文名，用于界面与报告。"""
+        return _ACCOUNT_STATUS_LABELS[self]
+
+
+class HolidayStatus(StrEnum):
+    """节假日条目状态（``holiday_calendar.status``）：停用后不参与调价与取消政策。"""
+
+    ENABLED = "ENABLED"
+    DISABLED = "DISABLED"
+
+    @property
+    def label(self) -> str:
+        """中文名，用于界面与报告。"""
+        return _HOLIDAY_STATUS_LABELS[self]
+
+
+class HotelAuditStatus(StrEnum):
+    """酒店审核状态（``hotel.audit_status``）：只有通过审核的酒店才能售卖。"""
+
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+
+    @property
+    def label(self) -> str:
+        """中文名，用于界面与报告。"""
+        return _AUDIT_STATUS_LABELS[self]
+
+
+#: 允许登录的账号状态集合（用集合成员判断，避免把魔法字符串散进领域模型）
+ENABLED_ACCOUNT_STATUSES: frozenset[AccountStatus] = frozenset({AccountStatus.ACTIVE})
+
+#: 参与价格与取消策略计算的节假日状态集合
+ENABLED_HOLIDAY_STATUSES: frozenset[HolidayStatus] = frozenset({HolidayStatus.ENABLED})
+
+#: 允许对外售卖的酒店审核状态集合
+SELLABLE_AUDIT_STATUSES: frozenset[HotelAuditStatus] = frozenset({HotelAuditStatus.APPROVED})
+
 ACTIVE_STATUSES: frozenset[BookingStatus] = frozenset(
     {BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.CHECKED_IN}
 )
@@ -104,4 +150,20 @@ _ROLE_LABELS: dict[ActorRole, str] = {
     ActorRole.HOTEL_STAFF: "酒店工作人员",
     ActorRole.PLATFORM_ADMIN: "平台管理员",
     ActorRole.SYSTEM: "系统",
+}
+
+_ACCOUNT_STATUS_LABELS: dict[AccountStatus, str] = {
+    AccountStatus.ACTIVE: "正常",
+    AccountStatus.DISABLED: "停用",
+}
+
+_HOLIDAY_STATUS_LABELS: dict[HolidayStatus, str] = {
+    HolidayStatus.ENABLED: "启用",
+    HolidayStatus.DISABLED: "停用",
+}
+
+_AUDIT_STATUS_LABELS: dict[HotelAuditStatus, str] = {
+    HotelAuditStatus.PENDING: "待审核",
+    HotelAuditStatus.APPROVED: "已通过",
+    HotelAuditStatus.REJECTED: "已驳回",
 }

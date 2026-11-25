@@ -22,8 +22,9 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass, field
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone, tzinfo
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from app.application.actor import Actor
 from app.application.booking_service import BookingAppService
@@ -37,6 +38,23 @@ DEFAULT_TIMEOUT_MINUTES = 30
 DEFAULT_NO_SHOW_CUTOFF = "23:59"
 DEFAULT_BATCH_LIMIT = 200
 
+#: ``settings.json`` 未配 ``runtime.timezone`` 时按本地时区（课程场景固定为 Asia/Shanghai）
+DEFAULT_TIMEZONE = "Asia/Shanghai"
+
+#: Windows 上 ``zoneinfo`` 需要 tzdata 包；缺失时退化为固定偏移。
+#: Asia/Shanghai 不实行夏令时，+08:00 与 ZoneInfo 结果完全等价。
+FALLBACK_TIMEZONE = timezone(timedelta(hours=8))
+
+#: 不需要 tz 数据库就能确定的时区名（Windows 上常常没有 tzdata）
+FIXED_TIMEZONES: dict[str, tzinfo] = {
+    "UTC": timezone.utc,
+    "ETC/UTC": timezone.utc,
+    "GMT": timezone.utc,
+    "Z": timezone.utc,
+    "ASIA/SHANGHAI": FALLBACK_TIMEZONE,
+    "PRC": FALLBACK_TIMEZONE,
+}
+
 
 @dataclass(slots=True)
 class ScanReport:
@@ -47,6 +65,7 @@ class ScanReport:
     auto_check_ins: int = 0
     no_shows: int = 0
     failures: list[dict[str, Any]] = field(default_factory=list)
+    timezone_name: str = DEFAULT_TIMEZONE
 
     @property
     def total(self) -> int:
@@ -54,9 +73,18 @@ class ScanReport:
         return self.timeouts + self.auto_check_ins + self.no_shows
 
     def to_dict(self) -> dict[str, Any]:
-        """扁平字典，便于打印或写日志。"""
+        """扁平字典，便于打印或写日志。
+
+        ``scanned_at`` 是**规范时刻（UTC）**，写日志与比对用；``scanned_at_local``
+        是按配置时区换算的墙钟时间，给人看——两者都打印，避免再出现
+        "日志里 13:05、本地 21:05" 的误读（S4-R1-01）。
+        """
         return {
-            "scanned_at": self.scanned_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "scanned_at": _utc_of(self.scanned_at).strftime("%Y-%m-%d %H:%M:%S"),
+            "scanned_at_local": _utc_of(self.scanned_at)
+            .astimezone(load_timezone(self.timezone_name))
+            .strftime("%Y-%m-%d %H:%M:%S"),
+            "timezone": self.timezone_name,
             "timeouts": self.timeouts,
             "auto_check_ins": self.auto_check_ins,
             "no_shows": self.no_shows,
@@ -94,7 +122,7 @@ class FulfillmentService:
 
     def scan_once(self) -> ScanReport:
         """跑一轮完整扫描（三条规则各一次），返回统计。"""
-        report = ScanReport(scanned_at=self._clock.now())
+        report = ScanReport(scanned_at=self._clock.now(), timezone_name=self.timezone_name)
         self._scan_timeouts(report)
         if self._auto_check_in_enabled:
             self._scan_auto_check_ins(report)
@@ -129,30 +157,59 @@ class FulfillmentService:
     def _auto_check_in_enabled(self) -> bool:
         return bool(self._options.get("auto_check_in_enabled", True))
 
+    # ------------------------------------------------------------------ 时区换算
+
+    @property
+    def timezone_name(self) -> str:
+        """配置时区（``runtime.timezone``），no-show 的 ``23:59`` 指**当地墙钟**。"""
+        runtime = self._settings.get("runtime")
+        name = runtime.get("timezone") if isinstance(runtime, dict) else None
+        return str(name or DEFAULT_TIMEZONE)
+
+    def _utc(self, moment: datetime) -> datetime:
+        """把时钟给的时刻规范成 UTC（朴素时间按 UTC 解释，去掉 tzinfo 便于写库）。"""
+        return _utc_of(moment).replace(tzinfo=None)
+
+    def _local(self, moment: datetime) -> datetime:
+        """UTC 时刻 → 配置时区的墙钟时间。"""
+        return _utc_of(moment).astimezone(load_timezone(self.timezone_name))
+
     # ------------------------------------------------------------------ 三条规则
 
     def _scan_timeouts(self, report: ScanReport) -> None:
-        """规则一：待确认超时 → T3 取消并回补库存。"""
-        cutoff = self._clock.now() - timedelta(minutes=self.timeout_minutes)
+        """规则一：待确认超时 → T3 取消并回补库存。
+
+        ``created_at`` 落库是 UTC，故截止时刻也在 UTC 上算，与展示时区无关。
+        """
+        cutoff = self._utc(self._clock.now()) - timedelta(minutes=self.timeout_minutes)
         pending = self._bookings.list_pending_created_before(cutoff, self.batch_limit)
         for booking in pending:
             if self._apply(booking.booking_no, BookingEvent.TIMEOUT, report):
                 report.timeouts += 1
 
     def _scan_auto_check_ins(self, report: ScanReport) -> None:
-        """规则二：已确认但入住日已过 → T5 自动入住。"""
-        today = self._clock.now().date()
+        """规则二：已确认但入住日已过 → T5 自动入住。
+
+        ``check_in_date`` 是**当地日历日**，所以"今天"必须用本地墙钟取，不能用 UTC 日期
+        （UTC 日期在北京时间 08:00 前还是前一天）。
+        """
+        today = self._local(self._clock.now()).date()
         confirmed = self._bookings.list_confirmed_check_in_before(today, self.batch_limit)
         for booking in confirmed:
             if self._apply(booking.booking_no, BookingEvent.AUTO_CHECK_IN, report):
                 report.auto_check_ins += 1
 
     def _scan_no_shows(self, report: ScanReport) -> None:
-        """规则三：入住日当天过 cutoff 仍未入住 → T7 no-show。"""
-        now = self._clock.now()
-        if now.time() < _parse_clock(self.no_show_cutoff):
+        """规则三：入住日当天过 cutoff 仍未入住 → T7 no-show。
+
+        cutoff 是**当地墙钟**（默认 23:59，即 ≥ 23:59:00 就触发）。时钟返回 UTC，
+        所以先换算到配置时区再取日期与时刻，否则真实运行时会在当地次日 07:59
+        才判 no-show（S4-R1-01 修的就是这条）。
+        """
+        local_now = self._local(self._clock.now())
+        if local_now.time() < _parse_clock(self.no_show_cutoff):
             return
-        confirmed = self._bookings.list_confirmed_check_in_on(now.date(), self.batch_limit)
+        confirmed = self._bookings.list_confirmed_check_in_on(local_now.date(), self.batch_limit)
         for booking in confirmed:
             if self._apply(booking.booking_no, BookingEvent.NO_SHOW, report):
                 report.no_shows += 1
@@ -182,3 +239,37 @@ def _parse_clock(text: str) -> time:
     if len(parts) != 2:
         raise ValueError(f"no_show_cutoff 必须是 HH:MM：{text!r}")
     return time(int(parts[0]), int(parts[1]))
+
+
+def _utc_of(moment: datetime) -> datetime:
+    """把任意时刻规范成带 UTC 时区的 ``datetime``。
+
+    ``SystemClock``/``FrozenClock`` 给的都可能是朴素时间，约定按 UTC 解释；
+    带时区的则原样换算。统一在这里做，调用点不用各写一遍 ``tzinfo`` 判断。
+    """
+    if moment.tzinfo is None:
+        return moment.replace(tzinfo=timezone.utc)
+    return moment.astimezone(timezone.utc)
+
+
+def load_timezone(name: str) -> tzinfo:
+    """按 IANA 名称取时区；没有 tz 数据库时退化为固定偏移。
+
+    先查 ``FIXED_TIMEZONES``（``UTC``、``Asia/Shanghai`` 这类无夏令时的常用值），
+    再交给 ``ZoneInfo``；两者都不成时按 +08:00 处理——课程场景只涉及中国，
+    退化的结果与 ``Asia/Shanghai`` 逐秒一致，不会静默算错。
+
+    Args:
+        name: 形如 ``"Asia/Shanghai"`` 的时区名。
+
+    Returns:
+        可用于 ``astimezone`` 的 ``tzinfo``。
+    """
+    key = name.strip().upper()
+    fixed = FIXED_TIMEZONES.get(key)
+    if fixed is not None:
+        return fixed
+    try:
+        return ZoneInfo(name)
+    except (ZoneInfoNotFoundError, ValueError, OSError):
+        return FALLBACK_TIMEZONE

@@ -6,6 +6,6 @@ negative_stock=0
 booking_rows=1
 booking_night_rows=1
 failure_breakdown={'sold_out': 199}
-elapsed_ms=3559.4
+elapsed_ms=4414.2
 check=passed
 exit=0

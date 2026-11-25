@@ -42,6 +42,21 @@ STAY_DATES = ("2027-03-01", "2027-03-02", "2027-03-03", "2027-03-04")
 #: 建单时刻：入住日之前，且不落在任何整点边界上，便于观察分钟级推进
 CREATED_AT = datetime(2027, 2, 28, 10, 0, 0)
 
+#: 本模块开始执行的时刻：用于把"整套扫描用例没有真实等待"变成**可断言的输出**
+_STARTED_AT = time.perf_counter()
+
+
+def tearDownModule() -> None:
+    """打印并断言整套用例的总耗时（S4-1：必须 < 5s）。
+
+    真等待一旦被引入（哪怕只等 30 分钟超时一次），这里的断言会立刻失败；
+    把阈值写进代码而不是写进交付说明，是为了让判据自己会叫。
+    """
+    elapsed_ms = int((time.perf_counter() - _STARTED_AT) * 1000)
+    print(f"elapsed_total_ms={elapsed_ms}")
+    assert elapsed_ms < 5000, f"扫描用例总耗时 {elapsed_ms}ms 超过 5s，说明引入了真实等待"
+    print("assert_elapsed_lt_5s=True")
+
 
 class TimeoutScanTest(unittest.TestCase):  # pylint: disable=too-many-instance-attributes
     """超时取消：假时钟推进 → 扫描 → 状态与库存同时收敛。"""

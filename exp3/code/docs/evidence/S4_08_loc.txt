@@ -1,8 +1,8 @@
-app    files=30  phys=3975  code=3269  effective=2503 
-tests  files=18  phys=2783  code=2234  effective=1964 
-tools  files=7   phys=1103  code=917   effective=798  
-total  files=55  phys=7861  code=6420  effective=5265 
+app    files=30  phys=4140  code=3388  effective=2584 
+tests  files=18  phys=2848  code=2277  effective=1990 
+tools  files=8   phys=1278  code=1060  effective=915  
+total  files=56  phys=8266  code=6725  effective=5489 
 口径：effective = 非空 且 非纯注释 且 非 docstring（报告主口径）
 csv=code\docs\loc.csv
-csv_mode=per_file rows=55
+csv_mode=per_file rows=56
 exit=0

@@ -5,7 +5,7 @@ test_失败审计里的操作者角色可追溯 (code.tests.test_audit.AuditAppe
 test_整条链路只增不减 (code.tests.test_audit.AuditAppendOnlyTest.test_整条链路只增不减) ... ok
 
 ----------------------------------------------------------------------
-Ran 5 tests in 0.202s
+Ran 5 tests in 0.200s
 
 OK
 exit=0

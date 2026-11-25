@@ -1,7 +1,9 @@
 db=code\data\scan_evidence.db
 tables=12 rows_hotel=3 rows_booking=0
 background_thread_ok=True
-scanned_at=2026-11-25 12:52:02
+scanned_at=2026-11-25 13:14:35
+scanned_at_local=2026-11-25 21:14:35
+timezone=Asia/Shanghai
 timeouts=0
 auto_check_ins=0
 no_shows=0

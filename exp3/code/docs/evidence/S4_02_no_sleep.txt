@@ -1,6 +1,9 @@
-scanned_dirs=app,tests,tools scanned_files=55
-pattern='time.sleep' hits=0
-pattern='delete from audit_log' hits=0
-total_hits=0
+rule=time_sleep scope=code files=56 expected=0 hits=0 result=OK
+  regex=time\.sleep|\bsleep\(
+rule=audit_delete scope=code files=56 expected=0 hits=0 result=OK
+  regex=delete\s+from\s+audit_log
+rule=shared_connection scope=code files=56 expected=0 hits=0 result=OK
+  regex=check_same_thread\s*=\s*False
+rules=3 total_hits=0
 check=passed
 exit=0

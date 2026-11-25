@@ -15,7 +15,15 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from typing import Callable
 
-from app.domain.enums import BookingStatus
+from app.domain.enums import (
+    ENABLED_ACCOUNT_STATUSES,
+    ENABLED_HOLIDAY_STATUSES,
+    SELLABLE_AUDIT_STATUSES,
+    AccountStatus,
+    BookingStatus,
+    HolidayStatus,
+    HotelAuditStatus,
+)
 from app.domain.errors import InvalidStateError, ValidationError
 
 
@@ -31,13 +39,17 @@ class UserAccount:
     password_hash: str
     role: str
     hotel_id: int | None = None
-    status: str = "ACTIVE"
+    status: AccountStatus = AccountStatus.ACTIVE
     created_at: datetime | None = None
 
     @property
     def is_enabled(self) -> bool:
-        """账号是否可用（``DISABLED`` 不得登录）。"""
-        return self.status == "ACTIVE"
+        """账号是否可用（``DISABLED`` 不得登录）。
+
+        先按枚举归一化再比集合成员：数据库读回来的是字符串，构造时传字符串也要成立，
+        同时避免在模型里散落状态字面量（S4-R1-02）。
+        """
+        return AccountStatus(self.status) in ENABLED_ACCOUNT_STATUSES
 
     def verify_password(self, plaintext: str, verifier: Callable[[str, str], bool]) -> bool:
         """校验明文口令。
@@ -67,7 +79,7 @@ class Hotel:  # pylint: disable=too-many-instance-attributes
     address: str
     phone: str
     description: str | None = None
-    audit_status: str = "PENDING"
+    audit_status: HotelAuditStatus = HotelAuditStatus.PENDING
     reject_reason: str | None = None
     created_at: datetime | None = None
     audited_at: datetime | None = None
@@ -75,7 +87,7 @@ class Hotel:  # pylint: disable=too-many-instance-attributes
     @property
     def is_approved(self) -> bool:
         """是否审核通过（``REJECTED`` 必须带驳回原因，由 CHECK 保证）。"""
-        return self.audit_status == "APPROVED"
+        return HotelAuditStatus(self.audit_status) in SELLABLE_AUDIT_STATUSES
 
 
 @dataclass(slots=True)
@@ -320,9 +332,9 @@ class HolidayCalendar:
 
     holiday_date: date
     name: str | None = None
-    status: str = "ENABLED"
+    status: HolidayStatus = HolidayStatus.ENABLED
 
     @property
     def is_enabled(self) -> bool:
         """是否启用；停用后不再参与价格与取消策略计算。"""
-        return self.status == "ENABLED"
+        return HolidayStatus(self.status) in ENABLED_HOLIDAY_STATUSES

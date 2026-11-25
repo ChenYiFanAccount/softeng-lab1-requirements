@@ -103,7 +103,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         f" rows_booking={counts.get('booking', 0)}"
     )
     print("background_thread_ok=True")
-    for key in ("scanned_at", "timeouts", "auto_check_ins", "no_shows", "failures", "total"):
+    for key in (
+        "scanned_at",
+        "scanned_at_local",
+        "timezone",
+        "timeouts",
+        "auto_check_ins",
+        "no_shows",
+        "failures",
+        "total",
+    ):
         print(f"{key}={report[key]}")
     print("check=passed")
     return 0

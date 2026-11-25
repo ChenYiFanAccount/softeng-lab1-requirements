@@ -1,7 +1,9 @@
-python -m unittest code.tests.test_state_machine -> exit=0 :: Ran 19 tests in 0.001s
-python -m unittest code.tests.test_pricing -> exit=0 :: Ran 8 tests in 0.000s
-python -m unittest code.tests.test_services -> exit=0 :: Ran 9 tests in 0.000s
-python -m unittest code.tests.test_domain_models -> exit=0 :: Ran 15 tests in 0.000s
-python -m unittest code.tests.test_inventory_domain -> exit=0 :: Ran 7 tests in 0.000s
-两种跑法均已验证：包模式（本文件）+ discover 模式（S4_06）
+# 包模式：python -m unittest code.tests.<module>（G2-R1-02 的双跑法之一）
+module=code.tests.test_state_machine exit=0 Ran 19 tests in 0.001s | OK
+module=code.tests.test_pricing exit=0 Ran 8 tests in 0.001s | OK
+module=code.tests.test_services exit=0 Ran 9 tests in 0.001s | OK
+module=code.tests.test_domain_models exit=0 Ran 15 tests in 0.001s | OK
+module=code.tests.test_inventory_domain exit=0 Ran 7 tests in 0.000s | OK
+module=code.tests.test_noshow_clock exit=0 Ran 8 tests in 0.278s | OK
+modules=6 failed=0
 exit=0
