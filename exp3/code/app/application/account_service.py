@@ -21,7 +21,7 @@ PHONE_PATTERN = re.compile(r"^\d{11}$")
 MIN_PASSWORD = 8
 
 
-class AccountService:  # pylint: disable=too-few-public-methods
+class AccountService:
     """注册与改密之外的最小账号能力。"""
 
     def __init__(self, conn: sqlite3.Connection) -> None:
@@ -35,11 +35,18 @@ class AccountService:  # pylint: disable=too-few-public-methods
         if confirm is not None and confirm != password:
             raise ValidationError("两次输入的密码不一致")
         _check_password(password)
-        if self._accounts.exists(phone):
-            raise ValidationError("该手机号已注册，请直接登录")
+        self.check_available(phone)
         salt = new_salt()
         account_id = self._accounts.create(phone, hash_password(password, salt))
         return Actor(account_id=account_id, role=ActorRole.CUSTOMER, login_name=phone)
+
+    def check_available(self, login_name: str) -> None:
+        """校验手机号格式且未被注册；注册页可单独调它做即时提示。"""
+        phone = (login_name or "").strip()
+        if not PHONE_PATTERN.match(phone):
+            raise ValidationError("手机号必须是 11 位数字")
+        if self._accounts.exists(phone):
+            raise ValidationError("该手机号已注册，请直接登录")
 
 
 def _check_password(password: str) -> None:

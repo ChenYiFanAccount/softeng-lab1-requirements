@@ -37,7 +37,7 @@ except ImportError:  # pragma: no cover - discover 模式
 
 from app.application.actor import Actor
 from app.application.booking_service import BookingAppService
-from app.application.clock import FrozenClock
+from app.application.clock import FrozenClock, SystemClock
 from app.application.commands import PlaceBookingCommand
 from app.application.fulfillment_service import FulfillmentService
 from app.domain.enums import ActorRole, BookingEvent, BookingStatus
@@ -196,6 +196,16 @@ class NoShowClockTest(unittest.TestCase):  # pylint: disable=too-many-instance-a
         self.assertEqual(payload["scanned_at"], "2027-03-01 02:00:00")
         self.assertEqual(payload["scanned_at_local"], "2027-03-01 10:00:00")
         self.assertEqual(payload["timezone"], "Asia/Shanghai")
+
+    def test_时钟自带来源标签(self) -> None:
+        """真实时钟与假时钟要能自证来源，报告里才分得清"真发生"与"用例拨动"。"""
+        real = SystemClock()
+        self.assertEqual(real.source(), "system")
+        self.assertIsNotNone(real.now().tzinfo)
+
+        frozen = FrozenClock(current=local_at(2027, 3, 1, 10, 0, 0))
+        self.assertEqual(frozen.source(), "frozen")
+        self.assertEqual(frozen.now(), local_at(2027, 3, 1, 10, 0, 0))
 
 
 if __name__ == "__main__":

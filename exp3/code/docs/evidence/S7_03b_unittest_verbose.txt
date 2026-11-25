@@ -1,3 +1,11 @@
+test_两次密码不一致时拒绝注册 (tests.test_account_register.AccountRegisterTest.test_两次密码不一致时拒绝注册)
+确认框与密码不一致直接拒绝，避免建出"以为设了 A 其实设了 B"的账号。 ... ok
+test_可用性检查与注册结论一致 (tests.test_account_register.AccountRegisterTest.test_可用性检查与注册结论一致)
+``check_available`` 通过则 ``register`` 必然能成；已存在则两者都给 422。 ... ok
+test_密码过弱时拒绝注册 (tests.test_account_register.AccountRegisterTest.test_密码过弱时拒绝注册)
+少于 8 位、或只有字母没有数字，都拒绝。 ... ok
+test_手机号格式不对时拒绝注册 (tests.test_account_register.AccountRegisterTest.test_手机号格式不对时拒绝注册)
+11 位数字以外的手机号一律 422。 ... ok
 test_403越权时留一条DENIED审计 (tests.test_audit.AuditAppendOnlyTest.test_403越权时留一条DENIED审计) ... ok
 test_409被规则拒时留一条REJECTED审计 (tests.test_audit.AuditAppendOnlyTest.test_409被规则拒时留一条REJECTED审计) ... ok
 test_失败审计不改变订单状态 (tests.test_audit.AuditAppendOnlyTest.test_失败审计不改变订单状态) ... ok
@@ -104,6 +112,8 @@ test_remaining_is_derived_not_stored (tests.test_inventory_query.InventoryQueryT
 test_UTC时刻的2359不会被当成当日未入住 (tests.test_noshow_clock.NoShowClockTest.test_UTC时刻的2359不会被当成当日未入住) ... ok
 test_cutoff随时区配置平移 (tests.test_noshow_clock.NoShowClockTest.test_cutoff随时区配置平移) ... ok
 test_扫描报告同时给出UTC与本地时刻 (tests.test_noshow_clock.NoShowClockTest.test_扫描报告同时给出UTC与本地时刻) ... ok
+test_时钟自带来源标签 (tests.test_noshow_clock.NoShowClockTest.test_时钟自带来源标签)
+真实时钟与假时钟要能自证来源，报告里才分得清"真发生"与"用例拨动"。 ... ok
 test_未入住判定不受提前一天影响 (tests.test_noshow_clock.NoShowClockTest.test_未入住判定不受提前一天影响) ... ok
 test_未入住后再扫描不会重复处理 (tests.test_noshow_clock.NoShowClockTest.test_未入住后再扫描不会重复处理) ... ok
 test_本地2358仍然算已确认不判未入住 (tests.test_noshow_clock.NoShowClockTest.test_本地2358仍然算已确认不判未入住) ... ok
@@ -229,9 +239,9 @@ test_rollback_on_exception (tests.test_tx.TransactionTest.test_rollback_on_excep
 事务体内抛异常时整批回滚，占用不会被改脏。 ... ok
 
 ----------------------------------------------------------------------
-Ran 147 tests in 3.219s
+Ran 152 tests in 3.300s
 
 OK
-elapsed_total_ms=2391
+elapsed_total_ms=2448
 assert_elapsed_lt_5s=True
 exit=0

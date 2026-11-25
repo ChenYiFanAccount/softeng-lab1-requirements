@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-# pylint: disable=missing-function-docstring  # 按钮回调名即语义，逐个写 docstring 是噪声
 import tkinter as tk
 from datetime import date, timedelta
 from tkinter import ttk
@@ -133,15 +132,18 @@ class InventoryScreen(BaseScreen):
         self.set_message(self.message_label, f"{card.name}：{len(rows)} 天", ok=True)
 
     def hotel_id(self) -> int | None:
+        """当前登录员工所属酒店（管理员为 None，表示可跨店）。"""
         actor = self.session.actor
         return None if actor is None else actor.hotel_id
 
     def _selected(self):
+        """返回（当前房型卡片, 选中行对应的库存记录）。"""
         row = self.selected_raw(self.tree)
         card = self.room_types.get(self.room_choice.get())
         return (card, row)
 
     def do_set_available(self) -> None:
+        """按「可售改为」的值提交库存调整。"""
         card, row = self._selected()
         if card is None or row is None:
             self.set_message(self.message_label, "请先选中日期行", ok=False)
@@ -159,6 +161,7 @@ class InventoryScreen(BaseScreen):
         )
 
     def do_set_price(self) -> None:
+        """按「单价改为」的值提交当日房价。"""
         card, row = self._selected()
         if card is None or row is None:
             self.set_message(self.message_label, "请先选中日期行", ok=False)
@@ -176,6 +179,7 @@ class InventoryScreen(BaseScreen):
         )
 
     def do_suspend(self) -> None:
+        """把当日置为停售。"""
         card, row = self._selected()
         if card is None or row is None:
             self.set_message(self.message_label, "请先选中日期行", ok=False)
@@ -188,6 +192,7 @@ class InventoryScreen(BaseScreen):
         )
 
     def do_resume(self) -> None:
+        """把当日恢复为在售。"""
         card, row = self._selected()
         if card is None or row is None:
             self.set_message(self.message_label, "请先选中日期行", ok=False)

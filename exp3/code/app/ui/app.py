@@ -13,6 +13,7 @@ from tkinter import ttk
 from typing import Callable
 
 from app.domain.enums import ActorRole
+from app.infrastructure.db.connection import connect, default_db_path
 from app.ui import theme
 from app.ui.screens.admin import AdminScreen
 from app.ui.screens.audit import AuditScreen
@@ -163,16 +164,7 @@ def _spec(key: str) -> ScreenSpec | None:
 
 
 def run(db_path: str | None = None, conn: sqlite3.Connection | None = None) -> int:
-    """启动界面；``db_path`` 为 None 用配置里的默认库，``conn`` 可由调用方预先建好。
-
-    连接模块在这里延迟导入：``app.ui.app`` 被 ``run.py`` 与冒烟脚本同时引用，
-    顶层导入会让「还没建库就跑界面」的路径先炸在 import 阶段。
-    """
-    from app.infrastructure.db.connection import (  # pylint: disable=import-outside-toplevel
-        connect,
-        default_db_path,
-    )
-
+    """启动界面；``db_path`` 为 None 用配置里的默认库，``conn`` 可由调用方预先建好。"""
     own_conn = conn is None
     connection = conn if conn is not None else connect(db_path or default_db_path())
     window = MainWindow(Session(conn=connection))
@@ -186,9 +178,4 @@ def run(db_path: str | None = None, conn: sqlite3.Connection | None = None) -> i
 
 def open_connection(db_path: str | None = None) -> sqlite3.Connection:
     """给冒烟脚本用：拿到与 ``run`` 相同的连接配置。"""
-    from app.infrastructure.db.connection import (  # pylint: disable=import-outside-toplevel
-        connect,
-        default_db_path,
-    )
-
     return connect(db_path or default_db_path())

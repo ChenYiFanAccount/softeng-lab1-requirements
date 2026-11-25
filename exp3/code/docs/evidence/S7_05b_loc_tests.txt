@@ -1,4 +1,4 @@
-tests  files=21  phys=3465  code=2783  effective=2453 
-total  files=21  phys=3465  code=2783  effective=2453 
+tests  files=22  phys=3546  code=2846  effective=2504 
+total  files=22  phys=3546  code=2846  effective=2504 
 口径：effective = 非空 且 非纯注释 且 非 docstring（报告主口径）
 exit=0
