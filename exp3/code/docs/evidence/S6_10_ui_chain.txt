@@ -1,13 +1,14 @@
 chain_steps=8
 step1 登录 ok actor=13800000001 role=CUSTOMER
-step2 搜索 ok rows=6 range=2026-11-27→2026-11-29
-step3 下单 ok booking=BK2026112514491280C9 status=PENDING total=69800
-step4 我的订单 ok detail=订单号 BK2026112514491280C9
+step2 搜索 ok rows=6 range=2026-11-28→2026-11-30
+step3 下单 ok booking=BK20261125161355F034 status=PENDING total=64800
+step4 我的订单 ok detail=订单号 BK20261125161355F034
 step5 顾客越权被拒 ok msg=取消失败：非法转换：待确认不接受事件「取消订单」（from_status=PENDING, event=CANCEL）
 确认预订 ok status=CONFIRMED
 办理入住 ok status=CHECKED_IN
 办理退房 ok status=CHECKED_OUT
 审计 ok 业务4条=['CREATE', 'CONFIRM', 'CHECK_IN', 'CHECK_OUT'] 失败1条=['REJECTED:CANCEL']
-报表营收 ok total_cents=69800
+报表营收 ok total_cents=64800
 check=passed
+
 exit=0

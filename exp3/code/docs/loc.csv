@@ -45,7 +45,7 @@ app/ui/format.py,101,76,62
 app/ui/screens/__init__.py,1,1,1
 app/ui/screens/admin.py,149,130,125
 app/ui/screens/audit.py,87,75,72
-app/ui/screens/base.py,149,124,107
+app/ui/screens/base.py,176,147,125
 app/ui/screens/hotel_console.py,150,131,126
 app/ui/screens/inventory_admin.py,212,185,180
 app/ui/screens/login.py,101,85,78
@@ -86,9 +86,10 @@ tools/init_db.py,125,98,89
 tools/migrate.py,68,51,43
 tools/reconcile_report.py,233,202,184
 tools/scan_once.py,122,101,86
-tools/take_screenshots.py,258,221,197
+tools/take_screenshots.py,407,345,301
+tools/ui_chain.py,272,213,187
 tools/ui_smoke.py,85,71,62
-#app,7371,6116,5032
+#app,7398,6139,5050
 #tests,3465,2783,2453
-#tools,1864,1564,1366
-#total,12700,10463,8851
+#tools,2285,1901,1657
+#total,13148,10823,9160

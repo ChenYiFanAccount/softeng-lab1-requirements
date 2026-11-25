@@ -10,4 +10,5 @@ rule=shared_connection scope=code files=91 expected=0 hits=0 result=OK
   regex=check_same_thread\s*=\s*False
 rules=5 total_hits=0
 check=passed
+
 exit=0

@@ -67,13 +67,14 @@ class BaseScreen(ttk.Frame):
         columns: Sequence[ColumnSpec],
         height: int = 12,
         selectmode: str = "browse",
-        stretch: bool = False,
+        stretch: bool = True,
     ) -> ttk.Treeview:
-        """带滚动条与斑马纹的表格；``columns`` 为 (列 id, 表头, 像素宽)。
+        """带滚动条与斑马纹的表格；``columns`` 为 (列 id, 表头, 基准像素宽)。
 
-        ``stretch`` 默认 ``False``：列宽就是给定像素值，窗口变宽也不放大。
-        一旦按比例拉伸，末列会被推出可视区——S6-R1-01 抓到的"合计/状态被截"
-        就是表格把宽度吃满造成的。确实想均分多余宽度时才传 ``True``。
+        ``stretch`` 为真时按"基准宽度占比"把六列铺满表格可视宽度：窗口变宽，
+        所有列一起按比例变宽，末列始终留在窗内；窗口缩到 minsize 也按比例收缩，
+        但不低于 ``minwidth``。分配由本函数自己算（``<Configure>`` 触发），
+        不依赖 ttk 的隐式 stretch，任何 DPI/尺寸下结果都可复现。
         """
         holder = ttk.Frame(parent, style="Card.TFrame")
         holder.pack(fill="both", expand=True, pady=(4, 8))
@@ -85,11 +86,32 @@ class BaseScreen(ttk.Frame):
             selectmode=selectmode,
             style="Data.Treeview",
         )
-        for name, heading, width in columns:
-            tree.heading(name, text=heading, anchor="w")
-            # 全部列按「指定宽度」做比例分配：窗口变宽时所有列一起长，
-            # 不会被某一列吃掉空间、把后面的列顶出可视区（本阶段反复踩到）。
-            tree.column(name, width=width, minwidth=40, anchor="w", stretch=stretch)
+        names = [spec[0] for spec in columns]
+        headings = {spec[0]: spec[1] for spec in columns}
+        base = {spec[0]: max(40, int(spec[2])) for spec in columns}
+        for name in names:
+            tree.heading(name, text=headings[name], anchor="w")
+            tree.column(name, width=base[name], minwidth=40, anchor="w", stretch=False)
+
+        if stretch:
+
+            def relayout(_event: object = None) -> None:
+                # 减 2px：Treeview 左右各有 1px 内边框，不减的话末列右边线会被裁掉
+                avail = tree.winfo_width() - 2
+                if avail <= 1:
+                    return
+                weights = sum(base.values())
+                widths = {key: max(40, int(avail * base[key] / weights)) for key in names}
+                # 舍入误差补给最宽的那列，保证合计恰等于可视宽度、末列不越界
+                widest = max(names, key=lambda key: widths[key])
+                widths[widest] += avail - sum(widths.values())
+                if all(int(tree.column(key, "width")) == widths[key] for key in names):
+                    return
+                for key in names:
+                    tree.column(key, width=widths[key])
+
+            tree.bind("<Configure>", relayout)
+            tree.after_idle(relayout)
         scroll = ttk.Scrollbar(holder, orient="vertical", command=tree.yview)
         tree.configure(yscrollcommand=scroll.set)
         tree.pack(side="left", fill="both", expand=True)
