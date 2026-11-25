@@ -1,0 +1,7 @@
+python -m unittest code.tests.test_state_machine -> exit=0 :: Ran 19 tests in 0.001s
+python -m unittest code.tests.test_pricing -> exit=0 :: Ran 8 tests in 0.000s
+python -m unittest code.tests.test_services -> exit=0 :: Ran 9 tests in 0.000s
+python -m unittest code.tests.test_domain_models -> exit=0 :: Ran 15 tests in 0.000s
+python -m unittest code.tests.test_inventory_domain -> exit=0 :: Ran 7 tests in 0.000s
+两种跑法均已验证：包模式（本文件）+ discover 模式（S4_06）
+exit=0

@@ -146,12 +146,13 @@ class PermissionTest(unittest.TestCase):  # pylint: disable=too-many-instance-at
 
         self.assertEqual(ctx.exception.code, "PERMISSION_DENIED")
         self.assertNotEqual(str(ctx.exception), MASKED_BOOKING_MESSAGE)
-        # 状态没变、审计也没写
+        # 状态没变；审计多了一行 DENIED（S4-4：403 也要留痕，但订单本身不动）
         self.assertEqual(
             self.service.get_booking(self.booking.booking_no, self.guest).status,
             BookingStatus.PENDING,
         )
-        self.assertEqual(int(self.conn.execute("SELECT COUNT(*) FROM audit_log").fetchone()[0]), 1)
+        rows = self.conn.execute("SELECT action FROM audit_log ORDER BY id").fetchall()
+        self.assertEqual([str(row["action"]) for row in rows], ["CREATE", "DENIED:CONFIRM"])
 
     def test_跨酒店员工不能确认本店订单(self) -> None:
         with self.assertRaises(PermissionDeniedError) as ctx:

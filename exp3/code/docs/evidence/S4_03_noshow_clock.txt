@@ -1,0 +1,11 @@
+test_入住日2358仍然算已确认不判未入住 (code.tests.test_noshow_clock.NoShowClockTest.test_入住日2358仍然算已确认不判未入住) ... ok
+test_入住日2359之后记为未入住并释放占用 (code.tests.test_noshow_clock.NoShowClockTest.test_入住日2359之后记为未入住并释放占用) ... ok
+test_未入住判定不受提前一天影响 (code.tests.test_noshow_clock.NoShowClockTest.test_未入住判定不受提前一天影响) ... ok
+test_未入住后再扫描不会重复处理 (code.tests.test_noshow_clock.NoShowClockTest.test_未入住后再扫描不会重复处理) ... ok
+test_跨过零点后走自动入住而不是未入住 (code.tests.test_noshow_clock.NoShowClockTest.test_跨过零点后走自动入住而不是未入住) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.194s
+
+OK
+exit=0

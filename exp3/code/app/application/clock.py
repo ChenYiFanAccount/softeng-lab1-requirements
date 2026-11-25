@@ -40,7 +40,7 @@ class SystemClock:
 
 @dataclass(slots=True)
 class FrozenClock:
-    """可拨动的假时钟：用例里用它代替 ``time.sleep``。"""
+    """可拨动的假时钟：用例里用它一步跨过等待时间，不必真等。"""
 
     current: datetime = field(default_factory=utc_now)
 

@@ -8,7 +8,7 @@
 
     python code/tools/count_loc.py                    # 三列统计 app/tests/tools
     python code/tools/count_loc.py --root code/app    # S7-5 判据用法，只统计 app
-    python code/tools/count_loc.py --csv code/docs/loc.csv
+    python code/tools/count_loc.py --csv code/docs/loc.csv --per-file   # 逐文件 CSV
 
 输出示例::
 
@@ -119,6 +119,39 @@ def write_csv(path: Path, rows: Sequence[tuple[str, tuple[int, int, int, int]]])
             writer.writerow([name, files, physical, code_lines, effective])
 
 
+def file_rows(root: Path, sections: Sequence[str]) -> list[tuple[str, tuple[int, int, int]]]:
+    """逐文件统计：`(相对 code 的 POSIX 路径, (物理行, 非空非注释, 有效行))`。
+
+    G2-R1-01 要求 CSV "每个 .py 一行"，因为报告里要能把数字对到具体文件；
+    只有分段汇总的话，读者无法核查"2294 行由哪些文件构成"。
+    """
+    rows: list[tuple[str, tuple[int, int, int]]] = []
+    for name in sections:
+        directory = root / name
+        if not directory.is_dir():
+            continue
+        for path in sorted(directory.rglob("*.py")):
+            rows.append((path.relative_to(root).as_posix(), count_file(path)))
+    return rows
+
+
+def write_csv_per_file(
+    path: Path,
+    rows: Sequence[tuple[str, tuple[int, int, int]]],
+    summary: Sequence[tuple[str, tuple[int, int, int, int]]],
+) -> None:
+    """写"逐文件 + 分段汇总"两段式 CSV（汇总行以 `#` 开头，与文件行区分）。"""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["path", "physical_lines", "non_blank_non_comment", "effective_lines"])
+        for relative, (physical, code_lines, effective) in rows:
+            writer.writerow([relative, physical, code_lines, effective])
+        for name, stats in summary:
+            _files, physical, code_lines, effective = stats
+            writer.writerow([f"#{name}", physical, code_lines, effective])
+
+
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     """解析命令行参数。"""
     parser = argparse.ArgumentParser(description="统计有效代码行（扣空行/注释/docstring）")
@@ -141,8 +174,14 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
         default=None,
         help="CSV 输出路径（全量模式默认 code/docs/loc.csv；--root 模式默认不写）",
     )
+    parser.add_argument(
+        "--per-file",
+        action="store_true",
+        help="CSV 逐文件输出（每个 .py 一行 + 末尾 #section 汇总行），G2-R1-01 / S7-5 要求",
+    )
     parser.add_argument("--no-csv", action="store_true", help="只打印不写 CSV")
     return parser.parse_args(list(argv))
+
 
 
 def main(argv: Iterable[str] | None = None) -> int:
@@ -169,8 +208,14 @@ def main(argv: Iterable[str] | None = None) -> int:
     if csv_path is None and args.root is None and not args.no_csv:
         csv_path = DEFAULT_CSV
     if csv_path is not None and not args.no_csv:
-        write_csv(csv_path, rows)
-        print(f"csv={csv_path}")
+        if args.per_file:
+            per_file = file_rows(root, args.sections)
+            write_csv_per_file(csv_path, per_file, list(rows) + [("total", totals)])
+            print(f"csv={csv_path}")
+            print(f"csv_mode=per_file rows={len(per_file)}")
+        else:
+            write_csv(csv_path, rows)
+            print(f"csv={csv_path}")
     return 0
 
 

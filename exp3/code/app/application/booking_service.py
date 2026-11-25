@@ -27,7 +27,13 @@ from app.application.clock import Clock, SystemClock
 from app.application.commands import PlaceBookingCommand, RescheduleCommand
 from app.application.errors import ConflictError, masked_booking_error
 from app.domain.enums import ActorRole, BookingEvent, BookingStatus
-from app.domain.errors import DuplicateBookingError, NoAvailabilityError, PermissionDeniedError
+from app.domain.errors import (
+    DomainError,
+    DuplicateBookingError,
+    IllegalTransitionError,
+    NoAvailabilityError,
+    PermissionDeniedError,
+)
 from app.domain.models import AuditLog, Booking
 from app.domain.pricing import quote, stay_dates
 from app.domain.state_machine import BookingStateMachine
@@ -41,8 +47,14 @@ from app.infrastructure.db.connection import immediate_transaction
 from app.infrastructure.db.inventory_repository import SqliteInventoryRepository
 from app.infrastructure.db.mapping import date_text
 
-#: 取消类事件：转过去就要把占用的房量放回
-RELEASING_EVENTS = (BookingEvent.CANCEL, BookingEvent.REJECT, BookingEvent.TIMEOUT)
+#: 终止类事件：转过去就要把占用的房量放回
+#: （``NO_SHOW`` 也算：客人没来，房间不该被"幽灵住宿"永久占住）
+RELEASING_EVENTS = (
+    BookingEvent.CANCEL,
+    BookingEvent.REJECT,
+    BookingEvent.TIMEOUT,
+    BookingEvent.NO_SHOW,
+)
 
 #: 办理类事件：转过去要写一条 ``stay_record``
 STAY_EVENTS = {
@@ -58,6 +70,9 @@ AUDIT_ROLE_CODE = {
     ActorRole.PLATFORM_ADMIN: "ADMIN",
     ActorRole.SYSTEM: "SYSTEM",
 }
+
+#: 被拒操作的审计前缀：403 记"无权"，409 记"被规则拒"，都带事件名
+FAILED_ACTION_PREFIX = {403: "DENIED", 409: "REJECTED"}
 
 
 class BookingAppService:  # pylint: disable=too-many-instance-attributes
@@ -204,10 +219,37 @@ class BookingAppService:  # pylint: disable=too-many-instance-attributes
 
         Returns:
             流转后的订单。
+
+        Raises:
+            IllegalTransitionError: 该边不允许（409），已在审计里留 ``REJECTED:<事件>``。
+            PermissionDeniedError: 角色无权触发该边（403），审计留 ``DENIED:<事件>``。
         """
+        failure: DomainError | None = None
         with immediate_transaction(self._conn):
             booking = self._visible(booking_no, actor)
             before = booking.status
+            failure = self._transition_or_record(booking, event, actor, reason)
+            if failure is None:
+                self._finish_transition(booking, event, actor, reason, before)
+        if failure is not None:
+            raise failure
+        return booking
+
+    # ------------------------------------------------------------------ 流转内部步骤
+
+    def _transition_or_record(
+        self,
+        booking: Booking,
+        event: BookingEvent,
+        actor: Actor,
+        reason: str | None,
+    ) -> DomainError | None:
+        """尝试改状态；被状态机拒时先在事务内补一条失败审计，再把异常交回调用方。
+
+        为什么要在同一个事务里写失败审计：审计表只追加，失败也是事实；若等
+        回滚后再单独写，就变成"两次提交"，一旦进程在中间退出，失败记录会丢。
+        """
+        try:
             self._machine.transition(
                 booking,
                 event,
@@ -215,24 +257,59 @@ class BookingAppService:  # pylint: disable=too-many-instance-attributes
                 at=self._clock.now(),
                 reason=reason,
             )
-            booking.cancel_initiator = (
-                actor.initiator_code if event in RELEASING_EVENTS else booking.cancel_initiator
+        except (IllegalTransitionError, PermissionDeniedError) as error:
+            self._write_failed_audit(booking, event, actor, error)
+            return error
+        return None
+
+    def _finish_transition(
+        self,
+        booking: Booking,
+        event: BookingEvent,
+        actor: Actor,
+        reason: str | None,
+        before: BookingStatus,
+    ) -> None:
+        """状态已经改好之后的收尾：释放库存、写住店记录、写审计。"""
+        booking.cancel_initiator = (
+            actor.initiator_code if event in RELEASING_EVENTS else booking.cancel_initiator
+        )
+        if event in RELEASING_EVENTS:
+            self._release(booking)
+        self._bookings.save(booking)
+        stay_action = STAY_EVENTS.get(event)
+        if stay_action is not None:
+            self._bookings.insert_stay_record(
+                booking.booking_id,
+                stay_action,
+                actor.account_id,
+                "SYSTEM" if actor.is_system else "MANUAL",
+                self._clock.now().strftime("%Y-%m-%d %H:%M:%S"),
+                reason,
             )
-            if event in RELEASING_EVENTS:
-                self._release(booking)
-            self._bookings.save(booking)
-            stay_action = STAY_EVENTS.get(event)
-            if stay_action is not None:
-                self._bookings.insert_stay_record(
-                    booking.booking_id,
-                    stay_action,
-                    actor.account_id,
-                    "SYSTEM" if actor.is_system else "MANUAL",
-                    self._clock.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    reason,
-                )
-            self._write_audit(booking, event.value, actor, before, booking.status, reason)
-            return booking
+        self._write_audit(booking, event.value, actor, before, booking.status, reason)
+
+    def _write_failed_audit(
+        self,
+        booking: Booking,
+        event: BookingEvent,
+        actor: Actor,
+        error: DomainError,
+    ) -> None:
+        """记录一次被拒的流转尝试（403 → ``DENIED:``，409 → ``REJECTED:``）。"""
+        prefix = FAILED_ACTION_PREFIX.get(error.http_status, "FAILED")
+        self._audits.append(
+            AuditLog(
+                operator_id=actor.account_id,
+                operator_role=AUDIT_ROLE_CODE[actor.role],
+                target_type="BOOKING",
+                target_id=booking.booking_no,
+                action=f"{prefix}:{event.value}",
+                before_state=booking.status.value,
+                after_state=booking.status.value,
+                created_at=self._clock.now(),
+            )
+        )
 
     def cancel_booking(
         self,

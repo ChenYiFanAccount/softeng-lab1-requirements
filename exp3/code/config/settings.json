@@ -19,5 +19,11 @@
   "runtime": {
     "money_unit": "cent",
     "timezone": "Asia/Shanghai"
+  },
+  "fulfillment": {
+    "pending_timeout_minutes": 30,
+    "no_show_cutoff": "23:59",
+    "auto_check_in_enabled": true,
+    "batch_limit": 200
   }
 }

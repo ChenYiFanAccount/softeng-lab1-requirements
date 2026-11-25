@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 import sqlite3
-from datetime import date
+from datetime import date, datetime
 from typing import Sequence
 
 from app.domain.enums import BookingStatus
@@ -123,6 +123,40 @@ class SqliteBookingRepository(BookingRepository):
             f"SELECT {_BOOKING_COLUMNS} FROM booking WHERE hotel_id = ? "
             "ORDER BY created_at DESC, id DESC LIMIT ?",
             (hotel_id, limit),
+        ).fetchall()
+        return [_to_booking(row, self.nights_of(int(row["id"]))) for row in rows]
+
+    def list_pending_created_before(self, cutoff: datetime, limit: int = 200) -> list[Booking]:
+        """待确认且建单时间不晚于 ``cutoff`` 的订单（超时取消扫描用）。
+
+        ``created_at`` 落库是 UTC 秒级文本，与 ``mapping.time_text`` 同格式，
+        因此可以直接做字符串比较（ISO 文本的字典序 = 时间序）。
+        """
+        rows = self._conn.execute(
+            f"SELECT {_BOOKING_COLUMNS} FROM booking "
+            "WHERE status = 'PENDING' AND created_at <= ? "
+            "ORDER BY created_at ASC, id ASC LIMIT ?",
+            (time_text(cutoff), limit),
+        ).fetchall()
+        return [_to_booking(row, self.nights_of(int(row["id"]))) for row in rows]
+
+    def list_confirmed_check_in_before(self, day: date, limit: int = 200) -> list[Booking]:
+        """已确认且入住日**早于** ``day`` 的订单（自动入住补偿扫描用）。"""
+        rows = self._conn.execute(
+            f"SELECT {_BOOKING_COLUMNS} FROM booking "
+            "WHERE status = 'CONFIRMED' AND check_in_date < ? "
+            "ORDER BY check_in_date ASC, id ASC LIMIT ?",
+            (date_text(day), limit),
+        ).fetchall()
+        return [_to_booking(row, self.nights_of(int(row["id"]))) for row in rows]
+
+    def list_confirmed_check_in_on(self, day: date, limit: int = 200) -> list[Booking]:
+        """已确认且入住日**正是** ``day`` 的订单（当日 no-show 扫描用）。"""
+        rows = self._conn.execute(
+            f"SELECT {_BOOKING_COLUMNS} FROM booking "
+            "WHERE status = 'CONFIRMED' AND check_in_date = ? "
+            "ORDER BY id ASC LIMIT ?",
+            (date_text(day), limit),
         ).fetchall()
         return [_to_booking(row, self.nights_of(int(row["id"]))) for row in rows]
 

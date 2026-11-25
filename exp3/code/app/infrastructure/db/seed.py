@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
+from app.domain.enums import SYSTEM_ACCOUNT_ID as _SYSTEM_ACCOUNT_ID
 from app.infrastructure.db.connection import immediate_transaction
 from app.infrastructure.security import derive_salt, hash_password
 
@@ -50,6 +51,9 @@ ACCOUNTS: tuple[tuple[str, str, int | None, str], ...] = (
     ("13800000002", "HOTEL_STAFF", 1, "ACTIVE"),
     ("13800000003", "HOTEL_STAFF", 2, "ACTIVE"),
 )
+
+#: 系统服务账号的固定主键（见 :func:`_insert_accounts` 的说明）
+SYSTEM_ACCOUNT_ID = _SYSTEM_ACCOUNT_ID
 
 #: 周末加价（周五、周六入住晚）
 WEEKEND_SURCHARGE_CENTS = 5000
@@ -211,8 +215,19 @@ def _insert_inventory_and_prices(
 
 
 def _insert_accounts(conn: sqlite3.Connection, hotel_ids: dict[int, int]) -> None:
-    """写入 4 个账号，口令统一为 :data:`DEMO_PASSWORD`。"""
+    """写入系统服务账号与 4 个演示账号，口令统一为 :data:`DEMO_PASSWORD`。
+
+    系统服务账号（``id = 0``、登录名 ``system``）供调度器写 ``stay_record`` 用：
+    该表的 ``operator_id`` 是指向 ``user_account`` 的 NOT NULL 外键，系统动作必须
+    有一个"真实存在的操作者"落库，否则外键会拒。它的 ``password_hash`` 被固定为
+    ``"!"``（不是合法口令格式），因此**无法登录**，只作为系统动作的落点。
+    """
     stamp = now_text()
+    conn.execute(
+        "INSERT INTO user_account (id, login_name, password_hash, role, hotel_id,"
+        " status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (SYSTEM_ACCOUNT_ID, "system", "!", "PLATFORM_ADMIN", None, "ACTIVE", stamp),
+    )
     for login_name, role, hotel_index, status in ACCOUNTS:
         hotel_id = hotel_ids[hotel_index] if hotel_index is not None else None
         conn.execute(

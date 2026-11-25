@@ -1,4 +1,4 @@
-﻿reset=yes
+reset=yes
 migrations_applied=none
 seed_applied=True
 db=D:\NJU\softengineering\exp3\code\data\app.db
@@ -9,5 +9,6 @@ foreign_key_check=[]
 integrity_check=ok
 journal_mode=wal
 user_version=1
-rows=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=4
+rows=audit_log=0 booking=0 booking_night=0 holiday_calendar=3 hotel=3 idempotency_key=0 notification_record=0 room_inventory=720 room_price=720 room_type=8 stay_record=0 user_account=5
 check=passed
+exit=0

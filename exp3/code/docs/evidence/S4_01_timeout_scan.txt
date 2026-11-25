@@ -1,0 +1,13 @@
+test_一轮扫描处理多张超时单 (code.tests.test_timeout_scan.TimeoutScanTest.test_一轮扫描处理多张超时单) ... ok
+test_扫描推进三天跨度也不靠真实等待 (code.tests.test_timeout_scan.TimeoutScanTest.test_扫描推进三天跨度也不靠真实等待) ... ok
+test_未超时的待确认订单不会被扫描动到 (code.tests.test_timeout_scan.TimeoutScanTest.test_未超时的待确认订单不会被扫描动到) ... ok
+test_超时31分钟后扫描取消订单并回补库存 (code.tests.test_timeout_scan.TimeoutScanTest.test_超时31分钟后扫描取消订单并回补库存) ... ok
+test_重复扫描不重复回补库存 (code.tests.test_timeout_scan.TimeoutScanTest.test_重复扫描不重复回补库存) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.207s
+
+OK
+elapsed_total_ms=427
+assert_elapsed_lt_5s=True
+exit=0

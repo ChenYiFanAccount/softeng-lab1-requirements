@@ -1,0 +1,6 @@
+scanned_dirs=app,tests,tools scanned_files=55
+pattern='time.sleep' hits=0
+pattern='delete from audit_log' hits=0
+total_hits=0
+check=passed
+exit=0

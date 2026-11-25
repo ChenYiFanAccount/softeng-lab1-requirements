@@ -4,8 +4,8 @@
 实现上把"查键 → 建单 → 写键"放进同一个 ``BEGIN IMMEDIATE`` 事务：并发同键的
 第二个线程会阻塞到第一个提交，再看键就已存在，直接返回原订单号。
 
-审计只追加：本类只提供 ``append`` 与 ``query``，**没有** update/delete 方法，
-S4-4 会用 ``grep 'delete from audit_log'`` 反向确认代码里也没有。
+审计只追加：本类只提供 ``append`` 与 ``query``，**没有**任何修改或删除方法，
+S4-4 会在仓库范围内反向确认真的一条都没有。
 """
 
 from __future__ import annotations

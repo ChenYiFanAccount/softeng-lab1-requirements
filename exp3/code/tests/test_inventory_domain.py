@@ -5,6 +5,14 @@ from __future__ import annotations
 import unittest
 from datetime import date
 
+import sys
+from pathlib import Path
+# 两种跑法都要成立（G2-R1-02）：`python -m unittest code.tests.X` 与
+# `python -m unittest discover -s code/tests -t code`。前者不会把 code/ 放进
+# sys.path，故在这里显式补一次；用 __file__ 定位，不依赖进程 cwd。
+_CODE_ROOT = Path(__file__).resolve().parents[1]
+if str(_CODE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_CODE_ROOT))
 from app.domain.errors import NoAvailabilityError, ValidationError
 from app.domain.inventory import (
     assert_can_occupy,

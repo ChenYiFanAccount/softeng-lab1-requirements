@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from app.domain.enums import ActorRole
+from app.domain.enums import SYSTEM_ACCOUNT_ID, ActorRole
 
 #: 角色 → 订单表 ``cancel_initiator`` 取值
 INITIATOR_BY_ROLE: dict[ActorRole, str] = {
@@ -61,5 +61,15 @@ class Actor:
 
     @classmethod
     def system(cls) -> "Actor":
-        """系统动作的伪操作者（用于超时取消、自动入住）。"""
-        return cls(account_id=0, role=ActorRole.SYSTEM, hotel_id=None, login_name="system")
+        """系统动作的伪操作者（用于超时取消、自动入住、no-show）。
+
+        ``account_id`` 取 :data:`app.domain.enums.SYSTEM_ACCOUNT_ID`——种子数据里确有
+        这一行"系统服务账号"（登录名 ``system``、口令不可用），因此写 ``stay_record``
+        时外键成立；``audit_log`` 无外键，记的也是同一个 id。
+        """
+        return cls(
+            account_id=SYSTEM_ACCOUNT_ID,
+            role=ActorRole.SYSTEM,
+            hotel_id=None,
+            login_name="system",
+        )

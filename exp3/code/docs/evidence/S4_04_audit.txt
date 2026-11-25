@@ -1,0 +1,11 @@
+test_403越权时留一条DENIED审计 (code.tests.test_audit.AuditAppendOnlyTest.test_403越权时留一条DENIED审计) ... ok
+test_409被规则拒时留一条REJECTED审计 (code.tests.test_audit.AuditAppendOnlyTest.test_409被规则拒时留一条REJECTED审计) ... ok
+test_失败审计不改变订单状态 (code.tests.test_audit.AuditAppendOnlyTest.test_失败审计不改变订单状态) ... ok
+test_失败审计里的操作者角色可追溯 (code.tests.test_audit.AuditAppendOnlyTest.test_失败审计里的操作者角色可追溯) ... ok
+test_整条链路只增不减 (code.tests.test_audit.AuditAppendOnlyTest.test_整条链路只增不减) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.202s
+
+OK
+exit=0

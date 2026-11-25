@@ -21,6 +21,7 @@ CODE_ROOT = Path(__file__).resolve().parents[1]
 if str(CODE_ROOT) not in sys.path:
     sys.path.insert(0, str(CODE_ROOT))
 
+from app.domain.enums import SYSTEM_ACCOUNT_ID  # noqa: E402
 from app.infrastructure.db import connection as db_connection  # noqa: E402
 from app.infrastructure.db import migrate_runner  # noqa: E402
 
@@ -87,11 +88,18 @@ def insert_fixture(conn) -> dict[str, int]:  # noqa: ANN001 - sqlite3.Connection
             (hotel_id, stamp),
         ).lastrowid
     )
+    # 系统服务账号：调度器写 stay_record 时 operator_id 的外键目标（固定 id = 0）
+    conn.execute(
+        "INSERT OR IGNORE INTO user_account (id, login_name, password_hash, role, hotel_id,"
+        " status, created_at) VALUES (?, 'system', '!', 'PLATFORM_ADMIN', NULL, 'ACTIVE', ?)",
+        (SYSTEM_ACCOUNT_ID, stamp),
+    )
     return {
         "hotel_id": hotel_id,
         "room_type_id": room_type_id,
         "guest_id": guest_id,
         "staff_id": staff_id,
+        "system_id": SYSTEM_ACCOUNT_ID,
     }
 
 

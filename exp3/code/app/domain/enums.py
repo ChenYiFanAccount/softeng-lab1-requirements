@@ -75,6 +75,10 @@ TERMINAL_STATUSES: frozenset[BookingStatus] = frozenset(
     {BookingStatus.CHECKED_OUT, BookingStatus.CANCELLED, BookingStatus.NO_SHOW}
 )
 
+#: 系统服务账号的固定主键：调度器（超时取消/自动入住/no-show）以它为操作者落库，
+#: 因为 ``stay_record.operator_id`` 是指向 ``user_account`` 的 NOT NULL 外键。
+SYSTEM_ACCOUNT_ID = 0
+
 _STATUS_LABELS: dict[BookingStatus, str] = {
     BookingStatus.PENDING: "待确认",
     BookingStatus.CONFIRMED: "已确认",

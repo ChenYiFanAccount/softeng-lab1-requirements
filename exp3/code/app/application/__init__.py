@@ -4,6 +4,7 @@
 
 - ``booking_service``：M1 下单、M4 取消、M5 改期；
 - ``inventory_service``：M2 库存维护（调可售、停售、复售）；
+- ``fulfillment_service``：M3 履约调度（超时取消、自动入住、no-show），时钟必须可注入；
 - ``commands``：用例入参（不可变）；
 - ``actor``：调用者身份与角色；
 - ``clock``：可注入时钟（测试用 ``FrozenClock`` 钉住时间）；
@@ -20,6 +21,7 @@ from app.application.errors import (
     bad_request,
     masked_booking_error,
 )
+from app.application.fulfillment_service import FulfillmentService, ScanReport
 from app.application.inventory_service import InventoryAppService
 
 __all__ = [
@@ -29,9 +31,11 @@ __all__ = [
     "Clock",
     "ConflictError",
     "FrozenClock",
+    "FulfillmentService",
     "InventoryAppService",
     "PlaceBookingCommand",
     "RescheduleCommand",
+    "ScanReport",
     "SystemClock",
     "bad_request",
     "masked_booking_error",
