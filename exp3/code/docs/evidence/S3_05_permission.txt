@@ -1,0 +1,13 @@
+test_不存在与无权访问返回同一错误码与文案 (code.tests.test_permission.PermissionTest.test_不存在与无权访问返回同一错误码与文案) ... ok
+test_本店员工可以确认订单 (code.tests.test_permission.PermissionTest.test_本店员工可以确认订单) ... ok
+test_管理员可以跨酒店确认订单 (code.tests.test_permission.PermissionTest.test_管理员可以跨酒店确认订单) ... ok
+test_跨酒店员工不能确认本店订单 (code.tests.test_permission.PermissionTest.test_跨酒店员工不能确认本店订单) ... ok
+test_跨酒店员工看到的是蒙版错误 (code.tests.test_permission.PermissionTest.test_跨酒店员工看到的是蒙版错误) ... ok
+test_顾客不能替别人下单 (code.tests.test_permission.PermissionTest.test_顾客不能替别人下单) ... ok
+test_顾客不能确认自己的订单 (code.tests.test_permission.PermissionTest.test_顾客不能确认自己的订单) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.250s
+
+OK
+exit=0

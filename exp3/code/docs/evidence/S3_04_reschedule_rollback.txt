@@ -1,0 +1,10 @@
+test_写到一半失败也整单回滚 (code.tests.test_reschedule_rollback.RescheduleRollbackTest.test_写到一半失败也整单回滚) ... ok
+test_新日期余量不足时新日期仍为零占用 (code.tests.test_reschedule_rollback.RescheduleRollbackTest.test_新日期余量不足时新日期仍为零占用) ... ok
+test_预检失败时旧日期占用不变 (code.tests.test_reschedule_rollback.RescheduleRollbackTest.test_预检失败时旧日期占用不变) ... ok
+test_预检失败时订单本身不变 (code.tests.test_reschedule_rollback.RescheduleRollbackTest.test_预检失败时订单本身不变) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.174s
+
+OK
+exit=0

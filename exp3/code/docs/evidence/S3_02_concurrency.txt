@@ -1,0 +1,11 @@
+threads=200 rooms=1 nights=1
+success=1
+fail=199
+locked_errors=0
+negative_stock=0
+booking_rows=1
+booking_night_rows=1
+failure_breakdown={'sold_out': 199}
+elapsed_ms=5461.9
+check=passed
+exit=0

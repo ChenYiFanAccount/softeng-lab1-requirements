@@ -1,4 +1,4 @@
 section,files,physical_lines,non_blank_non_comment,effective_lines
-app,17,2223,1797,1317
-tests,10,1419,1180,999
-tools,5,696,572,499
+app,29,3647,3000,2294
+tests,15,2232,1822,1590
+tools,6,945,786,687

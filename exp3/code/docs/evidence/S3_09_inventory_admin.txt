@@ -1,0 +1,12 @@
+test_停售与复售 (code.tests.test_inventory_admin.InventoryAdminTest.test_停售与复售) ... ok
+test_可售不能小于已占用 (code.tests.test_inventory_admin.InventoryAdminTest.test_可售不能小于已占用) ... ok
+test_可售不能超过总房量 (code.tests.test_inventory_admin.InventoryAdminTest.test_可售不能超过总房量) ... ok
+test_管理员可以改任意酒店库存 (code.tests.test_inventory_admin.InventoryAdminTest.test_管理员可以改任意酒店库存) ... ok
+test_调整可售房量并写审计 (code.tests.test_inventory_admin.InventoryAdminTest.test_调整可售房量并写审计) ... ok
+test_顾客不能改库存 (code.tests.test_inventory_admin.InventoryAdminTest.test_顾客不能改库存) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.214s
+
+OK
+exit=0

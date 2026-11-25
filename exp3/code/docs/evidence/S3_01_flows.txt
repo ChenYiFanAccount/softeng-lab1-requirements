@@ -1,0 +1,15 @@
+test_取消后同顾客可以重新预订同一时段 (code.tests.test_flows.CancelFlowTest.test_取消后同顾客可以重新预订同一时段) ... ok
+test_顾客取消链路释放库存并留审计 (code.tests.test_flows.CancelFlowTest.test_顾客取消链路释放库存并留审计) ... ok
+test_下单确认入住退房全链路 (code.tests.test_flows.OrderLifecycleTest.test_下单确认入住退房全链路) ... ok
+test_全链路留下完整审计 (code.tests.test_flows.OrderLifecycleTest.test_全链路留下完整审计) ... ok
+test_重叠区间被应用层复核拒绝 (code.tests.test_flows.OverlapReviewTest.test_重叠区间被应用层复核拒绝) ... ok
+test_首尾相接不算重叠 (code.tests.test_flows.OverlapReviewTest.test_首尾相接不算重叠) ... ok
+test_待确认订单不能改期 (code.tests.test_flows.RescheduleFlowTest.test_待确认订单不能改期) ... ok
+test_改期到重叠区间只占用新增的那几天 (code.tests.test_flows.RescheduleFlowTest.test_改期到重叠区间只占用新增的那几天) ... ok
+test_改期链路旧日期释放新日期占用 (code.tests.test_flows.RescheduleFlowTest.test_改期链路旧日期释放新日期占用) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.322s
+
+OK
+exit=0
