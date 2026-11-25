@@ -152,6 +152,44 @@ def write_csv_per_file(
             writer.writerow([f"#{name}", physical, code_lines, effective])
 
 
+def function_rows(root: Path) -> list[tuple[str, int, str, int]]:
+    """列出目录下所有函数的 `(相对路径, 起始行, 限定名, 行数)`。
+
+    S7-8 需要"长函数"清单，而 `ast` 的 `end_lineno` 是唯一可靠的行数来源
+    （grep 数不出多行签名、装饰器与嵌套函数）。限定名按 `类.方法` 拼，便于
+    在报告里直接定位。
+    """
+    rows: list[tuple[str, int, str, int]] = []
+    for path in sorted(root.rglob("*.py")):
+        text = path.read_text(encoding="utf-8")
+        try:
+            tree = ast.parse(text, filename=str(path))
+        except SyntaxError:
+            continue
+        relative = path.relative_to(root).as_posix()
+        _collect_functions(tree, relative, "", rows)
+    return rows
+
+
+def _collect_functions(
+    node: ast.AST,
+    relative: str,
+    prefix: str,
+    rows: list[tuple[str, int, str, int]],
+) -> None:
+    """递归收集函数定义，进入类时把类名并入限定名前缀。"""
+    for child in ast.iter_child_nodes(node):
+        if isinstance(child, ast.ClassDef):
+            _collect_functions(child, relative, f"{prefix}{child.name}.", rows)
+            continue
+        if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            end = getattr(child, "end_lineno", None) or child.lineno
+            rows.append((relative, child.lineno, f"{prefix}{child.name}", end - child.lineno + 1))
+            _collect_functions(child, relative, f"{prefix}{child.name}.", rows)
+            continue
+        _collect_functions(child, relative, prefix, rows)
+
+
 def parse_args(argv: Iterable[str]) -> argparse.Namespace:
     """解析命令行参数。"""
     parser = argparse.ArgumentParser(description="统计有效代码行（扣空行/注释/docstring）")
@@ -180,7 +218,29 @@ def parse_args(argv: Iterable[str]) -> argparse.Namespace:
         help="CSV 逐文件输出（每个 .py 一行 + 末尾 #section 汇总行），G2-R1-01 / S7-5 要求",
     )
     parser.add_argument("--no-csv", action="store_true", help="只打印不写 CSV")
+    parser.add_argument(
+        "--functions",
+        action="store_true",
+        help="改为列出函数长度（S7-8 长函数判据），可配 --max-lines",
+    )
+    parser.add_argument(
+        "--max-lines",
+        type=int,
+        default=60,
+        help="与 --functions 搭配：只列出超过该行数的函数，默认 60",
+    )
     return parser.parse_args(list(argv))
+
+
+def run_functions(root: Path, max_lines: int) -> None:
+    """打印长函数清单（超过阈值的一个一行，附函数总个数）。"""
+    rows = function_rows(root)
+    over = [row for row in rows if row[3] > max_lines]
+    print(f"root={root} functions={len(rows)} max_lines={max_lines} over_limit={len(over)}")
+    for relative, lineno, name, lines in over:
+        print(f"{relative}:{lineno} {name} lines={lines}")
+    if not over:
+        print("长函数清单为空（没有函数超过阈值）")
 
 
 
@@ -188,6 +248,10 @@ def main(argv: Iterable[str] | None = None) -> int:
     """入口：打印三列统计，写 CSV，返回退出码。"""
     args = parse_args(sys.argv[1:] if argv is None else argv)
     root = args.code_root or code_root()
+    if args.functions:
+        run_functions(args.root or root / "app", args.max_lines)
+        print("check=passed")
+        return 0
     rows: list[tuple[str, tuple[int, int, int, int]]] = []
     if args.root is not None:
         rows.append((args.root.name or "root", count_section(args.root)))

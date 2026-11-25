@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import tkinter as tk
 from datetime import date, timedelta
+from typing import NamedTuple
 from tkinter import ttk
 
 from app.application.catalog_service import RoomTypeCard
@@ -15,14 +16,11 @@ from app.ui.screens.base import BaseScreen
 DEFAULT_DAYS = 1
 
 
-class RoomRow:  # pylint: disable=too-few-public-methods
+class RoomRow(NamedTuple):
     """把「酒店名 + 房型卡片」拼成表格一行；只做展示，不含业务判断。"""
 
-    __slots__ = ("hotel_name", "card")
-
-    def __init__(self, hotel_name: str, card: RoomTypeCard) -> None:
-        self.hotel_name = hotel_name
-        self.card = card
+    hotel_name: str
+    card: RoomTypeCard
 
 
 class ResultsScreen(BaseScreen):

@@ -1,0 +1,237 @@
+test_403越权时留一条DENIED审计 (tests.test_audit.AuditAppendOnlyTest.test_403越权时留一条DENIED审计) ... ok
+test_409被规则拒时留一条REJECTED审计 (tests.test_audit.AuditAppendOnlyTest.test_409被规则拒时留一条REJECTED审计) ... ok
+test_失败审计不改变订单状态 (tests.test_audit.AuditAppendOnlyTest.test_失败审计不改变订单状态) ... ok
+test_失败审计里的操作者角色可追溯 (tests.test_audit.AuditAppendOnlyTest.test_失败审计里的操作者角色可追溯) ... ok
+test_整条链路只增不减 (tests.test_audit.AuditAppendOnlyTest.test_整条链路只增不减) ... ok
+test_同一时刻先按三十再按一分钟才取消 (tests.test_config_override.ConfigOverrideTest.test_同一时刻先按三十再按一分钟才取消) ... ok
+test_配置文件存在且阈值与默认值一致 (tests.test_config_override.ConfigOverrideTest.test_配置文件存在且阈值与默认值一致) ... ok
+test_阈值三十时建单后两分钟仍待确认 (tests.test_config_override.ConfigOverrideTest.test_阈值三十时建单后两分钟仍待确认) ... ok
+test_阈值不影响已确认订单 (tests.test_config_override.ConfigOverrideTest.test_阈值不影响已确认订单) ... ok
+test_阈值改成一分钟后订单真的被取消并回补 (tests.test_config_override.ConfigOverrideTest.test_阈值改成一分钟后订单真的被取消并回补) ... ok
+test_cancelled_booking_does_not_block_new_one (tests.test_constraints.ConstraintTest.test_cancelled_booking_does_not_block_new_one)
+旧单取消后可重订同一时段——U6 只拦有效状态，否则顾客取消一次就永远订不了。 ... ok
+test_checkout_not_after_checkin_rejected (tests.test_constraints.ConstraintTest.test_checkout_not_after_checkin_rejected)
+退房日必须晚于入住日；相等或更早都被 CHECK 挡住。 ... ok
+test_duplicate_active_booking_rejected (tests.test_constraints.ConstraintTest.test_duplicate_active_booking_rejected)
+有效状态内，同顾客+同酒店+同房型+同时段只能有一单（U6 部分唯一索引）。 ... ok
+test_duplicate_room_date_rejected (tests.test_constraints.ConstraintTest.test_duplicate_room_date_rejected)
+同一房型同一天只能有一行库存（U4）。 ... ok
+test_foreign_key_violation_rejected (tests.test_constraints.ConstraintTest.test_foreign_key_violation_rejected)
+外键真的生效：指向不存在的顾客必须失败（证明 PRAGMA foreign_keys=ON）。 ... ok
+test_negative_available_rooms_rejected (tests.test_constraints.ConstraintTest.test_negative_available_rooms_rejected)
+可售间数不能被改成负数（CHECK available_rooms >= 0）。 ... ok
+test_occupied_over_available_rejected (tests.test_constraints.ConstraintTest.test_occupied_over_available_rejected)
+占用不得超过可售（行内区间约束），否则余量会变成负数。 ... ok
+test_overlapping_dates_are_not_blocked_by_index (tests.test_constraints.ConstraintTest.test_overlapping_dates_are_not_blocked_by_index)
+U6 的边界：起止日不同的重叠单索引拦不住，必须由应用层在事务内校验。 ... ok
+test_天数与逐晚日期 (tests.test_domain_models.BookingDerivedTest.test_天数与逐晚日期)
+3/1 入住、3/4 退房 → 3 晚、日期到 3/3 为止。 ... ok
+test_按逐晚快照重算总价 (tests.test_domain_models.BookingDerivedTest.test_按逐晚快照重算总价)
+快照之和与订单总价一致时，对账才算通过。 ... ok
+test_有效与终态口径 (tests.test_domain_models.BookingDerivedTest.test_有效与终态口径)
+待确认/已确认/已入住算有效；已退房/已取消/未入住算终态。 ... ok
+test_写入枚举成员成功 (tests.test_domain_models.BookingStatusWriteTest.test_写入枚举成员成功)
+状态机给出目标状态后由实体落值。 ... ok
+test_写入裸字符串被拒 (tests.test_domain_models.BookingStatusWriteTest.test_写入裸字符串被拒)
+绕过枚举直接写 ``"CONFIRMED"`` 必须报 500，防止状态来源不可控。 ... ok
+test_负总价被拒 (tests.test_domain_models.BookingValidationTest.test_负总价被拒)
+金额不允许为负（0 元单允许存在，用于兑换/赠送场景）。 ... ok
+test_退房日不晚于入住日被拒 (tests.test_domain_models.BookingValidationTest.test_退房日不晚于入住日被拒)
+同日退房与倒序日期都在构造阶段被拒。 ... ok
+test_间数为零或负数被拒 (tests.test_domain_models.BookingValidationTest.test_间数为零或负数被拒)
+0 间与 −1 间都是 422。 ... ok
+test_余量与在售 (tests.test_domain_models.RoomInventoryTest.test_余量与在售)
+余量 = 可售 − 占用；停售行的余量照算但不可占用。 ... ok
+test_停售行不可占用 (tests.test_domain_models.RoomInventoryTest.test_停售行不可占用)
+停售日即使余量充足也拒绝占用。 ... ok
+test_可售量不得降到已占用以下 (tests.test_domain_models.RoomInventoryTest.test_可售量不得降到已占用以下)
+调整挂牌量时，新可售低于已占用会让余量为负，必须挡住。 ... ok
+test_占用超过总房量抛错 (tests.test_domain_models.RoomTypeTest.test_占用超过总房量抛错)
+总房量 6、占用 7 → 500 级数据不自洽。 ... ok
+test_审计摘要与节假日开关 (tests.test_domain_models.SmallEntitiesTest.test_审计摘要与节假日开关)
+审计摘要形如 ``CANCEL: CONFIRMED → CANCELLED``。 ... ok
+test_账号口令校验走注入的校验函数 (tests.test_domain_models.SmallEntitiesTest.test_账号口令校验走注入的校验函数)
+领域层不依赖加密实现：只调用 ``verifier``，便于用假实现单测。 ... ok
+test_酒店审核状态 (tests.test_domain_models.SmallEntitiesTest.test_酒店审核状态)
+只有 ``APPROVED`` 才算通过审核。 ... ok
+test_取消后同顾客可以重新预订同一时段 (tests.test_flows.CancelFlowTest.test_取消后同顾客可以重新预订同一时段) ... ok
+test_顾客取消链路释放库存并留审计 (tests.test_flows.CancelFlowTest.test_顾客取消链路释放库存并留审计) ... ok
+test_下单确认入住退房全链路 (tests.test_flows.OrderLifecycleTest.test_下单确认入住退房全链路) ... ok
+test_全链路留下完整审计 (tests.test_flows.OrderLifecycleTest.test_全链路留下完整审计) ... ok
+test_重叠区间被应用层复核拒绝 (tests.test_flows.OverlapReviewTest.test_重叠区间被应用层复核拒绝) ... ok
+test_首尾相接不算重叠 (tests.test_flows.OverlapReviewTest.test_首尾相接不算重叠) ... ok
+test_待确认订单不能改期 (tests.test_flows.RescheduleFlowTest.test_待确认订单不能改期) ... ok
+test_改期到重叠区间只占用新增的那几天 (tests.test_flows.RescheduleFlowTest.test_改期到重叠区间只占用新增的那几天) ... ok
+test_改期链路旧日期释放新日期占用 (tests.test_flows.RescheduleFlowTest.test_改期链路旧日期释放新日期占用) ... ok
+test_不同幂等键是两张独立订单 (tests.test_idempotency.IdempotencyTest.test_不同幂等键是两张独立订单) ... ok
+test_同一幂等键提交两次只建一单 (tests.test_idempotency.IdempotencyTest.test_同一幂等键提交两次只建一单) ... ok
+test_幂等命中不重复写审计 (tests.test_idempotency.IdempotencyTest.test_幂等命中不重复写审计) ... ok
+test_幂等命中时不再重复占用库存 (tests.test_idempotency.IdempotencyTest.test_幂等命中时不再重复占用库存) ... ok
+test_停售与复售 (tests.test_inventory_admin.InventoryAdminTest.test_停售与复售) ... ok
+test_可售不能小于已占用 (tests.test_inventory_admin.InventoryAdminTest.test_可售不能小于已占用) ... ok
+test_可售不能超过总房量 (tests.test_inventory_admin.InventoryAdminTest.test_可售不能超过总房量) ... ok
+test_管理员可以改任意酒店库存 (tests.test_inventory_admin.InventoryAdminTest.test_管理员可以改任意酒店库存) ... ok
+test_调整可售房量并写审计 (tests.test_inventory_admin.InventoryAdminTest.test_调整可售房量并写审计) ... ok
+test_顾客不能改库存 (tests.test_inventory_admin.InventoryAdminTest.test_顾客不能改库存) ... ok
+test_请求恰好等于余量时放行 (tests.test_inventory_domain.ExactRemainingTest.test_请求恰好等于余量时放行)
+3 间余量、请求 3 间 → 通过，且计划里每行占用 +3。 ... ok
+test_请求超出余量时拒绝 (tests.test_inventory_domain.OverRemainingTest.test_请求超出余量时拒绝)
+第二晚只剩 1 间，请求 2 间 → 409，且 details 指向该日期。 ... ok
+test_请求0间被拒为参数错误 (tests.test_inventory_domain.RequestZeroRoomsTest.test_请求0间被拒为参数错误)
+0 间必须抛 ``ValidationError``，且不能当成余量不足。 ... ok
+test_停售日即使有余量也拒绝 (tests.test_inventory_domain.SuspendedAndMissingRowTest.test_停售日即使有余量也拒绝)
+停售日的余量不参与售卖，抛 409 且 details 带停售状态。 ... ok
+test_区间可订上限取各日最小值 (tests.test_inventory_domain.SuspendedAndMissingRowTest.test_区间可订上限取各日最小值)
+``range_remaining`` 取最小值；停售日把上限压到 0；空集合为 0。 ... ok
+test_区间没有库存行时报构造错误 (tests.test_inventory_domain.SuspendedAndMissingRowTest.test_区间没有库存行时报构造错误)
+整段区间没有库存行是调用方的构造错误（422），不是"没房"。 ... ok
+test_拒绝提示文案统一 (tests.test_inventory_domain.SuspendedAndMissingRowTest.test_拒绝提示文案统一)
+界面与 409 响应共用同一句话，避免两处措辞不一致。 ... ok
+test_daily_remaining_matches_hardcoded_expectation (tests.test_inventory_query.InventoryQueryTest.test_daily_remaining_matches_hardcoded_expectation)
+三天余量必须逐日等于硬编码字典（3 / 0 / 5）。 ... ok
+test_daily_rows_exposes_three_values (tests.test_inventory_query.InventoryQueryTest.test_daily_rows_exposes_three_values)
+界面要并列显示可售 / 占用 / 余量三个数，不能只给一个剩余量。 ... ok
+test_empty_range_returns_zero (tests.test_inventory_query.InventoryQueryTest.test_empty_range_returns_zero)
+退房日不晚于入住日时区间为空，上限为 0 而不是报错。 ... ok
+test_missing_row_is_not_silently_available (tests.test_inventory_query.InventoryQueryTest.test_missing_row_is_not_silently_available)
+没有库存行的日期不进余量字典，且区间上限按 0 处理（不允许默认无限可订）。 ... ok
+test_range_limit_is_minimum_over_nights (tests.test_inventory_query.InventoryQueryTest.test_range_limit_is_minimum_over_nights)
+区间上限取各日最小值：含 0 余量的那一晚 → 0；只订首晚 → 3。 ... ok
+test_range_limit_zero_when_suspended (tests.test_inventory_query.InventoryQueryTest.test_range_limit_zero_when_suspended)
+停售是开关：可售间数 > 0 也订不了，区间上限必须是 0。 ... ok
+test_remaining_is_derived_not_stored (tests.test_inventory_query.InventoryQueryTest.test_remaining_is_derived_not_stored)
+余量派生自「可售 − 占用」，改占用立刻反映，没有独立字段可漂移。 ... ok
+test_UTC时刻的2359不会被当成当日未入住 (tests.test_noshow_clock.NoShowClockTest.test_UTC时刻的2359不会被当成当日未入住) ... ok
+test_cutoff随时区配置平移 (tests.test_noshow_clock.NoShowClockTest.test_cutoff随时区配置平移) ... ok
+test_扫描报告同时给出UTC与本地时刻 (tests.test_noshow_clock.NoShowClockTest.test_扫描报告同时给出UTC与本地时刻) ... ok
+test_未入住判定不受提前一天影响 (tests.test_noshow_clock.NoShowClockTest.test_未入住判定不受提前一天影响) ... ok
+test_未入住后再扫描不会重复处理 (tests.test_noshow_clock.NoShowClockTest.test_未入住后再扫描不会重复处理) ... ok
+test_本地2358仍然算已确认不判未入住 (tests.test_noshow_clock.NoShowClockTest.test_本地2358仍然算已确认不判未入住) ... ok
+test_本地2359之后记为未入住并释放占用 (tests.test_noshow_clock.NoShowClockTest.test_本地2359之后记为未入住并释放占用) ... ok
+test_跨过零点后走自动入住而不是未入住 (tests.test_noshow_clock.NoShowClockTest.test_跨过零点后走自动入住而不是未入住) ... ok
+test_不存在与无权访问返回同一错误码与文案 (tests.test_permission.PermissionTest.test_不存在与无权访问返回同一错误码与文案) ... ok
+test_本店员工可以确认订单 (tests.test_permission.PermissionTest.test_本店员工可以确认订单) ... ok
+test_管理员可以跨酒店确认订单 (tests.test_permission.PermissionTest.test_管理员可以跨酒店确认订单) ... ok
+test_跨酒店员工不能确认本店订单 (tests.test_permission.PermissionTest.test_跨酒店员工不能确认本店订单) ... ok
+test_跨酒店员工看到的是蒙版错误 (tests.test_permission.PermissionTest.test_跨酒店员工看到的是蒙版错误) ... ok
+test_顾客不能替别人下单 (tests.test_permission.PermissionTest.test_顾客不能替别人下单) ... ok
+test_顾客不能确认自己的订单 (tests.test_permission.PermissionTest.test_顾客不能确认自己的订单) ... ok
+test_单价非正与间数非正都被拒 (tests.test_pricing.QuoteTest.test_单价非正与间数非正都被拒)
+0 元/负价与 0 间/负数间都是参数错误。 ... ok
+test_均价向下取整只用于展示 (tests.test_pricing.QuoteTest.test_均价向下取整只用于展示)
+均价 = 总价 // 天数，整除不产生小数。 ... ok
+test_总价等于逐晚小计之和 (tests.test_pricing.QuoteTest.test_总价等于逐晚小计之和)
+两晚单价 300/320 元、2 间 → 总价 (300+320)×2 = 1240 元 = 124000 分。 ... ok
+test_报价可固化为逐晚快照 (tests.test_pricing.QuoteTest.test_报价可固化为逐晚快照)
+``to_booking_nights`` 生成的快照与报价逐晚对齐，总价可反算回来。 ... ok
+test_缺少某晚价格必须报错 (tests.test_pricing.QuoteTest.test_缺少某晚价格必须报错)
+缺价不能默认 0 元：漏价直接 422，避免出现"免费住一晚"。 ... ok
+test_三晚的区间含三个日期 (tests.test_pricing.StayDatesTest.test_三晚的区间含三个日期)
+3/1 入住、3/4 退房 → 3/1、3/2、3/3 三晚。 ... ok
+test_退房日不晚于入住日被拒 (tests.test_pricing.StayDatesTest.test_退房日不晚于入住日被拒)
+同日退房（0 晚）与倒序日期都是 422。 ... ok
+test_三晚不同价的快照求和 (tests.test_pricing.TotalFromNightsTest.test_三晚不同价的快照求和)
+(10000×1) + (20000×2) + (30000×3) = 140000 分。 ... ok
+test_人为把库存占用加一会告警并带订单号与日期 (tests.test_reconcile_alert.ReconcileAlertTest.test_人为把库存占用加一会告警并带订单号与日期) ... ok
+test_告警行不得出现裸bookings减号 (tests.test_reconcile_alert.ReconcileAlertTest.test_告警行不得出现裸bookings减号)
+无关联订单时必须写出可读原因，不能只给 ``bookings=-``（G3-R1-01 第 3 条后果）。 ... ok
+test_对账只读不修改库存与审计 (tests.test_reconcile_alert.ReconcileAlertTest.test_对账只读不修改库存与审计) ... ok
+test_已取消订单不计入右侧所以账仍然平 (tests.test_reconcile_alert.ReconcileAlertTest.test_已取消订单不计入右侧所以账仍然平) ... ok
+test_库存漏占也能发现且差额为负 (tests.test_reconcile_alert.ReconcileAlertTest.test_库存漏占也能发现且差额为负) ... ok
+test_账平时输出diff等于0 (tests.test_reconcile_alert.ReconcileAlertTest.test_账平时输出diff等于0) ... ok
+test_退房后对账diff等于零 (tests.test_reconcile_alert.ReconcileAlertTest.test_退房后对账diff等于零)
+退房不释放占用，右侧若排除 CHECKED_OUT 就会每单误报 diff=2（G3-R1-01）。 ... ok
+test_区间汇总与独立SQL一致 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_区间汇总与独立SQL一致) ... ok
+test_报表只读不影响订单与库存 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_报表只读不影响订单与库存) ... ok
+test_按月汇总等于逐日之和 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_按月汇总等于逐日之和) ... ok
+test_状态计数与独立SQL一致 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_状态计数与独立SQL一致) ... ok
+test_退房后营收与独立SQL一致且不为零 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_退房后营收与独立SQL一致且不为零) ... ok
+test_逐日入住率与独立SQL一致 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_逐日入住率与独立SQL一致) ... ok
+test_逐日营收与独立SQL一致 (tests.test_report_matches_sql.ReportMatchesSqlTest.test_逐日营收与独立SQL一致) ... ok
+test_写到一半失败也整单回滚 (tests.test_reschedule_rollback.RescheduleRollbackTest.test_写到一半失败也整单回滚) ... ok
+test_新日期余量不足时新日期仍为零占用 (tests.test_reschedule_rollback.RescheduleRollbackTest.test_新日期余量不足时新日期仍为零占用) ... ok
+test_预检失败时旧日期占用不变 (tests.test_reschedule_rollback.RescheduleRollbackTest.test_预检失败时旧日期占用不变) ... ok
+test_预检失败时订单本身不变 (tests.test_reschedule_rollback.RescheduleRollbackTest.test_预检失败时订单本身不变) ... ok
+test_余量不足时建单被拒 (tests.test_services.BookingServiceTest.test_余量不足时建单被拒)
+请求 6 间但只有 5 间 → 409，且不产生订单对象。 ... ok
+test_取消时记录原因与发起人 (tests.test_services.BookingServiceTest.test_取消时记录原因与发起人)
+T6 取消写 cancel_reason / cancel_initiator。 ... ok
+test_建单得到待确认订单与逐晚快照 (tests.test_services.BookingServiceTest.test_建单得到待确认订单与逐晚快照)
+总价 (300+320)×2=124000 分，状态 PENDING，两晚快照。 ... ok
+test_待确认订单不能被顾客取消 (tests.test_services.BookingServiceTest.test_待确认订单不能被顾客取消)
+待确认 + CANCEL 没有对应边 → 409，提示走拒单或超时。 ... ok
+test_无权操作时不保存也不写审计 (tests.test_services.BookingServiceTest.test_无权操作时不保存也不写审计)
+顾客替酒店确认 → 403，订单与审计都不动。 ... ok
+test_确认流转并写审计 (tests.test_services.BookingServiceTest.test_确认流转并写审计)
+酒店确认：状态变已确认、订单被保存、审计记录 T1。 ... ok
+test_区间余量取各日最小值 (tests.test_services.InventoryServiceTest.test_区间余量取各日最小值)
+3/1 余 3、3/2 余 0 → 区间上限 0；空区间 0。 ... ok
+test_可订校验失败时抛出日期细节 (tests.test_services.InventoryServiceTest.test_可订校验失败时抛出日期细节)
+第二晚已满，请求 1 间 → 409 且 details 指向 3/2。 ... ok
+test_调整挂牌量的三条边界 (tests.test_services.InventoryServiceTest.test_调整挂牌量的三条边界)
+负数 422、超过总房量 422、合法值放行。 ... ok
+test_T1_酒店确认待确认订单转为已确认 (tests.test_state_machine.AllowedEdgeTest.test_T1_酒店确认待确认订单转为已确认)
+T1：待确认 --CONFIRM--> 已确认（酒店工作人员）。 ... ok
+test_T2_酒店拒单待确认订单转为已取消 (tests.test_state_machine.AllowedEdgeTest.test_T2_酒店拒单待确认订单转为已取消)
+T2：待确认 --REJECT--> 已取消（酒店拒单，库存即时回补）。 ... ok
+test_T3_超时未确认由系统取消 (tests.test_state_machine.AllowedEdgeTest.test_T3_超时未确认由系统取消)
+T3：待确认 --TIMEOUT--> 已取消（30 分钟超时，只允许系统执行）。 ... ok
+test_T4_酒店核验办理入住 (tests.test_state_machine.AllowedEdgeTest.test_T4_酒店核验办理入住)
+T4：已确认 --CHECK_IN--> 已入住（凭订单号或手机号核验）。 ... ok
+test_T5_系统次日默认置为已入住 (tests.test_state_machine.AllowedEdgeTest.test_T5_系统次日默认置为已入住)
+T5：已确认 --AUTO_CHECK_IN--> 已入住（入住日 23:59 前未标记）。 ... ok
+test_T6_顾客或酒店取消已确认订单 (tests.test_state_machine.AllowedEdgeTest.test_T6_顾客或酒店取消已确认订单)
+T6：已确认 --CANCEL--> 已取消，顾客/酒店/管理员三方都可发起。 ... ok
+test_T7_酒店标记未入住 (tests.test_state_machine.AllowedEdgeTest.test_T7_酒店标记未入住)
+T7：已确认 --NO_SHOW--> 未入住（入住日 23:59 前标记）。 ... ok
+test_T8_酒店办理退房 (tests.test_state_machine.AllowedEdgeTest.test_T8_酒店办理退房)
+T8：已入住 --CHECK_OUT--> 已退房（订单完结，不可再变）。 ... ok
+test_F1_已入住不能取消 (tests.test_state_machine.ForbiddenEdgeTest.test_F1_已入住不能取消)
+F1：已入住 --CANCEL--> 拒绝（费用与库存已实际发生）。 ... ok
+test_F2_已退房不能取消 (tests.test_state_machine.ForbiddenEdgeTest.test_F2_已退房不能取消)
+F2：已退房 --CANCEL--> 拒绝（订单已完结）。 ... ok
+test_F3_已取消不能恢复确认 (tests.test_state_machine.ForbiddenEdgeTest.test_F3_已取消不能恢复确认)
+F3：已取消 --CONFIRM--> 拒绝（库存已回补，恢复会重复占用）。 ... ok
+test_F4_已入住不能回退为已确认 (tests.test_state_machine.ForbiddenEdgeTest.test_F4_已入住不能回退为已确认)
+F4：已入住 --CONFIRM--> 拒绝（状态回退）。 ... ok
+test_F5_已退房不能回退为已入住 (tests.test_state_machine.ForbiddenEdgeTest.test_F5_已退房不能回退为已入住)
+F5：已退房 --CHECK_IN--> 拒绝（状态回退）。 ... ok
+test_八条允许边与五条禁止边 (tests.test_state_machine.StateMachineRuleTest.test_八条允许边与五条禁止边)
+允许边恰为 8 条、禁止边恰为 5 条——报告里的两个数字由此可数。 ... ok
+test_取消原因与发起人写入订单 (tests.test_state_machine.StateMachineRuleTest.test_取消原因与发起人写入订单)
+T6 取消时，原因与发起人必须落到订单上（审计与报表要用）。 ... ok
+test_可用事件按角色收敛 (tests.test_state_machine.StateMachineRuleTest.test_可用事件按角色收敛)
+已确认状态下，顾客只有"取消"一个动作；酒店有入住/取消/未入住三个。 ... ok
+test_终态没有任何出边 (tests.test_state_machine.StateMachineRuleTest.test_终态没有任何出边)
+已退房/已取消/未入住三个终态，在 TRANSITIONS 里找不到任何来源边。 ... ok
+test_角色无权时拒绝且不改状态 (tests.test_state_machine.StateMachineRuleTest.test_角色无权时拒绝且不改状态)
+顾客不能替酒店确认订单（403），状态保持不变。 ... ok
+test_跨状态跳跃被拒 (tests.test_state_machine.StateMachineRuleTest.test_跨状态跳跃被拒)
+待确认 --CHECK_OUT--> 已退房：跨状态跳跃一律拒绝（405/409 语义）。 ... ok
+test_一轮扫描处理多张超时单 (tests.test_timeout_scan.TimeoutScanTest.test_一轮扫描处理多张超时单) ... ok
+test_扫描推进三天跨度也不靠真实等待 (tests.test_timeout_scan.TimeoutScanTest.test_扫描推进三天跨度也不靠真实等待) ... ok
+test_未超时的待确认订单不会被扫描动到 (tests.test_timeout_scan.TimeoutScanTest.test_未超时的待确认订单不会被扫描动到) ... ok
+test_超时31分钟后扫描取消订单并回补库存 (tests.test_timeout_scan.TimeoutScanTest.test_超时31分钟后扫描取消订单并回补库存) ... ok
+test_重复扫描不重复回补库存 (tests.test_timeout_scan.TimeoutScanTest.test_重复扫描不重复回补库存) ... ok
+test_busy_timeout_is_explicit (tests.test_tx.TransactionTest.test_busy_timeout_is_explicit)
+``busy_timeout`` 显式设置，锁冲突时等待重试而不是立刻 ``database is locked``。 ... ok
+test_concurrent_writers_serialize (tests.test_tx.TransactionTest.test_concurrent_writers_serialize)
+8 线程各 +1、各 25 轮：总占用必须是 200，且没有一次 ``database is locked``。 ... ok
+test_driver_autocommit_is_disabled (tests.test_tx.TransactionTest.test_driver_autocommit_is_disabled)
+连接处于 ``isolation_level=None``（自动提交），事务边界由我们控制。 ... ok
+test_foreign_keys_on_every_connection (tests.test_tx.TransactionTest.test_foreign_keys_on_every_connection)
+每新建的连接都开外键（SQLite 默认是关的，漏一处就等于没约束）。 ... ok
+test_immediate_after_dml_does_not_raise (tests.test_tx.TransactionTest.test_immediate_after_dml_does_not_raise)
+先 DML（自动提交）再 ``BEGIN IMMEDIATE`` 不得抛「事务内开事务」。 ... ok
+test_nested_transaction_is_rejected (tests.test_tx.TransactionTest.test_nested_transaction_is_rejected)
+嵌套事务被显式拒绝，避免静默把内层当外层的一部分提交。 ... ok
+test_rollback_on_exception (tests.test_tx.TransactionTest.test_rollback_on_exception)
+事务体内抛异常时整批回滚，占用不会被改脏。 ... ok
+
+----------------------------------------------------------------------
+Ran 147 tests in 3.219s
+
+OK
+elapsed_total_ms=2391
+assert_elapsed_lt_5s=True
+exit=0

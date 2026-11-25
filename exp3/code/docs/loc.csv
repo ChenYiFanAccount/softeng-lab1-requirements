@@ -80,7 +80,7 @@ tests/test_tx.py,134,112,99
 tools/check_source_rules.py,176,144,116
 tools/check_uml_sync.py,145,117,99
 tools/concurrency_probe.py,249,214,188
-tools/count_loc.py,223,191,164
+tools/count_loc.py,287,248,214
 tools/fetch_wheels.py,180,154,138
 tools/init_db.py,125,98,89
 tools/migrate.py,68,51,43
@@ -91,5 +91,5 @@ tools/ui_chain.py,272,213,187
 tools/ui_smoke.py,85,71,62
 #app,7398,6139,5050
 #tests,3465,2783,2453
-#tools,2285,1901,1657
-#total,13148,10823,9160
+#tools,2349,1958,1707
+#total,13212,10880,9210

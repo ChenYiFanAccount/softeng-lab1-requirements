@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-# 回调方法名即语义（do_approve / do_set_price …），补 docstring 只是把方法名再写一遍。
-# pylint: disable=missing-function-docstring
-
+# pylint: disable=missing-function-docstring  # 按钮回调名即语义，逐个写 docstring 是噪声
 import tkinter as tk
 from datetime import date, timedelta
 from tkinter import ttk
@@ -25,6 +23,7 @@ class InventoryScreen(BaseScreen):
     def build(self) -> None:
         self.head().pack(anchor="w", fill="x")
 
+        self.room_types: dict[int, str] = {}
         toolbar = ttk.Frame(self, style="Card.TFrame")
         toolbar.pack(fill="x", pady=(12, 0))
         ttk.Label(toolbar, text="房型", style="Body.TLabel").pack(side="left")
@@ -101,7 +100,7 @@ class InventoryScreen(BaseScreen):
             self.set_message(self.message_label, "本酒店尚未通过审核，暂不能维护库存", ok=False)
             return
         # 房型清单每次刷新重建；放这里是因为要先有库与登录身份。
-        self.room_types = {  # pylint: disable=attribute-defined-outside-init
+        self.room_types = {
             f"{card.name}（#{card.room_type_id}）": card for card in detail.room_types
         }
         labels = list(self.room_types)

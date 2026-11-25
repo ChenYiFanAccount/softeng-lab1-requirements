@@ -198,6 +198,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--threads", type=int, default=200, help="并发线程数")
     parser.add_argument("--rooms", type=int, default=1, help="每单间数")
     parser.add_argument("--keep", action="store_true", help="保留临时库便于事后排查")
+    parser.add_argument(
+        "--timing",
+        action="store_true",
+        help="额外打印用时（默认不打印：S7-6 要求三次输出逐字节一致，用时每次都不同）",
+    )
     return parser.parse_args(argv)
 
 
@@ -224,7 +229,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"booking_rows={booking_rows}")
         print(f"booking_night_rows={night_rows}")
         print(f"failure_breakdown={outcome.failures}")
-        print(f"elapsed_ms={elapsed:.1f}")
+        if args.timing:
+            print(f"elapsed_ms={elapsed:.1f}")
         if outcome.unexpected:
             for line in outcome.unexpected[:5]:
                 print(f"unexpected={line}")

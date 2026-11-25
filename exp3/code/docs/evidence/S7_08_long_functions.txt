@@ -1,0 +1,6 @@
+root=D:\NJU\softengineering\exp3\code\app functions=382 max_lines=60 over_limit=3
+application/booking_service.py:102 BookingAppService.place_booking lines=69
+application/booking_service.py:325 BookingAppService.reschedule_booking lines=62
+ui/theme.py:37 apply_theme lines=111
+check=passed
+exit=0

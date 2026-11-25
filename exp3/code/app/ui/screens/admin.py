@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-# 回调方法名即语义（do_approve / do_set_price …），补 docstring 只是把方法名再写一遍。
-# pylint: disable=missing-function-docstring
-
+# pylint: disable=missing-function-docstring  # 按钮回调名即语义，逐个写 docstring 是噪声
 import tkinter as tk
 from tkinter import ttk
 
