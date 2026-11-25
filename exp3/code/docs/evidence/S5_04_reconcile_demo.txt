@@ -1,12 +1,25 @@
-# 对账工具现场输出：先平账 diff=0，再人为 +1 打出带订单号与日期的 ALERT
-demo_booking_no=BK202702010900006D64 room_type_id=1
---- 平账（库存占用与订单汇总一致） ---
+# 对账工具现场输出：已确认单平账 → 退房后仍平账且营收不为零 → 人为差异带订单号 → 无订单差异写可读原因
+demo_booking_no=BK20270201090000FA81 room_type_id=1
+--- 平账（已确认单，库存占用与订单汇总一致） ---
 range=2027-03-01~2027-03-05
 checked_pairs=4 diff=0
 status=OK
---- 人为把 2027-03-02 的占用 +1 之后 ---
+--- 含已完成订单（已退房）的平账：退房不释放占用，两侧仍同集合 ---
+range=2027-03-01~2027-03-05
+checked_pairs=4 diff=0
+status=OK
+--- 退房后营收（按入住日归属，不得为 0） ---
+revenue stay_date=2027-03-01 cents=60000
+revenue stay_date=2027-03-02 cents=60000
+revenue_total_cents=120000
+--- 人为把 2027-03-02 的占用 +1 之后（告警必须带订单号） ---
 range=2027-03-01~2027-03-05
 checked_pairs=4 diff=1
-ALERT room_type=1 stay_date=2027-03-02 inventory=3 orders=2 diff=1 bookings=BK202702010900006D64
+ALERT room_type=1 stay_date=2027-03-02 inventory=3 orders=2 diff=1 bookings=BK20270201090000FA81
+--- 再给 2027-03-04（无任何订单）加 1 间占用：告警不得只写 bookings=- ---
+range=2027-03-01~2027-03-05
+checked_pairs=4 diff=2
+ALERT room_type=1 stay_date=2027-03-02 inventory=3 orders=2 diff=1 bookings=BK20270201090000FA81
+ALERT room_type=1 stay_date=2027-03-04 inventory=1 orders=0 diff=1 bookings=NONE(无有效订单，库存多占)
 check=passed
 exit=0

@@ -1,13 +1,17 @@
 """对账命令行（M10）：只读比对库存占用与有效订单汇总，打印差异清单。
 
-两种用法：
+三种用法：
 
 - ``--db <路径>``：对既有库跑一次对账（只读，不改任何数据）；
-- ``--demo``：在临时库里造一单，先跑平账（``diff=0``），再人为把某天占用 +1
-  跑一次，打印带订单号与日期的告警——交付证据与报告截图都用这一段。
+- ``--demo``：在临时库里造一单，依次演示三段——
+  1. 已确认单的平账（``diff=0``）；
+  2. **走完入住 + 退房的单**仍然平账，且这两天营收不为零（G3-R1-01 的回归段）；
+  3. 人为把某天占用 +1，打印带订单号与日期的告警；
+- 退出码固定为 0：对账发现差异不是"命令失败"，而是业务告警；调用方应读输出里的
+  ``diff=`` 而不是退出码。真正需要非零退出的场景（如巡检脚本）可在外面包一层判断。
 
-退出码固定为 0：对账发现差异不是"命令失败"，而是业务告警；调用方应读输出里的
-``diff=`` 而不是退出码。真正需要非零退出的场景（如巡检脚本）可在外面包一层判断。
+第 2 段是必须的：旧 demo 只有 PENDING/CONFIRMED，永远碰不到"退房后口径"这条路径，
+`CHECKED_OUT` 被排除在报表集合外的缺陷就是这样躲过了所有演示。
 """
 
 from __future__ import annotations
@@ -29,6 +33,7 @@ from app.application.booking_service import BookingAppService  # noqa: E402
 from app.application.clock import FrozenClock  # noqa: E402
 from app.application.commands import PlaceBookingCommand  # noqa: E402
 from app.application.reconcile_service import ReconcileService  # noqa: E402
+from app.application.report_service import ReportService  # noqa: E402
 from app.domain.enums import ActorRole, BookingEvent  # noqa: E402
 from app.infrastructure.db import connection as db_connection  # noqa: E402
 from app.infrastructure.db import migrate_runner  # noqa: E402
@@ -59,6 +64,21 @@ def print_report(  # pylint: disable=too-many-arguments,too-many-positional-argu
     print(f"--- {title} ---")
     print(f"range={report.start_date}~{report.end_date}")
     print(service.format_report(report))
+
+
+def print_revenue(conn, start: date, end: date) -> None:  # noqa: ANN001
+    """打印区间内逐日营收：退房后这些数字必须仍然存在（G3-R1-01 的回归点）。"""
+    revenue = ReportService(conn).revenue_by_day(start, end)
+    print("--- 退房后营收（按入住日归属，不得为 0） ---")
+    for row in revenue:
+        print(f"revenue stay_date={row.stay_date} cents={row.revenue_cents}")
+    print(f"revenue_total_cents={sum(row.revenue_cents for row in revenue)}")
+
+
+def complete_stay(bookings: BookingAppService, booking_no: str, staff: Actor) -> None:
+    """把订单推进到已退房（入住 → 退房），用于演示退房后的报表与对账口径。"""
+    bookings.apply_event(booking_no, BookingEvent.CHECK_IN, staff)
+    bookings.apply_event(booking_no, BookingEvent.CHECK_OUT, staff)
 
 
 def demo() -> None:
@@ -136,14 +156,46 @@ def demo() -> None:
 
         service = ReconcileService(conn)
         print(f"demo_booking_no={booking.booking_no} room_type_id={room_type_id}")
-        print_report("平账（库存占用与订单汇总一致）", service, DEMO_START, DEMO_END, None)
+        print_report("平账（已确认单，库存占用与订单汇总一致）", service, DEMO_START, DEMO_END, None)
+
+        # 第 2 段：走完 入住 → 退房。退房不释放占用，所以两侧必须仍然同集合；
+        # 同时这两天营收不得归零（旧实现把 CHECKED_OUT 排除，营收会凭空消失）。
+        complete_stay(bookings, booking.booking_no, staff)
+        print_report(
+            "含已完成订单（已退房）的平账：退房不释放占用，两侧仍同集合",
+            service,
+            DEMO_START,
+            DEMO_END,
+            None,
+        )
+        print_revenue(conn, DEMO_START, DEMO_END)
 
         conn.execute(
             "UPDATE room_inventory SET occupied_rooms = occupied_rooms + 1"
             " WHERE room_type_id = ? AND stay_date = '2027-03-02'",
             (room_type_id,),
         )
-        print_report("人为把 2027-03-02 的占用 +1 之后", service, DEMO_START, DEMO_END, None)
+        print_report(
+            "人为把 2027-03-02 的占用 +1 之后（告警必须带订单号）",
+            service,
+            DEMO_START,
+            DEMO_END,
+            None,
+        )
+
+        # 第 3 段：给一个**没有任何订单**的日期加占用，告警要写出可读原因而不是裸 "-"。
+        conn.execute(
+            "UPDATE room_inventory SET occupied_rooms = occupied_rooms + 1"
+            " WHERE room_type_id = ? AND stay_date = '2027-03-04'",
+            (room_type_id,),
+        )
+        print_report(
+            "再给 2027-03-04（无任何订单）加 1 间占用：告警不得只写 bookings=-",
+            service,
+            DEMO_START,
+            DEMO_END,
+            None,
+        )
         print("check=passed")
     finally:
         conn.close()

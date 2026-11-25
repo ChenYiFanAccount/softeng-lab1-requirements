@@ -8,7 +8,7 @@ app/application/commands.py,37,27,18
 app/application/errors.py,34,21,10
 app/application/fulfillment_service.py,275,213,149
 app/application/inventory_service.py,197,176,151
-app/application/reconcile_service.py,131,108,85
+app/application/reconcile_service.py,141,117,90
 app/application/report_service.py,151,121,95
 app/domain/__init__.py,117,113,109
 app/domain/enums.py,169,123,104
@@ -29,7 +29,7 @@ app/infrastructure/db/inventory_query.py,126,107,76
 app/infrastructure/db/inventory_repository.py,113,95,74
 app/infrastructure/db/mapping.py,47,35,24
 app/infrastructure/db/migrate_runner.py,161,124,91
-app/infrastructure/db/report_repository.py,173,148,128
+app/infrastructure/db/report_repository.py,188,156,136
 app/infrastructure/db/seed.py,278,223,191
 app/infrastructure/security.py,62,43,27
 tests/__init__.py,1,1,0
@@ -46,8 +46,8 @@ tests/test_inventory_query.py,113,93,75
 tests/test_noshow_clock.py,202,143,117
 tests/test_permission.py,192,158,147
 tests/test_pricing.py,118,95,83
-tests/test_reconcile_alert.py,164,138,125
-tests/test_report_matches_sql.py,238,194,178
+tests/test_reconcile_alert.py,193,163,148
+tests/test_report_matches_sql.py,270,218,201
 tests/test_reschedule_rollback.py,144,110,98
 tests/test_services.py,248,204,175
 tests/test_state_machine.py,269,227,193
@@ -60,9 +60,9 @@ tools/count_loc.py,223,191,164
 tools/fetch_wheels.py,180,154,138
 tools/init_db.py,125,98,89
 tools/migrate.py,68,51,43
-tools/reconcile_report.py,181,159,147
+tools/reconcile_report.py,233,202,184
 tools/scan_once.py,122,101,86
-#app,4631,3801,2926
-#tests,3404,2734,2407
-#tools,1459,1219,1062
-#total,9494,7754,6395
+#app,4656,3818,2939
+#tests,3465,2783,2453
+#tools,1511,1262,1099
+#total,9632,7863,6491

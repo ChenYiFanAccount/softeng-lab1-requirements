@@ -15,12 +15,27 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import date
 
-from app.domain.enums import ACTIVE_STATUSES
+from app.domain.enums import BookingStatus
 from app.infrastructure.db.mapping import date_text
 
-#: 有效订单状态占位符（待确认/已确认/已入住），随枚举变化自动跟随
-ACTIVE_VALUES: tuple[str, ...] = tuple(status.value for status in ACTIVE_STATUSES)
-ACTIVE_PLACEHOLDERS: str = ", ".join("?" for _ in ACTIVE_VALUES)
+#: 计入营收与间夜的状态：有效订单 + **已退房**。
+#:
+#: 退房不释放占用（``CHECK_OUT`` 不在 ``RELEASING_EVENTS`` 里），那几晚确实卖出去了；
+#: 若把 ``CHECKED_OUT`` 排除，客人一退房这两天的营收就会从报表里蒸发，口径变成
+#: "越接近成交越不算营收"（G3-R1-01 的缺陷本体）。
+REVENUE_STATUSES: tuple[BookingStatus, ...] = (
+    BookingStatus.PENDING,
+    BookingStatus.CONFIRMED,
+    BookingStatus.CHECKED_IN,
+    BookingStatus.CHECKED_OUT,
+)
+REVENUE_VALUES: tuple[str, ...] = tuple(status.value for status in REVENUE_STATUSES)
+REVENUE_PLACEHOLDERS: str = ", ".join("?" for _ in REVENUE_VALUES)
+
+#: 对账右侧集合：必须与营收同集合——库存侧退房不释放，右侧若把已退房排除，
+#: 每张正常退房的单都会留下"库存多占"的假告警（G3-R1-01）。
+OCCUPYING_VALUES: tuple[str, ...] = REVENUE_VALUES
+OCCUPYING_PLACEHOLDERS: str = REVENUE_PLACEHOLDERS
 
 
 @dataclass(slots=True)
@@ -52,14 +67,14 @@ class SqliteReportRepository:
     def sold_room_nights(
         self, start: date, end: date, hotel_id: int | None = None
     ) -> dict[str, int]:
-        """有效订单每天卖出的间夜数（左闭右开）。"""
+        """卖出间夜数（含已退房，左闭右开）。"""
         sql = (
             "SELECT n.stay_date AS stay_date, SUM(n.room_count) AS sold "
             "FROM booking_night n JOIN booking b ON b.id = n.booking_id "
-            f"WHERE b.status IN ({ACTIVE_PLACEHOLDERS}) "
+            f"WHERE b.status IN ({REVENUE_PLACEHOLDERS}) "
             "AND n.stay_date >= ? AND n.stay_date < ? "
         )
-        params: list[object] = [*ACTIVE_VALUES, date_text(start), date_text(end)]
+        params: list[object] = [*REVENUE_VALUES, date_text(start), date_text(end)]
         if hotel_id is not None:
             sql += "AND b.hotel_id = ? "
             params.append(hotel_id)
@@ -85,15 +100,15 @@ class SqliteReportRepository:
         return {str(row["stay_date"]): int(row["available"]) for row in rows}
 
     def revenue_by_day(self, start: date, end: date, hotel_id: int | None = None) -> dict[str, int]:
-        """每天按"当时价"算出的营收（分）。"""
+        """每天按"当时价"算出的营收（分，含已退房）。"""
         sql = (
             "SELECT n.stay_date AS stay_date, "
             "SUM(n.unit_price_cents * n.room_count) AS revenue "
             "FROM booking_night n JOIN booking b ON b.id = n.booking_id "
-            f"WHERE b.status IN ({ACTIVE_PLACEHOLDERS}) "
+            f"WHERE b.status IN ({REVENUE_PLACEHOLDERS}) "
             "AND n.stay_date >= ? AND n.stay_date < ? "
         )
-        params: list[object] = [*ACTIVE_VALUES, date_text(start), date_text(end)]
+        params: list[object] = [*REVENUE_VALUES, date_text(start), date_text(end)]
         if hotel_id is not None:
             sql += "AND b.hotel_id = ? "
             params.append(hotel_id)
@@ -148,15 +163,15 @@ class SqliteReconcileRepository:
     def order_side(
         self, start: date, end: date, hotel_id: int | None = None
     ) -> list[OrderNightRow]:
-        """右侧：从有效订单的逐晚快照重新加总，**不读库存表**。"""
+        """右侧：从订单的逐晚快照重新加总（含已退房），**不读库存表**。"""
         sql = (
             "SELECT b.booking_no AS booking_no, b.room_type_id AS room_type_id, "
             "n.stay_date AS stay_date, n.room_count AS room_count "
             "FROM booking_night n JOIN booking b ON b.id = n.booking_id "
-            f"WHERE b.status IN ({ACTIVE_PLACEHOLDERS}) "
+            f"WHERE b.status IN ({OCCUPYING_PLACEHOLDERS}) "
             "AND n.stay_date >= ? AND n.stay_date < ? "
         )
-        params: list[object] = [*ACTIVE_VALUES, date_text(start), date_text(end)]
+        params: list[object] = [*OCCUPYING_VALUES, date_text(start), date_text(end)]
         if hotel_id is not None:
             sql += "AND b.hotel_id = ? "
             params.append(hotel_id)

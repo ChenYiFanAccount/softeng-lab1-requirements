@@ -1,9 +1,10 @@
-# 有效行口径：effective = exp3 扣空行/纯注释/docstring；主口径取 app
-app    files=33  phys=4631  code=3801  effective=2926 
-tests  files=21  phys=3404  code=2734  effective=2407 
-tools  files=9   phys=1459  code=1219  effective=1062 
-total  files=63  phys=9494  code=7754  effective=6395 
+# 有效行口径：effective = 扣空行/纯注释/docstring；主口径取 app
+app    files=33  phys=4656  code=3818  effective=2939 
+tests  files=21  phys=3465  code=2783  effective=2453 
+tools  files=9   phys=1511  code=1262  effective=1099 
+total  files=63  phys=9632  code=7863  effective=6491 
 口径：effective = 非空 且 非纯注释 且 非 docstring（报告主口径）
 csv=code\docs\loc.csv
 csv_mode=per_file rows=63
+loc_csv_lines=68 (63 文件 + 4 分段汇总 + 1 表头)
 exit=0

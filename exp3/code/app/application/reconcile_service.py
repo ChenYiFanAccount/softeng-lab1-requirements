@@ -41,8 +41,18 @@ class ReconcileDifference:
         return self.inventory_occupied - self.orders_occupied
 
     def alert_line(self) -> str:
-        """一条可粘贴进告警渠道的文本（含日期与订单号）。"""
-        orders = ",".join(self.booking_nos) if self.booking_nos else "-"
+        """一条可粘贴进告警渠道的文本（含日期与订单号）。
+
+        没有关联订单时**不能**只写 ``bookings=-``：那让运维分不清"漏了打印"还是
+        "确实没有订单"。显式写原因，S5-2 的"告警必须含订单号"才经得起真实数据
+        （G3-R1-01 第 3 条后果）。
+        """
+        if self.booking_nos:
+            orders = ",".join(self.booking_nos)
+        elif self.orders_occupied == 0:
+            orders = "NONE(无有效订单，库存多占)"
+        else:
+            orders = "NONE(订单缺订单号，数据异常)"
         return (
             f"ALERT room_type={self.room_type_id} stay_date={self.stay_date} "
             f"inventory={self.inventory_occupied} orders={self.orders_occupied} "

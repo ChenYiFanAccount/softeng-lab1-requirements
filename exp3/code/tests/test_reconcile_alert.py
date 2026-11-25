@@ -141,6 +141,35 @@ class ReconcileAlertTest(unittest.TestCase):  # pylint: disable=too-many-instanc
         report = self.reconcile.check(START, END)
         self.assertTrue(report.is_clean, "取消后两侧都应归零；若右侧仍算旧单就会报警")
 
+    def test_退房后对账diff等于零(self) -> None:
+        """退房不释放占用，右侧若排除 CHECKED_OUT 就会每单误报 diff=2（G3-R1-01）。"""
+        for event in (BookingEvent.CHECK_IN, BookingEvent.CHECK_OUT):
+            self.bookings.apply_event(self.booking.booking_no, event, self.staff)
+        self.assertEqual(self._occupied("2027-03-01"), 2, "退房不应释放库存占用")
+
+        report = self.reconcile.check(START, END)
+        self.assertTrue(report.is_clean, f"正常退房不应产生差异，实得 {report.to_lines()}")
+        self.assertEqual(report.diff_total, 0)
+        text = self.reconcile.format_report(report)
+        self.assertIn("diff=0", text)
+        self.assertIn("status=OK", text)
+        self.assertNotIn("ALERT", text)
+
+    def test_告警行不得出现裸bookings减号(self) -> None:
+        """无关联订单时必须写出可读原因，不能只给 ``bookings=-``（G3-R1-01 第 3 条后果）。"""
+        # 3-04 有库存行但没有任何订单：占用被改成 1 就是"库存多占、无有效订单"
+        self.conn.execute(
+            "UPDATE room_inventory SET occupied_rooms = 1"
+            " WHERE room_type_id = ? AND stay_date = '2027-03-04'",
+            (self.fixture["room_type_id"],),
+        )
+        report = self.reconcile.check(START, END)
+        self.assertEqual(len(report.differences), 1)
+        line = report.differences[0].alert_line()
+        self.assertNotIn("bookings=-", line)
+        self.assertIn("bookings=NONE(无有效订单，库存多占)", line)
+        self.assertIn("2027-03-04", line)
+
     def test_对账只读不修改库存与审计(self) -> None:
         before_occ = self._occupied("2027-03-01")
         before_audit = self.conn.execute(

@@ -28,7 +28,7 @@ from app.application.actor import Actor  # noqa: E402
 from app.application.booking_service import BookingAppService  # noqa: E402
 from app.application.clock import FrozenClock  # noqa: E402
 from app.application.commands import PlaceBookingCommand  # noqa: E402
-from app.application.report_service import ReportService, permille  # noqa: E402
+from app.application.report_service import ReportService  # noqa: E402
 from app.domain.enums import ActorRole, BookingEvent, BookingStatus  # noqa: E402
 
 try:
@@ -128,7 +128,7 @@ class ReportMatchesSqlTest(unittest.TestCase):  # pylint: disable=too-many-insta
         rows = self.conn.execute(
             "SELECT n.stay_date AS stay_date, SUM(n.room_count) AS sold"
             " FROM booking_night n JOIN booking b ON b.id = n.booking_id"
-            " WHERE b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN')"
+            " WHERE b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT')"
             " AND n.stay_date >= ? AND n.stay_date < ?"
             " GROUP BY n.stay_date",
             (START.isoformat(), END.isoformat()),
@@ -149,7 +149,7 @@ class ReportMatchesSqlTest(unittest.TestCase):  # pylint: disable=too-many-insta
             "SELECT n.stay_date AS stay_date,"
             " SUM(n.unit_price_cents * n.room_count) AS revenue"
             " FROM booking_night n JOIN booking b ON b.id = n.booking_id"
-            " WHERE b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN')"
+            " WHERE b.status IN ('PENDING', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT')"
             " AND n.stay_date >= ? AND n.stay_date < ?"
             " GROUP BY n.stay_date",
             (START.isoformat(), END.isoformat()),
@@ -186,7 +186,8 @@ class ReportMatchesSqlTest(unittest.TestCase):  # pylint: disable=too-many-insta
             expected[stay_date] = (
                 sold_nights,
                 capacity_of_day,
-                permille(sold_nights, capacity_of_day),
+                # 字面量口径，刻意不用被测模块的 permille()——否则它写错时两边一起错（G3-R1-02）
+                sold_nights * 1000 // capacity_of_day,
             )
         self.assertEqual(actual, expected)
         self.assertEqual(actual["2027-03-01"], (2, 5, 400))
@@ -232,6 +233,37 @@ class ReportMatchesSqlTest(unittest.TestCase):  # pylint: disable=too-many-insta
             " (SELECT COUNT(*) FROM audit_log) AS a"
         ).fetchone()
         self.assertEqual(tuple(before), tuple(after))
+
+    # ------------------------------------------------ G3-R1-01：退房后的报表口径
+
+    def _place_and_check_out(self) -> str:
+        """造一张走完 下单 → 确认 → 入住 → 退房 的单（3-05 一晚）。"""
+        guest = self._add_guest("13900000013")
+        booking = self._place(guest, date(2027, 3, 5), date(2027, 3, 6), 1)
+        for event in (BookingEvent.CONFIRM, BookingEvent.CHECK_IN, BookingEvent.CHECK_OUT):
+            self.service.apply_event(booking.booking_no, event, self.staff)
+        return booking.booking_no
+
+    def test_退房后营收与独立SQL一致且不为零(self) -> None:
+        booking_no = self._place_and_check_out()
+        status = self.conn.execute(
+            "SELECT status FROM booking WHERE booking_no = ?", (booking_no,)
+        ).fetchone()["status"]
+        self.assertEqual(status, BookingStatus.CHECKED_OUT.value)
+
+        actual = {
+            row.stay_date: row.revenue_cents for row in self.report.revenue_by_day(START, END)
+        }
+        self.assertEqual(actual, self._sql_revenue_by_day())
+        # 退房那一晚仍然算营收（30000 分/晚 × 1 间）；旧实现此处键直接消失
+        self.assertEqual(actual.get("2027-03-05"), 30000)
+        self.assertGreater(sum(actual.values()), 0)
+
+        sold = {
+            row.stay_date: row.sold_room_nights
+            for row in self.report.occupancy_by_day(START, END)
+        }
+        self.assertEqual(sold.get("2027-03-05"), 1)
 
 
 if __name__ == "__main__":

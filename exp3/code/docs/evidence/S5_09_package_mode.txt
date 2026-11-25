@@ -1,7 +1,8 @@
 # 包模式（python -m unittest code.tests.X）逐模块跑：两条跑法都要成立
-test_report_matches_sql: exit=0 Ran 6 tests in 0.235s | OK
-test_reconcile_alert: exit=0 Ran 5 tests in 0.201s | OK
-test_config_override: exit=0 Ran 5 tests in 0.173s | OK
-test_timeout_scan: exit=0 Ran 5 tests in 0.200s | OK
-test_noshow_clock: exit=0 Ran 8 tests in 0.287s | OK
+test_report_matches_sql: exit=0 Ran 7 tests in 0.265s | OK
+test_reconcile_alert: exit=0 Ran 7 tests in 0.254s | OK
+test_config_override: exit=0 Ran 5 tests in 0.176s | OK
+test_timeout_scan: exit=0 Ran 5 tests in 0.185s | OK
+test_noshow_clock: exit=0 Ran 8 tests in 0.270s | OK
 all_exit_zero=True
+exit=0
