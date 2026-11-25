@@ -3,4 +3,4 @@
 #   python code/tools/fetch_wheels.py -r code/requirements-dev.txt -o .wheels
 #   .venv\Scripts\python.exe -m pip install --no-index --find-links .wheels -r code/requirements-dev.txt
 pylint==4.1.4
-coverage>=7.0,<8.0
+coverage==7.17.5
