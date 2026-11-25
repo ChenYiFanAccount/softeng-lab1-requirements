@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-# pylint: disable=missing-function-docstring  # 按钮回调名即语义，逐个写 docstring 是噪声
 import tkinter as tk
 from tkinter import ttk
 
@@ -109,6 +108,7 @@ class AdminScreen(BaseScreen):
         )
 
     def on_pick(self) -> None:
+        """选中酒店时把审核状态与驳回理由铺到控件上。"""
         row = self.selected_raw(self.tree)
         if row is None:
             return

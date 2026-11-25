@@ -1,25 +1,19 @@
 bare_except_hits=0
-pylint_disable_hits=20
+pylint_disable_hits=14
 
 
-disable code/app/application/account_service.py:24 [too-few-public-methods] 理由: Protocol / 单方法服务形态如此，加方法是凑数
-disable code/app/application/booking_service.py:78 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/application/booking_service.py:505 [too-many-arguments,too-many-positional-arguments] 理由: 业务键本身多个且必填，收成 dict 会丢类型 / 同上，位置参数即业务键，不给默认值以免误传
-disable code/app/application/catalog_service.py:38 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/application/clock.py:20 [too-few-public-methods] 理由: Protocol / 单方法服务形态如此，加方法是凑数
-disable code/app/application/commands.py:14 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/application/inventory_service.py:221 [too-many-arguments,too-many-positional-arguments] 理由: 业务键本身多个且必填，收成 dict 会丢类型 / 同上，位置参数即业务键，不给默认值以免误传
-disable code/app/application/report_service.py:57 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/domain/models.py:71 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/domain/models.py:193 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/domain/models.py:296 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/domain/services.py:112 [too-many-arguments] 理由: 业务键本身多个且必填，收成 dict 会丢类型
-disable code/app/domain/services.py:177 [too-many-arguments] 理由: 业务键本身多个且必填，收成 dict 会丢类型
-disable code/app/infrastructure/db/booking_repository.py:225 [too-many-arguments,too-many-positional-arguments] 理由: 业务键本身多个且必填，收成 dict 会丢类型 / 同上，位置参数即业务键，不给默认值以免误传
-disable code/app/ui/app.py:62 [too-many-instance-attributes] 理由: 字段与表列/界面控件一一对应，拆小类会把同一行数据切碎
-disable code/app/ui/app.py:171 [import-outside-toplevel] 理由: 延迟导入避免 ui 与 infrastructure 启动期循环导入
-disable code/app/ui/app.py:189 [import-outside-toplevel] 理由: 延迟导入避免 ui 与 infrastructure 启动期循环导入
-disable code/app/ui/screens/admin.py:5 [missing-function-docstring] 理由: 按钮回调名即语义，补 docstring 等于把方法名再抄一遍
-disable code/app/ui/screens/base.py:151 [too-many-arguments,too-many-positional-arguments] 理由: 业务键本身多个且必填，收成 dict 会丢类型 / 同上，位置参数即业务键，不给默认值以免误传
-disable code/app/ui/screens/inventory_admin.py:5 [missing-function-docstring] 理由: 按钮回调名即语义，补 docstring 等于把方法名再抄一遍
+disable code/app/application/booking_service.py:78 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/application/booking_service.py:505 [too-many-arguments,too-many-positional-arguments] 理由: 业务键多且必填，收成 dict 会丢类型 / 同上：位置参数即业务键，不给默认值以免误传
+disable code/app/application/catalog_service.py:38 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/application/commands.py:14 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/application/inventory_service.py:221 [too-many-arguments,too-many-positional-arguments] 理由: 业务键多且必填，收成 dict 会丢类型 / 同上：位置参数即业务键，不给默认值以免误传
+disable code/app/application/report_service.py:57 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/domain/models.py:71 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/domain/models.py:193 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/domain/models.py:296 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/domain/services.py:112 [too-many-arguments] 理由: 业务键多且必填，收成 dict 会丢类型
+disable code/app/domain/services.py:177 [too-many-arguments] 理由: 业务键多且必填，收成 dict 会丢类型
+disable code/app/infrastructure/db/booking_repository.py:225 [too-many-arguments,too-many-positional-arguments] 理由: 业务键多且必填，收成 dict 会丢类型 / 同上：位置参数即业务键，不给默认值以免误传
+disable code/app/ui/app.py:63 [too-many-instance-attributes] 理由: 字段即表列/控件区，拆小类会把同一行数据切碎
+disable code/app/ui/screens/base.py:151 [too-many-arguments,too-many-positional-arguments] 理由: 业务键多且必填，收成 dict 会丢类型 / 同上：位置参数即业务键，不给默认值以免误传
 exit=0
