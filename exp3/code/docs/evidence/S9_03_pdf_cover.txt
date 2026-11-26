@@ -1,0 +1,28 @@
+S9-4 PDF 首页含学号与姓名
+pdf=实验报告.pdf bytes=716649
+pdf_header=%PDF-1.7
+cover_image=docs/screenshots/report_cover.png（PDF 第 1 页渲染，1075x1521）
+
+[docx 封面段落]
+软件工程实践 · 实验三
+软件实现与构建
+—— 酒店预订管理系统 ——
+目　录
+1　实现概述：从 UML 到代码
+1.1　分层与模块落地
+1.2　类图 19 个符号的落点
+1.3　十屏界面与运行入口
+2　源码规模与度量
+2.1　有效代码行的口径与结果
+
+[docx 封面表格]
+课程 软件工程实践
+实验 实验三　软件实现与构建
+项目 酒店预订管理系统（Python 3.12 + Tkinter + SQLite）
+学号 241220024
+姓名 陈一帆
+日期 2026 年 11 月 26 日
+
+check_id=True
+check_name=True
+check=passed

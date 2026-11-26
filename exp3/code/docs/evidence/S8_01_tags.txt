@@ -6,5 +6,7 @@ gate-S3
 gate-S4
 gate-S5
 gate-S6
-count=7
-expected>=8 (S0-S7); gate-S7 pending reviewer round-2
+gate-S7
+count=8
+expected>=8 (S0-S7): 8/8 satisfied
+note=gate-S7 points at 3e8e202 ([S7] merge feature/s7r2)

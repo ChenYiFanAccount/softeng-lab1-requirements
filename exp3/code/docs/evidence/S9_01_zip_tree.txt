@@ -1,0 +1,11 @@
+S9-2 打包结构核验（python -c 用 zipfile 读取 zip 名表）
+zip=实验3_241220024_陈一帆.zip
+entries=230
+top_level=UML, code, 实验报告.pdf
+pdf_present=True
+uml_dir_present=True
+code_dir_present=True
+uml_png=8 uml_puml=8
+screenshots=10 evidence=92
+check_top3=True
+check=passed

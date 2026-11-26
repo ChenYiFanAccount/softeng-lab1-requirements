@@ -1,0 +1,4 @@
+S9-3 交付包洁净度（包内不得有 .git / venv / .db / __pycache__）
+pattern=(.git|.venv|.wheels|__pycache__|.verify)(/|$)|*.db|*.db-journal|*.db-wal|*.db-shm|*.pyc
+matched=0
+check=passed
